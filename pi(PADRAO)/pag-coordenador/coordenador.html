@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coordenação</title>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+}
+
+header {
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    text-align: center; /* Centraliza o conteúdo do cabeçalho horizontalmente */
+}
+.logo, .cps-logo {
+        max-height: 80px; /* Ajusta a altura máxima dos logos */
+    }
+
+    .cps-logo {
+        margin-left: auto;
+        margin-right: 20px;
+    }
+    .form-title {
+        text-align: center;
+        color: #333;
+    }
+
+.container {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+    margin: 0 auto; /* Centraliza o container horizontalmente */
+}
+
+    h1 {
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .teacher-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .teacher {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+
+    .teacher-info {
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .teacher-info h2 {
+        margin: 0;
+    }
+
+    .status {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+    }
+    .status.pending {
+    background-color: #17a2b8; /* Azul turquesa para "Aguardando resposta" */
+    color: white; /* Cor do texto */
+}
+
+    .status.waiting {
+        background-color: #ffc107; /* Amarelo para "Aguardando" */
+        color: #333; /* Cor do texto */
+    }
+
+    .status.deferido {
+        background-color: #28a745; /* Verde para "Deferido" */
+        color: white; /* Cor do texto */
+    }
+
+    .logo, .cps-logo {
+        max-height: 80px; /* Ajusta a altura máxima dos logos */
+    }
+
+    .cps-logo {
+        margin-left: auto;
+        margin-right: 20px;
+    }
+    .details-btn {
+    background-color: #007bff; /* Cor de fundo azul */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-left: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.details-btn:hover {
+    background-color: #0056b3; /* Cor de fundo azul mais escura ao passar o mouse */
+}
+
+.reason {
+    display: none;
+    width: 100%;
+    margin-top: 10px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.menu a:hover {
+    background-color: #555;
+    color: #fff;
+}
+.footer {
+    background-color: #f0f0f0;
+    padding: 30px 0;
+    color: #333;
+    font-size: 14px;
+    text-align: center;
+    position: relative;
+    margin-top: 20px; /* Distância do footer ao botão enviar */
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.footer-section {
+    flex: 1 1 300px; /* Cresce, encolhe, base */
+    margin-bottom: 20px;
+}
+
+.footer-section h3 {
+    margin-bottom: 10px;
+    color: #333; /* Cor do link padrão */
+}
+
+.footer-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 5px;
+}
+
+.footer-section ul li a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #007bff; /* Cor do link no hover */
+}
+
+.footer-bottom {
+    background-color: #ddd;
+    padding: 10px 0;
+}
+
+.footer-bottom p {
+    margin: 0;
+    font-size: 12px;
+}
+</style>
+</head>
+<body>
+    <header>
+        <img src="../img/fatec.itapira.png" class="logo" alt="Logo Fatec Itapira">
+        <h1 class="form-title">Formulário Justificativa de Faltas - Coordenação</h1>
+        <img src="../img/cps.png" class="cps-logo" alt="Logo Centro de Paula Souza" >
+        <nav class="menu">
+            <a href="home-coordenador.html">Início</a>
+        </nav>
+    </header>
+    <div class="container">
+        <h1>Lista de Professores Aguardando Aprovação</h1>
+        <ul class="teacher-list">
+            <li class="teacher">
+                <div class="teacher-info">
+                    <h2>Prof. Júnior</h2>
+                    <p>Disciplina: Algoritmos e Lógica de Programação</p>
+                </div>
+                <div class="status waiting">À analisar</div>
+                <button class="details-btn" onclick="redirectToDetails('Prof. Júnior')">Ver detalhes</button>
+            </li>
+            <li class="teacher">
+                <div class="teacher-info">
+                    <h2>Prof. Wladimir</h2>
+                    <p>Disciplina: Modelagem de Banco de Dados</p>
+                </div>
+                <div class="status waiting">À analisar</div>
+                <button class="details-btn" onclick="redirectToDetails('Prof. Wladimir')">Ver detalhes</button>
+            </li>
+            <li class="teacher">
+                <div class="teacher-info">
+                    <h2>Prof. Ana Célia</h2>
+                    <p>Disciplina: Engenharia de Software</p>
+                </div>
+                <div class="status waiting">À analisar</div>
+                <button class="details-btn" onclick="redirectToDetails('Prof. Ana Célia')">Ver detalhes</button>
+            </li>
+            <li class="teacher">
+                <div class="teacher-info">
+                    <h2>Prof. Thiago</h2>
+                    <p>Disciplina: Desenvolvimento Web</p>
+                </div>
+                <div class="status deferido">Deferido</div>
+            </li>
+        </ul>
+        <li class="teacher">
+            <div class="teacher-info">
+                <h2>Prof. Édison</h2>
+                <p>Disciplina: Sistemas Operacionais</p>
+            </div>
+            <div class="status pending">Aguardando - Professor</div>
+        </li>
+    </div>
+    <script>
+
+    function redirectToDetails(professorName) {
+        let url;
+        if (professorName === 'Prof. Júnior') {
+            url = 'detalhes-junior.html';
+        } else if (professorName === 'Prof. Wladimir') {
+            url = 'detalhes-wladimir.html';
+        } else if (professorName === 'Prof. Ana Célia') {
+            url = 'detalhes-ana-celia.html';
+        } else if (professorName === 'Prof. Thiago') {
+            url = 'detalhes-thiago.html';
+        } else {
+            url = 'detalhes-professor.html?professor=' + encodeURIComponent(professorName);
+        }
+        window.location.href = url;
+    }
+    </script>
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Contatos</h3>
+                <ul>
+                    <li>Email: contato@fatecitapira.edu.br</li>
+                    <li>Telefone: (19) 1234-5678</li>
+                    <li>Endereço: Rua das Palmeiras, 123 - Itapira/SP</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Links Úteis</h3>
+                <ul>
+                    <li><a href="../links-footer/privacidade.html">Política de Privacidade</a></li>
+                    <li><a href="../links-footer/termos.html">Termos de Uso</a></li>
+                    <li><a href="../links-footer/faq.html">FAQ</a></li>
+                </ul>
+        </div>
+    </footer>
+</body>
+</html>
