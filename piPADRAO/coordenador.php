@@ -1,8 +1,8 @@
 <?php
 
-include 'index.html';
+include 'index-coordenador.html';
 
-// Toda alteração no cabeçalho e footer devem ser modificadas no index.html
+// Toda alteração no cabeçalho e footer devem ser modificadas no index-coordenador.html
 
 ?>
 
@@ -13,6 +13,9 @@ include 'index.html';
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Padrao - Coordenação</title>
 <link rel="stylesheet" href="css/coordenador.css">
+
+<!-- Estilos do Body estão em coordenador.css -->
+
 </head>
 
 <!-- Fim do Head -->
@@ -68,7 +71,7 @@ include 'index.html';
 <!-- Início do JS -->
 
 <script>
-    
+
 document.addEventListener('DOMContentLoaded', function() {
     const detailButtons = document.querySelectorAll('.details-btn');
         
@@ -125,4 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Fim do JS -->
 
 </body>
+
+<footer>
+        <div class="containerf">
+            <a href="">
+                <img src="img/logo-governo-do-estado-sp.png">
+            </a>
+        </div>
+    </footer>
+
+    
 </html>
