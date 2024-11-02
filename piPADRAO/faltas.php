@@ -1,12 +1,13 @@
 <?php
 
 include 'conexao.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_inicio = $_POST['data_inicio'];
     $data_fim = $_POST['data_fim'];
     $arquivo = $_FILES['arquivo_pdf'];
     $motivo_falta = $_POST['motivo_falta'];
-    $curso = $_POST['curso']; // Captura o curso selecionado
+    $cursosSelecionados = $_POST['curso']; // Captura os cursos selecionados como um array
 
     if ($arquivo['error'] === UPLOAD_ERR_OK) {
         $nomeArquivo = uniqid() . "-" . basename($arquivo['name']);
@@ -19,15 +20,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Obtém o id_formulario gerado
         $id_formulario = $conn->lastInsertId();
 
-        // Insere o relacionamento na tabela formulario_faltas_cursos
-        $stmtCurso = $conn->prepare("INSERT INTO formulario_faltas_cursos (id_formulario, id_curso) VALUES (?, ?)");
-        $stmtCurso->execute([$id_formulario, $curso]);
+        // Insere o relacionamento na tabela formulario_faltas_cursos para cada curso selecionado
+        $stmtCurso = $conn->prepare("INSERT INTO formulario_faltas_cursos (idform_faltas_cursos, idcursos) VALUES (?, ?)");
+        foreach ($cursosSelecionados as $curso) {
+            $stmtCurso->execute([$id_formulario, $curso]);
+        }
 
         // Redireciona para a página inicial após o processo
         header("Location: home.php");
         exit;
     }
 }
+
 
 
 ?>
@@ -88,12 +92,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </fieldset>
     <div class="ausencia">
       <legend>Curso(s) Envolvido(s) na Ausência</legend>
-      <label><input type="radio" class="CEA" name="curso" value="CST-DSM"> CST-DSM</label>
-      <label><input type="radio" class="CEA" name="curso" value="CST-GE"> CST-GE</label>
-      <label><input type="radio" class="CEA" name="curso" value="CST-GPI"> CST-GPI</label>
-      <label><input type="radio" class="CEA" name="curso" value="CST-GTI"> CST-GTI</label>
-      <label><input type="radio" class="CEA" name="curso" value="HAE"> HAE</label>
+      <label><input type="checkbox" class="CEA" name="curso[]" value="1"> DSM</label>
+      <label><input type="checkbox" class="CEA" name="curso[]" value="2"> GE</label>
+      <label><input type="checkbox" class="CEA" name="curso[]" value="3"> GPI</label>
+      <label><input type="checkbox" class="CEA" name="curso[]" value="4"> GTI</label>
+      <label><input type="checkbox" class="CEA" name="curso[]" value="5"> HAE</label>
     </div>
+
 
     <fieldset class="faltas">
       <legend>Falta Referente</legend>
