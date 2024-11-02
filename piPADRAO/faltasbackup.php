@@ -1,25 +1,56 @@
 <?php
 
+require_once('tcpdf/tcpdf.php');
+
 include 'conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data_inicio = $_POST['data_inicio'];
     $data_fim = $_POST['data_fim'];
-    $arquivo = $_FILES['arquivo_pdf'];
-    $motivo_falta = $_POST['motivo1'];
+    $arquivo_atestado = $_FILES['arquivo_pdf'];
+    $motivo_falta = $_POST['motivo_falta'];
 
-    if ($arquivo['error'] === UPLOAD_ERR_OK) {
+    $pdf = new TCPDF();
+    $pdf->AddPage();
+    $pdf->SetFont('helvetica', '', 12);
+
+    $pdf->Cell(0, 10, "Formulário Justificativa de Faltas", 0, 1, 'C');
+    $pdf->Cell(0, 10, "Data de Início da Falta: $data_inicio", 0, 1);
+    $pdf->Cell(0, 10, "Data de Fim da Falta: $data_fim", 0, 1);
+    $pdf->Cell(0, 10, "Motivo da Falta: $motivo_falta", 0, 1);
+
+    $uploadsDir = 'uploads/';
+    $pdfFilename = "formulario_faltas.pdf"; 
+
+    if (!is_dir($uploadsDir)) {
+        mkdir($uploadsDir, 0777, true);
+    }
+
+
+    $absolutePath = __DIR__ . '/' . $uploadsDir . $pdfFilename;
+
+
+    if ($pdf->Output($absolutePath, 'F')) {
         $nomeArquivo = uniqid() . "-" . $arquivo['name'];
         move_uploaded_file($arquivo['tmp_name'], "uploads/$nomeArquivo");
+    
+        $stmt = $conn->prepare("INSERT INTO formulario_faltas (datainicio, datafim, pdf_atestado, motivo_falta, pdf_form) VALUES (?, ?, ?, ?, ?)");
+        // Execute a consulta com os dados corretos
+        $stmt->execute([$data_inicio, $data_fim, $nomeArquivo, $motivo_falta, $absolutePath]);
 
-        $stmt = $conn->prepare("INSERT INTO formulario_faltas (datainicio, datafim
-        pdf_atestado, motivo_falta) VALUES (?, ?, ?, ?)");
-        $stmt->execute([$data_inicio, $data_fim, $nomeArquivo, $motivo_falta]);
-
-        header("Location: home.php");
-        exit;
+        // Envie o arquivo para download
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . basename($pdfFilename) . '"');
+        header('Content-Length: ' . filesize($absolutePath));
+        readfile($absolutePath);
+    } else {
+        echo "Erro ao salvar o arquivo PDF.";
     }
+
+    // Redirecione para a página inicial ou outra página
+    exit;
 }
+
 
 
 ?>
@@ -31,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formulário de Faltas</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
     body {
     font-family: Arial, sans-serif;
@@ -100,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         margin-top: 5px;
         box-sizing: border-box;
     }
-    input[type="checkbox"],
+    input[type="radio"],
     input[type="radio"] {
         margin-right: 5px;
     }
@@ -281,6 +313,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </style>
 </head>
 <body>
+
     <header>
         <img src="img/fatec.itapira.png" class="logo" alt="Logo Fatec Itapira">
         <h1 class="form-title">Formulário Justificativa de Faltas</h1>
@@ -291,133 +324,154 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="professor.html">Histórico</a>
         </nav>
     </header>
-
-    <form method="POST" enctype="multipart/form-data">
-    <fieldset>
-        <legend>Informações Pessoais</legend>
-        <div class="input-row">
-            <label for="nome">Nome:</label>
-            <input type="text" class="nome" name="nome" required>
-            <script>
-                var name = localStorage.getItem("userName");
-                if (name) {
-                    document.querySelector('.nome').value = name;
-                }
-            </script>
-        </div>
-        <div class="input-row">
-            <label for="matricula">Matrícula:</label>
-            <input type="text" class="matricula" name="matricula" id="matricula" readonly required>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    var matricula = localStorage.getItem("userMatricula");
-                    if (matricula) {
-                        document.getElementById("matricula").value = matricula;
+    
+        <form method="POST" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Informações Pessoais</legend>
+            <div class="input-row">
+                <label for="nome">Nome:</label>
+                <input type="text" class="nome" name="nome" required>
+                <script>
+                    var name = localStorage.getItem("userName");
+                    if (name) {
+                        document.querySelector('.nome').value = name;
                     }
-                });
-            </script>
-            <label for="funcao">Função:</label>
-            <input type="text" class="funcao" name="funcao" value="Professor de Ensino Superior" readonly required>
-            <label for="regime">Regime Jurídico:</label>
-            <input type="text" class="regime" name="regime" value="CLT" readonly required>
-        </div>
-    </fieldset>
-        <fieldset class="ausencia">
-            <legend>Curso(s) Envolvido(s) na Ausência</legend>
-            <label><input type="checkbox" class="CEA" name="curso" value="CST-DSM"> CST-DSM</label>
-            <label><input type="checkbox" class="CEA" name="curso" value="CST-GE"> CST-GE</label>
-            <label><input type="checkbox" class="CEA" name="curso" value="CST-GPI"> CST-GPI</label>
-            <label><input type="checkbox" class="CEA" name="curso" value="CST-GTI"> CST-GTI</label>
-            <label><input type="checkbox" class="CEA" name="curso" value="HAE"> HAE</label>
-        </fieldset>
-
-        <fieldset class="faltas">
-            <legend>Falta Referente</legend>
-            <label for="data-falta">Falta referente ao dia:</label>
-            <input type="date" class="data-falta" name="data_inicio">
-            <label class="textfim" for="data-fim">Até:</label>
-            <input type="date" class="data-fim small-input" name="data_fim">
-        </fieldset>
-        
-
-        <fieldset class="motivo-falta">
-            <legend>Motivo da Falta</legend>
-        
-            <label for="motivo">Selecione o motivo da falta:</label>
-            <select id="motivo" name="motivo">
-                <option value="" disabled selected>Selecione o motivo</option>
-                <option value="licenca-falta-medica">Licença e Falta Médica</option>
-                <option value="falta-injustificada">Falta Injustificada (Com desconto do DSR)</option>
-                <option value="faltas-justificadas">Faltas Justificadas</option>
-                <option value="faltas-previstas-legislacao">Faltas Previstas na Legislação Trabalhista</option>
-            </select>
-        
-            <div id="opcoes-motivo">
-                <div class="motivo licenca-falta-medica">
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="falta-medica"> Falta Médica (Atestado médico de 1 dia)</label>
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="comparecimento-medico"> Comparecimento ao Médico no período das <input type="time" class="small-input"> às <input type="time" class="small-input"></label>
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="licenca-saude"> Licença-Saúde (Atestado médico igual ou superior a 2 dias)</label>
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="licenca-maternidade"> Licença-Maternidade (Atestado médico até 15 dias)</label>
-                </div>
+                </script>
             </div>
+            <div class="input-row">
+                <label for="matricula">Matrícula:</label>
+                <input type="text" class="matricula" name="matricula" id="matricula" readonly required>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var matricula = localStorage.getItem("userMatricula");
+                        if (matricula) {
+                            document.getElementById("matricula").value = matricula;
+                        }
+                    });
+                </script>
+                <label for="funcao">Função:</label>
+                <input type="text" class="funcao" name="funcao" value="Professor de Ensino Superior" readonly required>
+                <label for="regime">Regime Jurídico:</label>
+                <input type="text" class="regime" name="regime" value="CLT" readonly required>
+            </div>
+        </fieldset>
+            <fieldset class="ausencia">
+                <legend>Curso(s) Envolvido(s) na Ausência</legend>
+                <label><input type="radio" class="CEA" name="curso" value="CST-DSM"> CST-DSM</label>
+                <label><input type="radio" class="CEA" name="curso" value="CST-GE"> CST-GE</label>
+                <label><input type="radio" class="CEA" name="curso" value="CST-GPI"> CST-GPI</label>
+                <label><input type="radio" class="CEA" name="curso" value="CST-GTI"> CST-GTI</label>
+                <label><input type="radio" class="CEA" name="curso" value="HAE"> HAE</label>
+            </fieldset>
+
+            <fieldset class="faltas">
+                <legend>Falta Referente</legend>
+                <label for="data-falta">Falta referente ao dia:</label>
+                <input type="date" class="data-falta" name="data_inicio">
+                <label class="textfim" for="data-fim">Até:</label>
+                <input type="date" class="data-fim small-input" name="data_fim">
+            </fieldset>
             
-        
-                <div class="motivo falta-injustificada">
-                    <label><input type="checkbox" class="FI" name="motivo1" value="falta-injustificada"> Falta</label>
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="comparecimento-medico"> Atraso ou Saída Antecipada, das <input type="time" class="small-input"> às <input type="time" class="small-input"></label>
-                </div>
-        
-                <div class="motivo faltas-justificadas">
-                    <label><input type="checkbox" class="FJ" name="motivo1" value="falta-justificada"> Falta por motivo de:</label>
-                    <textarea name="motivo-descricao" rows="1"></textarea>
-                    <label><input type="checkbox" class="LFM" name="motivo1" value="comparecimento-medico"> Atraso ou Saída Antecipada das <input type="time" class="small-input"> às <input type="time" class="small-input"> Por motivo de:</label>
-                    <textarea name="atraso-descricao" rows="1"></textarea>
-                </div>
-        
-                <div class="motivo faltas-previstas-legislacao">
-                    <label><input type="checkbox" class="FPLT" name="motivo1" value="falecimento-conjuge"> Falecimento de cônjuge, pai, mãe, filho (9 dias consecutivos)</label>
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="falecimento-outros"> Falecimento de outros familiares (2 dias consecutivos)</label>
 
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="casamento"> Casamento (9 dias consecutivos)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="nascimento-filho"> Nascimento de filho (5 dias)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="acompanhamento-esposa"> Acompanhar esposa ou companheira (Até 2 dias)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="acompanhamento-filho"> Acompanhar filho até 6 anos (1 dia por ano)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="doacao-sangue"> Doação voluntária de sangue (1 dia em cada 12 meses)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="alistamento-eleitor"> Alistamento como eleitor (Até 2 dias)</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="depoimento-judicial"> Convocação para depoimento judicial</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="comparecimento-juri"> Comparecimento como jurado no Tribunal do Júri</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="servico-eleitoral"> Convocação para serviço eleitoral</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="composicao-mesa-eleitoral"> Dispensa para compor mesas eleitorais</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="prova-vestibular"> Realização de Prova de Vestibular</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="justica-trabalho"> Comparecimento como parte na Justiça do Trabalho</label>
-                    
-                    <label><input type="checkbox" class="FPLT" name="motivo1" id="acidente-transporte"> Atrasos devido a acidentes de transporte</label>
+            <fieldset class="motivo-falta">
+                <legend>Motivo da Falta</legend>
+            
+                <label for="motivo">Selecione o motivo da falta:</label>
+                <select id="motivo" name="motivo">
+                    <option value="" disabled selected>Selecione o motivo</option>
+                    <option value="licenca-falta-medica">Licença e Falta Médica</option>
+                    <option value="falta-injustificada">Falta Injustificada (Com desconto do DSR)</option>
+                    <option value="faltas-justificadas">Faltas Justificadas</option>
+                    <option value="faltas-previstas-legislacao">Faltas Previstas na Legislação Trabalhista</option>
+                </select>
+                
+                
+                <div id="opcoes_licenca-falta-medica" style="display: none;" class="motivo licenca-falta-medica">
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="falta-medica"> Falta Médica (Atestado médico de 1 dia)</label>
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"> Comparecimento ao Médico no período das <input type="time" class="small-input"> às <input type="time" class="small-input"></label>
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="licenca-saude"> Licença-Saúde (Atestado médico igual ou superior a 2 dias)</label>
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="licenca-maternidade"> Licença-Maternidade (Atestado médico até 15 dias)</label>
+                    </div>
+            
+                    <div id="opcoes_falta-injustificada" style="display: none;" class="motivo falta-injustificada">
+                        <label><input type="radio" class="FI" name="motivo_falta" value="falta-injustificada"> Falta</label>
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"> Atraso ou Saída Antecipada, das <input type="time" class="small-input"> às <input type="time" class="small-input"></label>
+                    </div>
+            
+                    <div id="opcoes_faltas-justificadas" style="display: none;" class="motivo faltas-justificadas">
+                        <label><input type="radio" class="FJ" name="motivo_falta" value="falta-justificada"> Falta por motivo de:</label>
+                        <textarea name="motivo-descricao" rows="1"></textarea>
+                        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"> Atraso ou Saída Antecipada das <input type="time" class="small-input"> às <input type="time" class="small-input"> Por motivo de:</label>
+                        <textarea name="atraso-descricao" rows="1"></textarea>
+                    </div>
+            
+                    <div id="opcoes-faltas-previstas-legislacao" style="display: none;" class="motivo faltas-previstas-legislacao">
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="falecimento-conjuge"> Falecimento de cônjuge, pai, mãe, filho (9 dias consecutivos)</label>
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="falecimento-outros"> Falecimento de outros familiares (2 dias consecutivos)</label>
+
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="casamento"> Casamento (9 dias consecutivos)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="nascimento-filho"> Nascimento de filho (5 dias)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="acompanhamento-esposa"> Acompanhar esposa ou companheira (Até 2 dias)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="acompanhamento-filho"> Acompanhar filho até 6 anos (1 dia por ano)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="doacao-sangue"> Doação voluntária de sangue (1 dia em cada 12 meses)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="alistamento-eleitor"> Alistamento como eleitor (Até 2 dias)</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="depoimento-judicial"> Convocação para depoimento judicial</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="comparecimento-juri"> Comparecimento como jurado no Tribunal do Júri</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="servico-eleitoral"> Convocação para serviço eleitoral</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="composicao-mesa-eleitoral"> Dispensa para compor mesas eleitorais</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="prova-vestibular"> Realização de Prova de Vestibular</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="justica-trabalho"> Comparecimento como parte na Justiça do Trabalho</label>
+                        
+                        <label><input type="radio" class="FPLT" name="motivo_falta" value="acidente-transporte"> Atrasos devido a acidentes de transporte</label>
+                    </div>
                 </div>
+                    <script>
+                        // Função para exibir as opções de acordo com a categoria dos motivos selecionada
+                        document.getElementById('motivo').addEventListener('change', function(){
+                            // Esconder as divs de opções
+                            document.getElementById('opcoes_licenca-falta-medica').style.display = 'none';
+                            document.getElementById('opcoes_falta-injustificada').style.display = 'none';
+                            document.getElementById('opcoes_faltas-justificadas').style.display = 'none';
+                            document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'none';
+
+                            // Mostrar a div correspondente à categoria dos motivos escolhida
+                            var categoriaSelecionada = this.value;
+                            if (categoriaSelecionada == 'licenca-falta-medica'){
+                                document.getElementById('opcoes_licenca-falta-medica').style.display = 'block';
+                            } else if (categoriaSelecionada == 'falta-injustificada'){
+                                document.getElementById('opcoes_falta-injustificada').style.display = 'block';
+                            } else if (categoriaSelecionada == 'faltas-justificadas'){
+                                document.getElementById('opcoes_faltas-justificadas').style.display = 'block';
+                            } else if (categoriaSelecionada == 'faltas-previstas-legislacao'){
+                                document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'block';
+                            } 
+                        }); 
+                    </script>
+            </fieldset>
+    
+
+            <div class="form-footer">
+                <label for=""></label>
+                <input type="file" class="form-control" name="arquivo_pdf" accept=".pdf" id="fileInput" required>
+                <ul id="fileList"></ul>
+            </div>       
+
+            <div class="form-footer">
+                <button class="btn-enviar"type="submit">Enviar Formulário</button>
             </div>
-        </fieldset>
-   
+        </form>
 
-        <div class="form-footer">
-            <label for=""></label>
-            <input type="file" class="form-control" name="arquivo_pdf" accept=".pdf" id="fileInput" required>
-            <ul id="fileList"></ul>
-        </div>       
-
-        <div class="form-footer">
-            <button class="btn-enviar" type="submit">Enviar Formulário</button>
-        </div>
-    </form>
 
         <footer class="footer">
             <div class="footer-container">
@@ -442,104 +496,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p>&copy; 2024 Fatec Itapira. Todos os direitos reservados.</p>
             </div>
         </footer>
-    <!-- Script para Selecionar Motivo da falta by Cauã -->
-    <script>
-        document.getElementById('motivo').addEventListener('change', function() {
-            var opcoes = document.querySelectorAll('.motivo');
-            opcoes.forEach(function(opcao) {
-                opcao.style.display = 'none';
-            });
-    
-            var selected = this.value;
-            var selectedOption = document.querySelector('.motivo.' + selected);
-            if (selectedOption) {
-                selectedOption.style.display = 'block';
-            }
-        });
-    </script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const LFMCheckboxes = document.querySelectorAll('input[name="motivo1"]');
-            const FICheckboxes = document.querySelectorAll('input[name="motivo1"]');
-            const FJCheckboxes = document.querySelectorAll('input[name="motivo1"]');
-            const FPLTCheckboxes = document.querySelectorAll('input[name="motivo1"]');
-            const horarioInputs = document.querySelectorAll('.horario');
-
-            function handleCheckboxClick(checkboxes) {
-                checkboxes.forEach(checkbox => {
-                    checkbox.addEventListener('click', function() {
-                        if (this.checked) {
-                            checkboxes.forEach(box => {
-                                if (box !== this) box.checked = false;
-                            });
-                        }
-                    });
-                });
-            }
-
-            handleCheckboxClick(LFMCheckboxes);
-            handleCheckboxClick(FICheckboxes);
-            handleCheckboxClick(FJCheckboxes);
-            handleCheckboxClick(FPLTCheckboxes);
-
-            function formatTimeInput(input) {
-                input.addEventListener('input', function() {
-                    let value = input.value.replace(/\D/g, '');
-                    if (value.length >= 3) {
-                        value = value.substring(0, 2) + ':' + value.substring(2, 4);
-                    }
-                    input.value = value;
-                });
-            }
-
-            horarioInputs.forEach(input => {
-                formatTimeInput(input);
-            });
-        });
-    </script>
-    <script>
-        document.getElementById('myForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Impede o envio padrão do formulário
-    
-            // Verificar se os campos obrigatórios estão preenchidos
-            var nome = document.querySelector('input[name="nome"]').value.trim();
-            var matricula = document.querySelector('input[name="matricula"]').value.trim();
-            var dataFalta = document.querySelector('input[name="data-falta"]').value.trim();
-            var quantidadeDias = document.querySelector('input[name="quantidade-dias"]').value.trim();
-            var dataInicio = document.querySelector('input[name="data-inicio"]').value.trim();
-            var dataFim = document.querySelector('input[name="data-fim"]').value.trim();
-            var motivo = document.getElementById('motivo').value.trim();
-    
-            // Verificar se "Falta referente ao dia" ou "período de x dias" está preenchido
-            var faltaReferentePreenchido = dataFalta || (quantidadeDias && dataInicio && dataFim);
-    
-            // Verificar se o arquivo é obrigatório para os motivos especificados
-            var isFileRequired = motivo === 'licenca-falta-medica' || motivo === 'faltas-justificadas' || motivo === 'faltas-previstas-legislacao';
-    
-            // Verificar se foi selecionado um motivo e pelo menos uma checkbox correspondente
-            var motivoSelecionado = motivo !== '';
-            var checkboxSelecionada = false;
-            var checkboxes = document.querySelectorAll('.motivo.' + motivo + ' input[type="checkbox"]');
-            checkboxes.forEach(function(checkbox) {
-                if (checkbox.checked) {
-                    checkboxSelecionada = true;
-                }
-            });
-    
-            if (!nome || !matricula || !motivoSelecionado || !faltaReferentePreenchido || !checkboxSelecionada) {
-                alert("Por favor, preencha todos os campos obrigatórios.");
-                return;
-            }
-    
-            if (isFileRequired && !fileSelected) {
-                alert("Necessário carregar o arquivo.");
-                return;
-            }
-    
-            // Se tudo estiver preenchido corretamente, redireciona para reposicao.html
-            window.location.href = "reposicao.html";
-        });
-    </script>
 </body>
 </html>
