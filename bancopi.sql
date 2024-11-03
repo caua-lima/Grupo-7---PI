@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 19/10/2024 às 02:36
+-- Tempo de geração: 04/11/2024 às 00:12
 -- Versão do servidor: 8.0.39
 -- Versão do PHP: 8.2.12
 
@@ -80,8 +80,15 @@ CREATE TABLE `aulas_reposicao_formulario_reposicao` (
 
 CREATE TABLE `cursos` (
   `idcursos` int NOT NULL,
-  `nome_curso` varchar(40) NOT NULL
+  `nome_curso` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Despejando dados para a tabela `cursos`
+--
+
+INSERT INTO `cursos` (`idcursos`, `nome_curso`) VALUES
+(8, '671be590d29c1-formulario.pdf');
 
 -- --------------------------------------------------------
 
@@ -106,8 +113,10 @@ CREATE TABLE `formulario_faltas` (
 --
 
 INSERT INTO `formulario_faltas` (`idform_faltas`, `datainicio`, `datafim`, `pdf_atestado`, `motivo_falta`, `pdf_form`, `situacao`, `motivo_indeferimento`, `idfuncionario`) VALUES
-(1, '2024-10-03', '2024-10-02', '6712f3dc05040-ATIVIDADE _ GERENCIAMENTO DE CLIENTES, USUARIOS e PRODUTOS.pdf', 'falta-injustificada', NULL, NULL, NULL, NULL),
-(2, '2024-10-24', '2024-10-24', '6712f43b14c84-2435e130-58b1-45d6-9b12-20f9d04b2baa.pdf', 'falecimento-conjuge', NULL, NULL, NULL, NULL);
+(12, '2024-10-30', '2024-10-30', '671bfa0926706-ESII(DSM) - Preparação Prova I.pdf', 'comparecimento-medico', 'uploads/671bfa092624e-formulario_falta.pdf', NULL, NULL, NULL),
+(13, '2024-11-05', '2024-11-05', '6727f7981eb39-671bfb7a0d6c9-formulario_falta.pdf', 'licenca-maternidade', NULL, NULL, NULL, NULL),
+(14, '2024-11-27', '2024-11-27', '6727f7fec0e1d-671bfb7a0d6c9-formulario_falta.pdf', 'on', NULL, NULL, NULL, NULL),
+(15, '2024-11-28', '2024-11-20', '6727f8254365e-671bfb7a0d6c9-formulario_falta.pdf', 'on', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -271,13 +280,13 @@ ALTER TABLE `aulas_reposicao_formulario_reposicao`
 -- AUTO_INCREMENT de tabela `cursos`
 --
 ALTER TABLE `cursos`
-  MODIFY `idcursos` int NOT NULL AUTO_INCREMENT;
+  MODIFY `idcursos` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de tabela `formulario_faltas`
 --
 ALTER TABLE `formulario_faltas`
-  MODIFY `idform_faltas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `idform_faltas` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT de tabela `formulario_faltas_cursos`
