@@ -1,647 +1,560 @@
-<!DOCTYPE html>
+<?php
+include 'conexao.php';
+include 'index.html';
 
+// ID do professor (fixo por enquanto)
+$idFuncionario = 1; // Este valor será substituído pela variável de sessão no futuro
+
+// Obter o próximo ID de formulário de reposição
+$nextIdForm = null;
+try {
+  $stmt = $conn->query("SHOW TABLE STATUS LIKE 'formulario_reposicao'");
+  $tableStatus = $stmt->fetch(PDO::FETCH_ASSOC);
+  $nextIdForm = $tableStatus['Auto_increment'];
+} catch (PDOException $e) {
+  echo "Erro ao obter o próximo ID: " . $e->getMessage();
+}
+
+// Buscar nome do funcionário pelo ID
+$nomeFuncionario = '';
+try {
+  $stmtNome = $conn->prepare("SELECT nome FROM funcionarios WHERE idfuncionario = ?");
+  $stmtNome->execute([$idFuncionario]);
+  $resultadoNome = $stmtNome->fetch(PDO::FETCH_ASSOC);
+  if ($resultadoNome) {
+    $nomeFuncionario = $resultadoNome['nome'];
+  }
+} catch (PDOException $e) {
+  echo "Erro ao buscar nome do funcionário: " . $e->getMessage();
+}
+
+// Consulta para buscar as aulas semanais do professor
+try {
+  $stmtAulas = $conn->prepare("
+        SELECT dia_semana, horario_inicio, horario_fim, disciplina
+        FROM aulas_semanal_professor
+        WHERE idfuncionario = ?
+        ORDER BY FIELD(dia_semana, 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'), horario_inicio
+    ");
+  $stmtAulas->execute([$idFuncionario]);
+  $aulas = $stmtAulas->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo "Erro ao buscar aulas: " . $e->getMessage();
+}
+
+// Consulta para buscar horas de HAE do professor
+try {
+  $stmtHAE = $conn->prepare("
+        SELECT idhae, dia_semana, data_atividade, horario_inicio, horario_fim, tipo_atividade, hae_total, hae_usadas
+        FROM horas_hae_professor
+        WHERE idfuncionario = ?
+    ");
+  $stmtHAE->execute([$idFuncionario]);
+  $atividadesHAE = $stmtHAE->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo "Erro ao buscar atividades de HAE: " . $e->getMessage();
+}
+
+$idform = $_GET['idform'] ?? null;
+
+if ($idform) {
+  try {
+    $stmt = $conn->prepare("
+            SELECT 
+                f.idform_faltas, 
+                f.datainicio, 
+                f.datafim, 
+                f.motivo_falta,
+                c.nome_curso,
+                c.idcursos
+            FROM formulario_faltas f
+            JOIN formulario_faltas_cursos fc ON f.idform_faltas = fc.idform_faltas
+            JOIN cursos c ON fc.idcursos = c.idcursos
+            WHERE f.idform_faltas = ? AND f.idfuncionario = ?  -- Verifica o idfuncionario
+        ");
+    $stmt->execute([$idform, $idFuncionario]);
+    $formularios = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Verifica se a data de início está disponível e formata o mês e ano para o input de mês
+    $mesAno = '';
+    if ($formularios && !empty($formularios[0]['datainicio'])) {
+      $mesAno = date('Y-m', strtotime($formularios[0]['datainicio']));
+    }
+  } catch (PDOException $e) {
+    echo "Erro: " . $e->getMessage();
+  }
+}
+
+if (!$formularios) {
+  echo "Formulário não encontrado ou não autorizado.";
+  exit;
+}
+
+try {
+  // Consulta para buscar as informações das aulas de falta associadas ao `idform_faltas`
+  $stmtAulasFaltas = $conn->prepare("
+        SELECT 
+            af.data_aula, 
+            af.num_aulas, 
+            af.nome_disciplina
+        FROM aulas_falta af
+        WHERE af.idform_faltas = ?
+    ");
+  $stmtAulasFaltas->execute([$idform]);
+  $aulasFaltas = $stmtAulasFaltas->fetchAll(PDO::FETCH_ASSOC);
+
+  if (!$aulasFaltas) {
+    echo "Nenhuma aula registrada para este formulário de faltas.";
+  }
+} catch (PDOException $e) {
+  echo "Erro ao buscar informações de aulas não ministradas: " . $e->getMessage();
+}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  // Captura dos dados do formulário antes da validação
+  $datasReposicao = $_POST['dataReposicao'] ?? [];
+  $inicioHorarios = $_POST['inicioHorario'] ?? [];
+  $teroHorarios = $_POST['teroHorario'] ?? [];
+  $disciplinas = $_POST['nome_disciplina'] ?? [];
+
+  // Processa os dados do formulário de reposição
+  $virtude = $formularios[0]['motivo_falta'];
+  $data_entrega = date('Y-m-d');
+  $situacao = $_POST['situacao'] ?? 'Proposta Enviada';
+
+  try {
+    // Validação inicial para garantir que os campos obrigatórios estão presentes
+    if (empty($datasReposicao) || empty($inicioHorarios) || empty($teroHorarios) || empty($disciplinas)) {
+      throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
+    }
+
+    // Insere os dados na tabela formulario_reposicao
+    $stmt = $conn->prepare("INSERT INTO formulario_reposicao (virtude, data_entrega, situacao, idfuncionario) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$virtude, $data_entrega, $situacao, $idFuncionario]);
+
+    // Obtém o id_form_reposicao gerado
+    $id_form_reposicao = $conn->lastInsertId();
+
+    // Preparação das consultas
+    $stmtAulas = $conn->prepare("INSERT INTO aulas_reposicao (data_reposicao, nome_disciplina, horarioinicio, horariofim) VALUES (?, ?, ?, ?)");
+    $stmtRelacionamento = $conn->prepare("INSERT INTO aulas_reposicoa_formulario_reposicao (idaulas_reposicao, idform_reposicao) VALUES (?, ?)");
+    $stmtInserirHAE = $conn->prepare("INSERT INTO horas_hae_professor (idfuncionario, dia_semana, data_atividade, horario_inicio, horario_fim, tipo_atividade, hae_total, hae_usadas) VALUES (?, ?, ?, ?, ?, ?, 0, 0)");
+
+    $diasSemanaMap = [
+      'Sunday' => 'Domingo',
+      'Monday' => 'Segunda',
+      'Tuesday' => 'Terça',
+      'Wednesday' => 'Quarta',
+      'Thursday' => 'Quinta',
+      'Friday' => 'Sexta',
+      'Saturday' => 'Sábado'
+    ];
+
+    for ($i = 0; $i < count($datasReposicao); $i++) {
+      // Verificação de campos vazios na linha atual
+      if (empty($datasReposicao[$i]) || empty($inicioHorarios[$i]) || empty($teroHorarios[$i]) || empty($disciplinas[$i])) {
+        throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
+      }
+
+      // Capturar os horários de início e término da reposição atual
+      $horario_inicio_novo = $inicioHorarios[$i];
+      $horario_fim_novo = $teroHorarios[$i];
+      $data_reposicao = $datasReposicao[$i];
+      $nome_disciplina = $disciplinas[$i];
+
+      // Validações adicionais para evitar conflitos de horário
+      $stmtVerificaConflito = $conn->prepare("
+              SELECT * FROM horas_hae_professor
+              WHERE idfuncionario = ? AND data_atividade = ?
+              AND horario_inicio < ? AND horario_fim > ?
+          ");
+      $stmtVerificaConflito->execute([
+        $idFuncionario,
+        $data_reposicao,
+        $horario_fim_novo,
+        $horario_inicio_novo
+      ]);
+      $conflito = $stmtVerificaConflito->fetch(PDO::FETCH_ASSOC);
+
+      if ($conflito) {
+        throw new Exception("Conflito de horário detectado para a data: " . $data_reposicao . " no horário " . $horario_inicio_novo . " - " . $horario_fim_novo);
+      }
+
+      // Insere as aulas de reposição
+      $stmtAulas->execute([$data_reposicao, $nome_disciplina, $horario_inicio_novo, $horario_fim_novo]);
+      $idaulas_reposicao = $conn->lastInsertId();
+      $stmtRelacionamento->execute([$idaulas_reposicao, $id_form_reposicao]);
+
+      // Verifica o dia da semana da data de reposição
+      $diaSemana = date('l', strtotime($data_reposicao));
+      $diaSemanaPT = $diasSemanaMap[$diaSemana] ?? '-';
+
+      // Insere na tabela horas_hae_professor para manter a agenda completa
+      $stmtInserirHAE->execute([$idFuncionario, $diaSemanaPT, $data_reposicao, $horario_inicio_novo, $horario_fim_novo, 'Reposição de Aula']);
+    }
+
+    // Insere os cursos relacionados à tabela formulario_reposicao_cursos
+    $cursosSelecionados = array_column($formularios, 'idcursos');
+    $stmtCurso = $conn->prepare("INSERT INTO formulario_reposicao_cursos (idform_reposicao, idcursos) VALUES (?, ?)");
+    foreach ($cursosSelecionados as $curso) {
+      $stmtCurso->execute([$id_form_reposicao, $curso]);
+    }
+
+    // Atualiza a situação do formulário de faltas original para "Proposta Enviada"
+    $stmtUpdate = $conn->prepare("UPDATE formulario_faltas SET situacao = 'Proposta Enviada' WHERE idform_faltas = ? AND idfuncionario = ?");
+    $stmtUpdate->execute([$formularios[0]['idform_faltas'], $idFuncionario]);
+
+    echo "Formulário de reposição, aulas e cursos salvos com sucesso!";
+    header("Location: home.php");
+    exit;
+  } catch (PDOException $e) {
+    echo "Erro ao salvar os dados: " . $e->getMessage();
+  } catch (Exception $e) {
+    echo "Erro: " . $e->getMessage();
+  }
+}
+?>
+
+
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Plano de Reposições</title>
-
-    <style>
-    body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-}
-header {
-    background-color: #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-bottom: 20px;
-    text-align: center; /* Centraliza o conteúdo do cabeçalho horizontalmente */
-}
-.logo, .cps-logo {
-        max-height: 80px; /* Ajusta a altura máxima dos logos */
-    }
-
-    .cps-logo {
-        margin-left: auto;
-        margin-right: 20px;
-    }
-    .form-title {
-        text-align: center;
-        color: #333;
-    }
-        .container {
-           max-width: 8000px;
-           margin: 0 auto;
-       }
-       fieldset {
-           border: 1px solid #ccc;
-           padding: 10px 40px;
-           margin-bottom: 10px;
-       }
-       legend {
-           font-weight: bold;
-       }
-       label {
-           display: inline;
-           margin-top: 10px;        
-           margin: 5px 0;
-       }
-    
-        .small-input {
-           width: auto;
-           display: inline-block;
-       }
-       .section-title {
-           margin-top: 20px;
-           font-weight: bold;
-       }
-       .form-footer {
-           text-align: center;
-           margin-top: 20px;
-       }
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: normal;
-        }
-        h1 {
-            text-align: center;
-        }
-        input[type="date"]
-        input[type="time"] {
-            width: auto;
-            padding: 5px;
-            margin-bottom: 5px;
-            box-sizing: content-box;         
-        }
-        input[type="text"] {
-            width: 50%;
-            padding: 5px;
-            margin-bottom: 5px;
-            margin-top: 5px;
-            box-sizing: content-box;        
-        }
-        input[type="checkbox"] {
-            margin-right: 10px;
-        }
-        input[type="number"] {
-            width: 40px;
-        }
-        table, th, td {
-            margin-bottom: 20px;
-            border: 2px solid #000;
-            border-collapse: collapse;
-            padding: 10px;
-            text-align: center;
-            margin-top: 10px;
-        }
-        .signature {
-            display: block;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-        }
-        .menu {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.menu a:hover {
-    background-color: #555;
-    color: #fff;
-}
-#disciplinas{
-    width: 300px;
-}
-.btn-enviar {
-    text-decoration: none;
-    color: #fff;
-    background-color: #007bff; /* Cor de fundo azul */
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-    cursor: pointer;
-    bottom: 20px; /* Distância do rodapé */
-    z-index: 999; /* Garante que o botão fique acima de todos os outros elementos */
-}
-
-.btn-enviar:hover {
-    background-color: #0056b3; /* Cor de fundo azul mais escura no hover */
-}
-.footer {
-    background-color: #f0f0f0;
-    padding: 30px 0;
-    color: #333;
-    font-size: 14px;
-    text-align: center;
-    position: relative;
-    margin-top: 20px; /* Distância do footer ao botão enviar */
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.footer-section {
-    flex: 1 1 300px; /* Cresce, encolhe, base */
-    margin-bottom: 20px;
-}
-
-.footer-section h3 {
-    margin-bottom: 10px;
-    color: #333; /* Cor do link padrão */
-}
-
-.footer-section ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.footer-section ul li {
-    margin-bottom: 5px;
-}
-
-.footer-section ul li a {
-    color: #333;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.footer-section ul li a:hover {
-    color: #007bff; /* Cor do link no hover */
-}
-
-.footer-bottom {
-    background-color: #ddd;
-    padding: 10px 0;
-}
-
-.footer-bottom p {
-    margin: 0;
-    font-size: 12px;
-}
-    </style>
+  <meta charset="UTF-8">
+  <title>Planejar Reposição</title>
+  <link rel="stylesheet" href="./css/cssreposicao.css">
 
 </head>
 
 <body>
-    <header>
-        <img src="img/fatec.itapira.png" class="logo" alt="Logo Fatec Itapira">
-        <h1 class="form-title">Formulário Justificativa de Reposição</h1>
-        <img src="img/cps.png" class="cps-logo" alt="Logo Centro de Paula Souza">
-        <nav class="menu">
-            <a href="home.html">Início</a>
-            <a href="faltas.html">Faltas</a>
-            <a href="professor.html">Histórico</a>
-        </nav>
-    </header>
-
-<div>
-        <fieldset>
-        <label >Número: </label><input type="text" id="numero" value="2506/2024" readonly>
-        <label for="reposicoes-mes">Reposições mês: </label><input type="month" id="reposicoes-mes" placeholder="________________/2024">
-    </fieldset>
-</div>
-    <fieldset>
-        <label >Nome do Professor: </label> 
-        <input type="text" id="nome-professor" value="">
-    </fieldset>
-    <fieldset>
-        <legend>1) Curso</legend>
-        <label><input type="checkbox" class="Curso" id="CST-DSM" > CST-DSM</label>
-        <label><input type="checkbox" class="Curso" id="CST-GE"> CST-GE</label>
-        <label><input type="checkbox" class="Curso" id="CST-GPI"> CST-GPI</label>
-        <label><input type="checkbox" class="Curso" id="CST-GTI"> CST-GTI</label>
-        <label><input type="checkbox" class="Curso" id="HAE"> HAE</label>
-    </fieldset>
-    <script>
-        function ensureOnlyOneChecked(event) {
-            var checkboxes = document.querySelectorAll('.Curso');    
-                checkboxes.forEach(function(checkbox) {                 
-                if (checkbox !== event.target) {
-                        checkbox.checked = false;
-                    }
-                });
-            }
-            document.querySelectorAll('.Curso').forEach(function(checkbox) {
-                checkbox.addEventListener('change', ensureOnlyOneChecked);
-            });
-        </script>
-    <fieldset>
-        <legend>2) Turno</legend>
-        <label><input type="checkbox" class="Turno" id="Manha"> Manhã</label>
-        <label><input type="checkbox" class="Turno" id="Tarde"> Tarde</label>
-        <label><input type="checkbox" class="Turno" id="Noite"> Noite</label>
-    </fieldset>
-    <script>
-        function ensureOnlyOneChecked(event) {
-            var checkboxes = document.querySelectorAll('.Turno');               
-            checkboxes.forEach(function(checkbox) {            
-                if (checkbox !== event.target) {
-                        checkbox.checked = false;
-                    }
-                });
-            }
-            document.querySelectorAll('.Turno').forEach(function(checkbox) {
-                checkbox.addEventListener('change', ensureOnlyOneChecked);
-            });
-        </script>
-    <fieldset>
-        <legend>3) Reposicao em virtude de:</legend>
-        <label><input type="checkbox" class="RVD"> Claro Docente</label>
-        <label><input type="checkbox" class="RVD"> Falta</label>
-        <label><input type="checkbox" class="RVD"> Substituição</label>
-    </fieldset>
-    <script>
-        function ensureOnlyOneChecked(event) {
-            var checkboxes = document.querySelectorAll('.RVD');    
-            
-            checkboxes.forEach(function(checkbox) {            
-                if (checkbox !== event.target) {
-                        checkbox.checked = false;
-                    }
-                });
-            }
-            document.querySelectorAll('.RVD').forEach(function(checkbox) {
-                checkbox.addEventListener('change', ensureOnlyOneChecked);
-            });
-        </script>
-<div>
-    <fieldset>
-        <legend>4) Dados da(s) aulas não ministradas</legend>
-        <table>
-            <tr>
-                <th>Ordem</th>
-                <th>Data da(s) aula(s) não ministrada(s)</th>
-                <th>Nº de aulas</th>
-                <th>Nome da(s) Disciplina(s)</th>
-            </tr>
-            <tr>
-                <td>01</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="number" id="n-aulas"></td>
-                <td><input type="text" id="disciplinas"></td>
-            </tr>
-            <tr>
-                <td>02</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="number" id="n-aulas"></td>
-                <td><input type="text" id="disciplinas"></td>
-            </tr>
-            <tr>
-                <td>03</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="number" id="n-aulas"></td>
-                <td><input type="text" id="disciplinas"></td>
-            </tr>
-            <tr>
-                <td>04</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="number" id="n-aulas"></td>
-                <td><input type="text" id="disciplinas"></td>
-            </tr>
-        </table>
-    </fieldset>
-</div>
-<div>
-
-     <fieldset>
-        <legend>5) Dados da(s) aulas de reposição</legend>    
-        <table>
-            <tr>
-                <th>Ordem</th>
-                <th>Data da Reposição</th>
-                <th>Horário de Início e Término</th>
-                <th>Disciplina(s) *</th>
-    
-            </tr>
-            <tr>
-                <td>01</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="time" id="horas"> as <input type="time" id="horas"></td>
-                <td><input type="text" id="disciplinas"></td>
-         
-            </tr>
-            <tr>
-                <td>02</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="time" id="horas"> as <input type="time" id="horas"></td>
-                <td><input type="text" id="disciplinas"></td>
-        
-            </tr>
-            <tr>
-                <td>03</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="time" id="horas"> as <input type="time" id="horas"></td>
-                <td><input type="text" id="disciplinas"></td>
-     
-            </tr>
-            <tr>
-                <td>04</td>
-                <td><input type="date" id="DNM1" name="DNM1"></td>
-                <td><input type="time" id="horas"> as <input type="time" id="horas"></td>
-                <td><input type="text" id="disciplinas"></td>
-             
-            </tr>
-        </table>
- </fieldset>
-</div>
-<div>
-    <fieldset>
-        <legend>6) Entregue na Coordenação em:</legend>
-        <input type="date">
-    </fieldset>
-</div>
-<div>
-
-        <fieldset>
-            <legend>7) Confirmo a(s) reposição(ões) da(s) disciplinas e encaminho à Diretoria Administrativa para as providências cabíveis.</legend>      
-        <h2></h2>
-        <label>Itapira: <input type="date"></label>
-        <div class="signature">
-        </div>
-    </fieldset>
-
- </div>
- <div>
-     <fieldset>
-        <legend>8) Represente no quadro: ( X ) as Aulas, ( HAE ) Hora Atividade Específica e ( R ) Reposição proposta.</legend>
-
-        <fieldset>
-            <legend>Manha</legend>
-            <table>
-
-            <tr>
-                <th>HAE-RJI-JORNADA</th>
-                <th>HORA-AULA</th>
-                <th>SEGUNDA</th>
-                <th>TERÇA</th>
-                <th>QUARTA</th>
-                <th>QUINTA</th>
-                <th>SEXTA</th>
-                <th>SÁBADO</th>
-            </tr>        
-            <tr>                 
-                <td>-</td>
-                <td>07h40min<BR>-<BR>08h30min</td>              
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>             
-            </tr>
-            <tr>
-                <td>08h00 - 09h00</td>
-                <td> 08h30min<BR>-<BR>09h20min </td>          
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>09h00 - 10h00</td>
-                <td>09h20min<BR>-<BR>10h10min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>10h00 - 11h00</td>
-                <td>10h10min<BR>-<BR>11h00min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>11h00 - 12h00</td>
-                <td>11h00min<BR>-<BR>12h00min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>12h00 - 13h00</td>
-                <td>12h00min<BR>-<BR>12h50min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-        </table>
-    </fieldset>
-    <fieldset>
-        <legend>Tarde</legend>
-        <table>
-            <tr>
-                <th>HAE-RJI-JORNADA</th>
-                <th>HORA-AULA</th>
-                <th>SEGUNDA</th>
-                <th>TERÇA</th>
-                <th>QUARTA</th>
-                <th>QUINTA</th>
-                <th>SEXTA</th>
-                <th>SÁBADO</th>
-            </tr>
-        </tr>
-            <tr>             
-                <td>13h - 14h</td>
-                <td>13h00min<BR>-<BR>13h50min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>                
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>14h - 15h</td>                
-                <td>13h50min<BR>-<BR>14h40min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>15h - 16h</td>
-                <td>14h50min<BR>-<BR>15h40min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>16h - 17h</td>
-                <td>15h40min<BR>-<BR>16h30min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-        <tr>
-                <td>17h - 18h</td>                
-                <td>16h30min<BR>-<BR>17h30min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-                <td>-</td>                    
-                <td>17h30min<BR>-<BR>18h20min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-        </table>
-    </fieldset>
-    <fieldset>
-        <legend>Noite</legend>
-        <table>       
-            <tr>
-                <th>HAE-RJI-JORNADA</th>
-                <th>HORA-AULA</th>
-                <th>SEGUNDA</th>
-                <th>TERÇA</th>
-                <th>QUARTA</th>
-                <th>QUINTA</th>
-                <th>SEXTA</th>
-                <th>SÁBADO</th>
-            </tr>        
-            <tr>       
-                <td>18h - 19h</td>
-                <td>18h10min<BR>-<BR>19h00min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>19h - 20h</td>
-                <td>19h00min<BR>-<BR>19h50min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>20h - 21h</td>
-                <td>19h50min<BR>-<BR>20h40min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>21h - 22h</td>
-                <td>20h50min<BR>-<BR>21h40min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-            <tr>
-                <td>-</td>
-                <td>21h40min<BR>-<BR>22h30min</td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-                <td><input type="checkbox" id="TABELA"></td>
-            </tr>
-        </table>    
-        <p>Observe as exigências legais: máximo 8 horas diárias de trabalho, intervalo de 1 hora entre um expediente e outro e 6 horas em cada expediente.</p>    
-        </fieldset>
-    </fieldset>
-</div>
-</fieldset>
-<div class="form-footer">
-    <a href="professor.html" class="btn-enviar" type="submit">Enviar Formulário</button></a>
-</div>
-<footer class="footer">
-    <div class="footer-container">
-        <div class="footer-section">
-            <h3>Contatos</h3>
-            <ul>
-                <li>Email: contato@fatecitapira.edu.br</li>
-                <li>Telefone: (19) 1234-5678</li>
-                <li>Endereço: Rua das Palmeiras, 123 - Itapira/SP</li>
-            </ul>
-        </div>
-        <div class="footer-section">
-            <h3>Links Úteis</h3>
-            <ul>
-                <li><a href="links-footer/privacidade.html">Política de Privacidade</a></li>
-                <li><a href="links-footer/termos.html">Termos de Uso</a></li>
-                <li><a href="links-footer/faq.html">FAQ</a></li>
-            </ul>
-        </div>
+  <form id="form-reposicao" method="POST" enctype="multipart/form-data">
+    <div class="title">
+      <h1>Planejar Reposição</h1>
     </div>
-    <div class="footer-bottom">
-        <p>&copy; 2024 Fatec Itapira. Todos os direitos reservados.</p>
-    </div>
-</footer>
+    <!-- Número e Mês -->
+    <div class="form-group-inline">
+      <!-- Campo de Nome do Funcionário -->
+      <div class="form-field centralizado">
+        <label for="nome">Nome: </label>
+        <input type="text" style="text-align: center; border: none; background-color: #f4f4f4; padding: 5px;"
+          class="nome" name="nome" value="<?php echo htmlspecialchars($nomeFuncionario); ?>" readonly>
+      </div>
+      <div class="form-field centralizado">
+        <label for="numero">Número:</label>
+        <input style="text-align: center; width: 130px; border: none; background-color: #f4f4f4; padding: 5px; "
+          type="text" id="numero" value="<?php echo htmlspecialchars($nextIdForm); ?>" readonly>
+      </div>
+      <div class="form-field centralizado">
+        <label for="reposicoes-mes">Reposições mês:</label>
+        <input style="text-align: center; width: 230px; border: none; background-color: #f4f4f4; padding: 5px;"
+          type="month" id="reposicoes-mes" value="<?php echo $mesAno; ?>" readonly>
+      </div>
 
-</form>
-</div>
+
+    </div>
+    <div class="form-group-inline">
+      <!-- Turno -->
+      <div class="form-field">
+        <label for="turno">Turno:</label>
+        <div class="form-checks turno">
+          <label><input type="radio" name="turno" value="manha" onclick="mostrarTabela('manha')"> Manhã</label>
+          <label><input type="radio" name="turno" value="tarde" onclick="mostrarTabela('tarde')"> Tarde</label>
+          <label><input type="radio" name="turno" value="noite" onclick="mostrarTabela('noite')"> Noite</label>
+        </div>
+      </div>
+
+      <!-- Motivo da Reposição -->
+      <div class="form-field">
+        <label for="motivo_falta">Reposição em virtude de:</label>
+        <input type="text" readonly value="
+          <?php echo htmlspecialchars($formularios[0]['motivo_falta']); ?>"
+          style="text-align: center; border: none; background-color: #f4f4f4; padding: 5px;">
+      </div>
+
+      <!-- Cursos Envolvidos -->
+      <div class="form-field">
+        <label>Cursos Envolvidos:</label>
+        <div class="cursos-envolvidos">
+          <?php foreach ($formularios as $formulario): ?>
+            <input type="text" readonly value="<?php echo htmlspecialchars($formulario['nome_curso']); ?>"
+              style="border: none; background-color: #f4f4f4; margin-right: 5px; padding: 5px;">
+          <?php endforeach; ?>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contêiner flexível para as duas seções -->
+    <div class="tables-side-by-side">
+      <!-- Aulas Não Mistradas -->
+      <div class="form-group">
+        <legend>Aulas não Ministradas:</legend>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Data(as):</th>
+              <th>Nº de aulas</th>
+              <th>Nome da(s) Disciplina(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php if (!empty($aulasFaltas)): ?>
+              <?php foreach ($aulasFaltas as $aula): ?>
+                <tr>
+                  <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
+                  <td><?php echo htmlspecialchars($aula['num_aulas']); ?></td>
+                  <td><?php echo htmlspecialchars($aula['nome_disciplina']); ?></td>
+                </tr>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <tr>
+                <td colspan="3">Nenhuma aula registrada.</td>
+              </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Dados das Aulas de Reposição -->
+      <div class="form-group">
+        <legend>Dados da(s) aulas de reposição:</legend>
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>Ordem</th>
+              <th>Data da Falta</th>
+              <th>Data da Reposição</th>
+              <th>Horário de Início e Término</th>
+              <th>Disciplina(s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php $ordem = 1; ?>
+            <?php if (!empty($aulasFaltas)): ?>
+              <?php foreach ($aulasFaltas as $aula): ?>
+                <tr>
+                  <td><?php echo $ordem++; ?></td>
+                  <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
+                  <td><input type="date" name="dataReposicao[]" required></td>
+                  <td>
+                    <input type="time" name="inicioHorario[]" required> às
+                    <input type="time" name="teroHorario[]" required>
+                  </td>
+                  <td>
+                    <?php echo htmlspecialchars($aula['nome_disciplina']); ?>
+                    <input type="hidden" name="nome_disciplina[]"
+                      value="<?php echo htmlspecialchars($aula['nome_disciplina']); ?>">
+                  </td>
+                </tr>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <tr>
+                <td colspan="5">Nenhuma aula registrada para reposição.</td>
+              </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+    <!-- Tabela de Horários com Informações de Aulas e Atividades de HAE -->
+    <div id="agenda-completa" class="tabela">
+      <fieldset>
+        <legend>Agenda Completa do Professor</legend>
+        <!-- Legenda das cores -->
+        <div class="legenda-cores"
+          style="text-align: center; display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 10px;">
+          <span
+            style="background-color: #05fda2; display: inline-block; width: 20px; height: 20px; margin-right: 5px;"></span>
+          Aulas
+          <span
+            style="background-color: #02c0ff; display: inline-block; width: 20px; height: 20px; margin-left: 15px; margin-right: 5px;"></span>
+          HAE (Horas de Atividade Extra)
+          <span
+            style="background-color: #ffcccb; display: inline-block; width: 20px; height: 20px; margin-left: 15px; margin-right: 5px;"></span>
+          Reposição de Aulas
+        </div>
+
+        <table id="tabela-aulas" class="styled-table">
+          <tr>
+            <th>Horário</th>
+            <th>Segunda</th>
+            <th>Terça</th>
+            <th>Quarta</th>
+            <th>Quinta</th>
+            <th>Sexta</th>
+            <th>Sábado</th>
+          </tr>
+
+          <?php
+          // Obter todos os horários únicos de aulas e HAE com formatação de hora
+          $horariosUnicos = [];
+          foreach (array_merge($aulas, $atividadesHAE) as $evento) {
+            $horarioInicioFormatado = date('H:i', strtotime($evento['horario_inicio']));
+            $horarioFimFormatado = date('H:i', strtotime($evento['horario_fim']));
+            $horariosUnicos[] = $horarioInicioFormatado . ' - ' . $horarioFimFormatado;
+          }
+          $horariosUnicos = array_unique($horariosUnicos);
+          sort($horariosUnicos); // Ordena os horários para exibição
+
+          // Exibição da tabela com os dados de horários
+          foreach ($horariosUnicos as $horario):
+          ?>
+            <tr>
+              <td><?php echo htmlspecialchars($horario); ?></td>
+              <?php
+              // Colunas de segunda a sábado
+              $diasSemana = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
+              foreach ($diasSemana as $dia):
+                $eventoEncontrado = '-';
+                $classeEvento = '';
+
+                // Verifica se há uma aula para o dia e horário específico
+                foreach ($aulas as $aula) {
+                  $aulaHorarioInicio = date('H:i', strtotime($aula['horario_inicio']));
+                  $aulaHorarioFim = date('H:i', strtotime($aula['horario_fim']));
+                  if (
+                    strtoupper($aula['dia_semana']) === strtoupper($dia) &&
+                    ($aulaHorarioInicio . ' - ' . $aulaHorarioFim) === $horario
+                  ) {
+                    $eventoEncontrado = $aula['disciplina'];
+                    $classeEvento = 'aula'; // Classe para aula
+                    break;
+                  }
+                }
+
+                // Verifica se há uma atividade de HAE para o dia e horário específico
+                foreach ($atividadesHAE as $hae) {
+                  $haeHorarioInicio = date('H:i', strtotime($hae['horario_inicio']));
+                  $haeHorarioFim = date('H:i', strtotime($hae['horario_fim']));
+                  if (
+                    strtoupper($hae['dia_semana']) === strtoupper($dia) &&
+                    ($haeHorarioInicio . ' - ' . $haeHorarioFim) === $horario
+                  ) {
+                    $eventoEncontrado = $hae['tipo_atividade'];
+                    $classeEvento = 'hae'; // Classe para HAE
+                    break;
+                  }
+                }
+
+                // Verifica se há uma reposição de aula inserida dinamicamente
+                if (strpos($eventoEncontrado, 'Reposição de Aula') !== false) {
+                  $classeEvento = 'reposicao'; // Classe para reposição
+                }
+              ?>
+                <td class="<?php echo $classeEvento; ?>"><?php echo htmlspecialchars($eventoEncontrado); ?></td>
+              <?php endforeach; ?>
+            </tr>
+          <?php endforeach; ?>
+        </table>
+        <p style="text-align: center; margin-top: 10px;">Observe as exigências legais: máximo 8 horas diárias de
+          trabalho, intervalo de 1 hora entre um expediente e outro e 6 horas em cada expediente.</p>
+
+
+      </fieldset>
+    </div>
+
+    <input type="hidden" name="situacao" value="Proposta Enviada">
+
+    <!-- Botão de Enviar -->
+    <div class="form-footer">
+      <button class="btn-enviar" type="submit">Enviar Formulário</button>
+    </div>
+
+  </form>
+
+  <script>
+    function atualizarAgendaCompletada() {
+      // Captura os elementos dos inputs do formulário
+      const datasReposicao = document.getElementsByName('dataReposicao[]');
+      const inicioHorarios = document.getElementsByName('inicioHorario[]');
+      const teroHorarios = document.getElementsByName('teroHorario[]');
+      const disciplinas = document.getElementsByName('nome_disciplina[]');
+
+      const tabela = document.getElementById('tabela-aulas');
+      const linhas = tabela.querySelectorAll('tr');
+
+      for (let i = 0; i < datasReposicao.length; i++) {
+        if (datasReposicao[i].value && inicioHorarios[i].value && teroHorarios[i].value && disciplinas[i].value) {
+          // Formata o horário de início e término
+          const novoHorario = `${inicioHorarios[i].value} - ${teroHorarios[i].value}`;
+
+          // Converte a data para obter o dia da semana em formato maiúsculo
+          const data = new Date(datasReposicao[i].value);
+          const diaSemana = data.toLocaleDateString('pt-BR', {
+            weekday: 'long'
+          }).toUpperCase();
+
+          // Mapeia o dia da semana em português para o formato esperado (sem domingo)
+          const diasSemanaMap = {
+            'SEGUNDA-FEIRA': 2,
+            'TERÇA-FEIRA': 3,
+            'QUARTA-FEIRA': 4,
+            'QUINTA-FEIRA': 5,
+            'SEXTA-FEIRA': 6,
+            'SÁBADO': 7
+          };
+
+          const colunaIndex = diasSemanaMap[diaSemana] ?? null;
+
+          // Verifica se o dia da semana é válido (exclui domingo)
+          if (colunaIndex !== null) {
+            // Verifica se a linha com o horário já existe na tabela
+            let linhaExistente = null;
+            for (let j = 1; j < linhas.length; j++) {
+              const celulaHorario = linhas[j].cells[0].textContent.trim();
+              if (celulaHorario === novoHorario) {
+                linhaExistente = linhas[j];
+                break;
+              }
+            }
+
+            if (linhaExistente) {
+              // Atualiza a célula correspondente ao dia da semana
+              linhaExistente.cells[colunaIndex].textContent = 'Reposição de Aula - ' + disciplinas[i].value;
+              linhaExistente.cells[colunaIndex].classList.add('reposicao');
+            } else {
+              // Cria uma nova linha e insere na posição correta
+              const novaLinha = tabela.insertRow();
+              const celulaHorario = novaLinha.insertCell(0);
+              celulaHorario.textContent = novoHorario;
+
+              // Adiciona células vazias para os dias da semana
+              for (let k = 1; k <= 6; k++) {
+                const celulaDia = novaLinha.insertCell(k);
+                if (k === colunaIndex) {
+                  celulaDia.textContent = 'Reposição de Aula - ' + disciplinas[i].value;
+                  celulaDia.classList.add('reposicao');
+                } else {
+                  celulaDia.textContent = '-';
+                }
+              }
+
+              // Insere a nova linha na posição correta para manter a ordem
+              let inserido = false;
+              for (let l = 1; l < linhas.length; l++) {
+                const horarioAtual = linhas[l].cells[0].textContent.trim();
+                if (novoHorario < horarioAtual) {
+                  tabela.insertBefore(novaLinha, linhas[l]);
+                  inserido = true;
+                  break;
+                }
+              }
+
+              if (!inserido) {
+                tabela.appendChild(novaLinha);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Adiciona eventos de mudança nos campos do formulário para atualizar a agenda automaticamente
+    document.querySelectorAll('input[name="dataReposicao[]"], input[name="inicioHorario[]"], input[name="teroHorario[]"]')
+      .forEach(input => {
+        input.addEventListener('change', atualizarAgendaCompletada);
+      });
+  </script>
+
 </body>
+
 </html>
