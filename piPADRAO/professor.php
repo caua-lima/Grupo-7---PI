@@ -63,28 +63,12 @@ include 'index.html';
       </div>
     </div>
   </div>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h3>Contatos</h3>
-        <ul>
-          <li>Email: contato@fatecitapira.edu.br</li>
-          <li>Telefone: (19) 1234-5678</li>
-          <li>Endereço: Rua das Palmeiras, 123 - Itapira/SP</li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h3>Links Úteis</h3>
-        <ul>
-          <li><a href="links-footer/privacidade.html">Política de Privacidade</a></li>
-          <li><a href="links-footer/termos.html">Termos de Uso</a></li>
-          <li><a href="links-footer/faq.html">FAQ</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 Fatec Itapira. Todos os direitos reservados.</p>
+  <br><br>
+  <footer>
+    <div class="containerf">
+      <a href="">
+        <img src="img/logo-governo-do-estado-sp.png">
+      </a>
     </div>
   </footer>
 </body>

@@ -70,3 +70,16 @@
 .link-social-media:hover{
     margin-right: 1px;
 }
+
+
+
+/* Rodapé */
+.containerf{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 122px;
+    width: 100%;
+    background-color: black;
+}
+/* Fim Rodapé */

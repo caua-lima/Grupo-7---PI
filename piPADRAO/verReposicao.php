@@ -420,6 +420,15 @@ try {
       return false;
     }
   </script>
+
+  <br><br>
+  <footer>
+    <div class="containerf">
+      <a href="">
+        <img src="img/logo-governo-do-estado-sp.png">
+      </a>
+    </div>
+  </footer>
 </body>
 
 </html>

@@ -244,14 +244,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
       <div id="opcoes_licenca-falta-medica" style="display: none;" class="motivo licenca-falta-medica">
-        <label><input type="radio" class="LFM" name="motivo_falta" value="falta-medica"> Falta Médica (Atestado médico
+        <label><input type="radio" class="LFM" name="motivo_falta" value="Falta Medica"> Falta Médica (Atestado médico
           de 1 dia)</label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"> Comparecimento ao
+        <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimentoao Medico"> Comparecimento ao
           Médico no período das <input type="time" class="small-input"> às <input type="time"
             class="small-input"></label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="licenca-saude"> Licença-Saúde (Atestado médico
+        <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Saude"> Licença-Saúde (Atestado médico
           igual ou superior a 2 dias)</label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="licenca-maternidade"> Licença-Maternidade
+        <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Maternidade"> Licença-Maternidade
           (Atestado médico até 15 dias)</label>
       </div>
 
@@ -262,58 +262,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
 
       <div id="opcoes_faltas-justificadas" style="display: none;" class="motivo faltas-justificadas">
-        <label><input type="radio" class="FJ" name="motivo_falta" value="falta-justificada"> Falta por motivo
+        <label><input type="radio" class="FJ" name="motivo_falta" value="Falta justificada"> Falta por motivo
           de:</label>
         <textarea name="motivo-descricao" rows="1"></textarea>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"> Atraso ou Saída
+        <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimento ao Medico"> Atraso ou Saída
           Antecipada das <input type="time" class="small-input"> às <input type="time" class="small-input"> Por motivo
           de:</label>
         <textarea name="atraso-descricao" rows="1"></textarea>
       </div>
 
       <div id="opcoes-faltas-previstas-legislacao" style="display: none;" class="motivo faltas-previstas-legislacao">
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="falecimento-conjuge"> Falecimento de cônjuge,
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento do Conjuge"> Falecimento de
+          cônjuge,
           pai, mãe, filho (9 dias consecutivos)</label>
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="falecimento-outros"> Falecimento de outros
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento Familiares"> Falecimento de
+          outros
           familiares (2 dias consecutivos)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="casamento"> Casamento (9 dias
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Casamento"> Casamento (9 dias
           consecutivos)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="nascimento-filho"> Nascimento de filho (5
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Nascimento do Filho"> Nascimento de filho (5
           dias)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="acompanhamento-esposa"> Acompanhar esposa ou
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento da(o) Esposa(o)"> Acompanhar
+          esposa ou
           companheira (Até 2 dias)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="acompanhamento-filho"> Acompanhar filho até 6
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento do Filho"> Acompanhar filho
+          até 6
           anos (1 dia por ano)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="doacao-sangue"> Doação voluntária de sangue
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Doacao de Sangue"> Doação voluntária de
+          sangue
           (1 dia em cada 12 meses)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="alistamento-eleitor"> Alistamento como
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Alistamento Eleitor"> Alistamento como
           eleitor (Até 2 dias)</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="depoimento-judicial"> Convocação para
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Depoimento Judicial"> Convocação para
           depoimento judicial</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="comparecimento-juri"> Comparecimento como
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Comparecimento Juri"> Comparecimento como
           jurado no Tribunal do Júri</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="servico-eleitoral"> Convocação para serviço
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Servico Eleitoral"> Convocação para serviço
           eleitoral</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="composicao-mesa-eleitoral"> Dispensa para
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Composicao Mesa Eleitoral"> Dispensa para
           compor mesas eleitorais</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="prova-vestibular"> Realização de Prova de
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Prova de Vestibular"> Realização de Prova de
           Vestibular</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="justica-trabalho"> Comparecimento como parte
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Justica do trabalho"> Comparecimento como
+          parte
           na Justiça do Trabalho</label>
 
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="acidente-transporte"> Atrasos devido a
+        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acidente de Transporte"> Atrasos devido a
           acidentes de transporte</label>
       </div>
       </div>
@@ -353,28 +359,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button class="btn-enviar" type="submit">Enviar Formulário</button>
     </div>
   </form>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h3>Contatos</h3>
-        <ul>
-          <li>Email: contato@fatecitapira.edu.br</li>
-          <li>Telefone: (19) 1234-5678</li>
-          <li>Endereço: Rua das Palmeiras, 123 - Itapira/SP</li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h3>Links Úteis</h3>
-        <ul>
-          <li><a href="links-footer/privacidade.html">Política de Privacidade</a></li>
-          <li><a href="links-footer/termos.html">Termos de Uso</a></li>
-          <li><a href="links-footer/faq.html">FAQ</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2024 Fatec Itapira. Todos os direitos reservados.</p>
+  <br><br>
+  <footer>
+    <div class="containerf">
+      <a href="">
+        <img src="img/logo-governo-do-estado-sp.png">
+      </a>
     </div>
   </footer>
 </body>

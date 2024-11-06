@@ -87,7 +87,7 @@
           </ul>
         </div>
       </a>
-      <a class="link-column" href="VerReposicao.php">
+      <a class="link-column" href="verReposicao.php">
         <div class="second-column">
           <ul class="list-window">
             <li class="item-window"><i class="fa-regular fa-calendar-days"></i></li>
