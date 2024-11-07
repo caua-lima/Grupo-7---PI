@@ -81,7 +81,7 @@ try {
   <!-- Inclua um reset CSS para evitar conflitos de estilo -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
   <!-- CSS principal -->
-  <link rel="stylesheet" href="./css/cssVerReposicao.css">
+  <link rel="stylesheet" href="./css/VerReposicao.css">
   <!-- FontAwesome para ícones -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <!-- Verifique se o caminho para o arquivo CSS está correto -->
