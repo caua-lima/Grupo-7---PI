@@ -221,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Planejar Reposição</title>
-  <link rel="stylesheet" href="./css/cssreposicao.css">
+  <link rel="stylesheet" href="./css/Reposicao.css">
 
 </head>
 

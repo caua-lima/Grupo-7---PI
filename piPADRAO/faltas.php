@@ -4,6 +4,7 @@ include 'index.html';
 
 // Definir o ID do funcionário (fixo como 1 por enquanto)
 $idFuncionario = 1;
+$errorMessage = ''; // Variável para armazenar a mensagem de erro
 
 try {
   // Consulta para buscar as informações do funcionário com base no ID
@@ -15,87 +16,115 @@ try {
     throw new Exception("Funcionário não encontrado.");
   }
 
-  // Consulta para buscar as disciplinas que o funcionário ministra
-  $stmtDisciplinas = $conn->prepare("SELECT DISTINCT disciplina FROM aulas_semanal_professor WHERE idfuncionario = ?");
+  // Consulta para buscar as disciplinas que o funcionário ministra, incluindo `idcursos` e `dia_semana`
+  $stmtDisciplinas = $conn->prepare("SELECT DISTINCT disciplina, idcursos, dia_semana FROM aulas_semanal_professor WHERE idfuncionario = ?");
   $stmtDisciplinas->execute([$idFuncionario]);
   $disciplinas = $stmtDisciplinas->fetchAll(PDO::FETCH_ASSOC);
+
+  // Consulta para buscar os tipos de atividade HAE do professor
+  $stmtHAE = $conn->prepare("SELECT tipo_atividade FROM horas_hae_professor WHERE idfuncionario = ?");
+  $stmtHAE->execute([$idFuncionario]);
+  $haeAtividades = $stmtHAE->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-  die("Erro ao buscar informações do funcionário: " . $e->getMessage());
+  $errorMessage = "Erro ao buscar informações do funcionário: " . $e->getMessage();
 } catch (Exception $e) {
-  die($e->getMessage());
+  $errorMessage = $e->getMessage();
 }
 
-// Passar os dados das disciplinas para o JavaScript
 $disciplinasJson = json_encode($disciplinas);
+$haeAtividadesJson = json_encode($haeAtividades);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $tipo_falta = $_POST['tipo_falta'] ?? null;
   $data_unica = $_POST['data_unica'] ?? null;
   $data_inicio_periodo = $_POST['data_inicio_periodo'] ?? null;
   $data_fim_periodo = $_POST['data_fim_periodo'] ?? null;
-  $num_aulas = $_POST['num_aulas'] ?? null;
   $motivo_falta = $_POST['motivo_falta'] ?? null;
-  $cursosSelecionados = $_POST['curso'] ?? []; // Captura os cursos selecionados como um array
   $situacao = $_POST['situacao'] ?? 'Aguardando Reposição';
+  $cursosSelecionados = $_POST['cursos_por_data'] ?? []; // Captura os cursos selecionados como um array
 
-  try {
-    // Processar o arquivo PDF
-    $arquivo = $_FILES['arquivo_pdf'];
-    if ($arquivo['error'] === UPLOAD_ERR_OK) {
-      $nomeArquivo = uniqid() . "-" . basename($arquivo['name']);
-      $destinoArquivo = "uploads/$nomeArquivo";
-      if (!move_uploaded_file($arquivo['tmp_name'], $destinoArquivo)) {
-        throw new Exception("Erro ao fazer o upload do arquivo.");
+  // Verificação se os campos obrigatórios foram preenchidos
+  if (!$tipo_falta || !$motivo_falta || empty($cursosSelecionados)) {
+    $errorMessage = "Por favor, preencha todos os campos obrigatórios.";
+  } else {
+    // Validação para garantir que cada curso tenha ao menos uma disciplina selecionada e o número de aulas
+    foreach ($cursosSelecionados as $data => $cursoData) {
+      if (empty($cursoData['curso'])) {
+        $errorMessage = "Por favor, selecione ao menos um curso na data $data.";
+        break;
       }
 
-      // Insere os dados na tabela formulario_faltas
-      $stmt = $conn->prepare("INSERT INTO formulario_faltas (idfuncionario, datainicio, datafim, pdf_atestado, motivo_falta, situacao) VALUES (?, ?, ?, ?, ?, ?)");
-      $stmt->execute([$idFuncionario, $data_unica ?? $data_inicio_periodo, $data_unica ?? $data_fim_periodo, $nomeArquivo, $motivo_falta, $situacao]);
+      foreach ($cursoData['curso'] as $cursoId) {
+        // Verificar se disciplinas foram selecionadas para o curso específico
+        if (empty($cursoData["disciplinas_$cursoId"])) {
+          $errorMessage = "Por favor, selecione ao menos uma disciplina para o curso ID $cursoId na data $data.";
+          break 2;
+        }
 
-      // Obtém o ID do formulário gerado
-      $id_formulario = $conn->lastInsertId();
+        // Verificar se o número de aulas foi preenchido e é maior que zero
+        $numAulas = $_POST["num_aulas_${data}_${cursoId}"] ?? null;
+        if (!$numAulas || intval($numAulas) <= 0) {
+          $errorMessage = "Por favor, preencha corretamente o número de aulas para o curso ID $cursoId na data $data.";
+          break 2;
+        }
+      }
+    }
+  }
 
-      // Insere os cursos selecionados na tabela formulario_faltas_cursos
-      $stmtCurso = $conn->prepare("INSERT INTO formulario_faltas_cursos (idform_faltas, idcursos) VALUES (?, ?)");
-      foreach ($cursosSelecionados as $curso) {
-        $stmtCurso->execute([$id_formulario, $curso]);
+  // Se não houver erros, prosseguir com o processamento do formulário
+  if (empty($errorMessage)) {
+    try {
+      // Processar o arquivo PDF
+      $arquivo = $_FILES['arquivo_pdf'];
+      if ($arquivo['error'] === UPLOAD_ERR_OK) {
+        $nomeArquivo = uniqid() . "-" . basename($arquivo['name']);
+        $destinoArquivo = "uploads/$nomeArquivo";
+        if (!move_uploaded_file($arquivo['tmp_name'], $destinoArquivo)) {
+          throw new Exception("Erro ao fazer o upload do arquivo.");
+        }
 
-        // Captura as disciplinas selecionadas para cada curso
-        if (isset($_POST["disciplinas_curso_$curso"])) {
-          $disciplinasSelecionadas = $_POST["disciplinas_curso_$curso"];
+        // Insere os dados na tabela formulario_faltas
+        $stmt = $conn->prepare("INSERT INTO formulario_faltas (idfuncionario, datainicio, datafim, pdf_atestado, motivo_falta, situacao) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$idFuncionario, $data_unica ?? $data_inicio_periodo, $data_unica ?? $data_fim_periodo, $nomeArquivo, $motivo_falta, $situacao]);
 
-          // Insere as disciplinas na tabela aulas_falta
-          $stmtAulaFalta = $conn->prepare("INSERT INTO aulas_falta (idform_faltas, num_aulas, data_aula, nome_disciplina) VALUES (?, ?, ?, ?)");
-          foreach ($disciplinasSelecionadas as $disciplina) {
-            if ($tipo_falta === 'unica' && $data_unica) {
-              $stmtAulaFalta->execute([$id_formulario, $num_aulas, $data_unica, $disciplina]);
-            } elseif ($tipo_falta === 'periodo' && $data_inicio_periodo && $data_fim_periodo) {
-              $dataAtual = new DateTime($data_inicio_periodo);
-              $dataFim = new DateTime($data_fim_periodo);
-              while ($dataAtual <= $dataFim) {
-                $stmtAulaFalta->execute([$id_formulario, $num_aulas, $dataAtual->format('Y-m-d'), $disciplina]);
-                $dataAtual->modify('+1 day');
+        // Obtém o ID do formulário gerado
+        $id_formulario = $conn->lastInsertId();
+
+        // Inserir dados nas tabelas relacionadas para cada data selecionada
+        $stmtCurso = $conn->prepare("INSERT INTO formulario_faltas_cursos (idform_faltas, idcursos) VALUES (?, ?)");
+        $stmtAulaFalta = $conn->prepare("INSERT INTO aulas_falta (idform_faltas, num_aulas, data_aula, nome_disciplina) VALUES (?, ?, ?, ?)");
+
+        foreach ($cursosSelecionados as $data => $cursoData) {
+          foreach ($cursoData['curso'] as $cursoId) {
+            $cursoId = (int) $cursoId; // Confirma que é um número inteiro
+            $stmtCurso->execute([$id_formulario, $cursoId]);
+
+            // Insere disciplinas associadas a cada curso
+            if (isset($cursoData["disciplinas_$cursoId"])) {
+              $numCursosSelecionados = count($cursoData['curso']);
+              $num_aulas = (4 / $numCursosSelecionados); // Divide 4 aulas pelo número de cursos selecionados
+
+              foreach ($cursoData["disciplinas_$cursoId"] as $disciplina) {
+                $stmtAulaFalta->execute([$id_formulario, $num_aulas, $data, $disciplina]);
               }
             }
           }
         }
-      }
 
-      // Redireciona para a página inicial após o processo
-      header("Location: home.php");
-      exit;
-    } else {
-      throw new Exception("Erro no upload do arquivo: código de erro " . $arquivo['error']);
+        // Redireciona para a página inicial após o processo
+        header("Location: home.php");
+        exit;
+      } else {
+        throw new Exception("Erro no upload do arquivo: código de erro " . $arquivo['error']);
+      }
+    } catch (PDOException $e) {
+      $errorMessage = "Erro ao inserir dados no banco de dados: " . $e->getMessage();
+    } catch (Exception $e) {
+      $errorMessage = $e->getMessage();
     }
-  } catch (PDOException $e) {
-    die("Erro ao inserir dados no banco de dados: " . $e->getMessage());
-  } catch (Exception $e) {
-    die($e->getMessage());
   }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -104,12 +133,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulário de Faltas</title>
-  <link rel="stylesheet" href="./css/cssFaltas.css">
+  <link rel="stylesheet" href="./css/Faltas.css">
 
 </head>
 
 <body>
-
+  <?php if (!empty($errorMessage)): ?>
+    <div class="error-message">
+      <?php echo htmlspecialchars($errorMessage); ?>
+    </div>
+  <?php endif; ?>
 
   <form method="POST" enctype="multipart/form-data">
     <fieldset>
@@ -132,18 +165,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
     </fieldset>
 
-    <fieldset class="ausencia">
-      <legend>Curso(s) Envolvido(s) na Ausência</legend>
-      <label><input type="checkbox" class="CEA" name="curso[]" value="1" onclick="gerarSelecaoDisciplinas()">
-        DSM</label>
-      <label><input type="checkbox" class="CEA" name="curso[]" value="2" onclick="gerarSelecaoDisciplinas()"> GE</label>
-      <label><input type="checkbox" class="CEA" name="curso[]" value="3" onclick="gerarSelecaoDisciplinas()">
-        GPI</label>
-      <label><input type="checkbox" class="CEA" name="curso[]" value="4" onclick="gerarSelecaoDisciplinas()">
-        GTI</label>
-      <label><input type="checkbox" class="CEA" name="curso[]" value="5" onclick="gerarSelecaoDisciplinas()">
-        HAE</label>
-    </fieldset>
 
     <fieldset class="faltas">
       <legend>Falta Referente</legend>
@@ -151,85 +172,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="radio" name="tipo_falta" value="unica" checked onclick="togglePeriodo(false)"> Falta referente ao
         dia:
       </label>
-      <input type="date" class="data-falta" name="data_unica" id="data_unica">
+      <input type="date" class="data-falta" name="data_unica" id="data_unica" onchange="gerarSelecaoCursos()">
 
       <label>
         <input type="radio" name="tipo_falta" value="periodo" onclick="togglePeriodo(true)"> Período de
       </label>
       <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" placeholder="Nº de dias">
       <label for="data-inicio-periodo">dias: </label>
-      <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo">
+      <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
+        onchange="gerarSelecaoCursosPeriodo()">
       <label for="data-fim-periodo">até</label>
       <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
-
-      <!-- Campo para número de aulas -->
-      <label for="num_aulas">Número de Aulas:</label>
-      <input type="number" name="num_aulas" id="num_aulas" min="2" max="4" required placeholder="2 - 4">
-
-      <!-- Container para seleção de disciplinas -->
-      <div id="disciplinas-container"></div>
     </fieldset>
 
-    <script>
-      const disciplinas = <?php echo $disciplinasJson; ?>; // Passa as disciplinas do PHP para o JavaScript
+    <!-- Container dinâmico para seleção de cursos, disciplinas e número de aulas -->
+    <div id="selecoes-container"></div>
 
-      function togglePeriodo(isPeriodo) {
-        document.getElementById('data_unica').disabled = isPeriodo;
-        document.getElementById('num_dias').disabled = !isPeriodo;
-        document.getElementById('data_inicio_periodo').disabled = !isPeriodo;
-        document.getElementById('data_fim_periodo').disabled = !isPeriodo;
-
-        if (!isPeriodo) {
-          document.getElementById('num_dias').value = '';
-          document.getElementById('data_inicio_periodo').value = '';
-          document.getElementById('data_fim_periodo').value = '';
-        }
-      }
-
-      document.getElementById('data_inicio_periodo').addEventListener('change', function() {
-        const numDias = parseInt(document.getElementById('num_dias').value, 10);
-        if (numDias && this.value) {
-          const dataInicio = new Date(this.value);
-          dataInicio.setDate(dataInicio.getDate() + numDias - 1);
-          const dataFim = dataInicio.toISOString().split('T')[0];
-          document.getElementById('data_fim_periodo').value = dataFim;
-        }
-      });
-
-      function gerarSelecaoDisciplinas() {
-        const cursosSelecionados = document.querySelectorAll('input[name="curso[]"]:checked');
-        const container = document.getElementById('disciplinas-container');
-        container.innerHTML = ''; // Limpa o container antes de adicionar novas seleções
-
-        if (cursosSelecionados.length === 0) {
-          container.innerHTML = '<p>Selecione ao menos um curso.</p>';
-          return;
-        }
-
-        cursosSelecionados.forEach((curso, index) => {
-          const label = document.createElement('label');
-          label.textContent = `Disciplina do curso ${curso.nextSibling.textContent.trim()}:`;
-          label.htmlFor = `disciplina-${curso.value}`;
-
-          const select = document.createElement('select');
-          select.name = `disciplinas_curso_${curso.value}[]`; // Nome ajustado para capturar como array por curso
-          select.id = `disciplina-${curso.value}`;
-          select.multiple = true; // Permite múltipla seleção
-          select.required = true;
-
-          // Adiciona opções ao select a partir da variável disciplinas
-          disciplinas.forEach(disciplina => {
-            const option = document.createElement('option');
-            option.value = disciplina.disciplina;
-            option.textContent = disciplina.disciplina;
-            select.appendChild(option);
-          });
-
-          container.appendChild(label);
-          container.appendChild(select);
-        });
-      }
-    </script>
     <fieldset class="motivo-falta">
       <legend>Motivo da Falta</legend>
 
@@ -359,6 +317,255 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button class="btn-enviar" type="submit">Enviar Formulário</button>
     </div>
   </form>
+
+  <!-- Script para a area de datas e materias e cursos -->
+  <script>
+    // Dados de disciplinas e atividades HAE obtidos do PHP
+    const disciplinas = <?php echo $disciplinasJson; ?>;
+    const haeAtividades = <?php echo $haeAtividadesJson; ?>;
+
+    // Mapeamento dos dias da semana para português em maiúsculas
+    const diasSemana = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+
+    // Função para alternar entre Falta Única e Período
+    function togglePeriodo(isPeriodo) {
+      document.getElementById('data_unica').disabled = isPeriodo;
+      document.getElementById('num_dias').disabled = !isPeriodo;
+      document.getElementById('data_inicio_periodo').disabled = !isPeriodo;
+      document.getElementById('data_fim_periodo').disabled = !isPeriodo;
+
+      if (!isPeriodo) {
+        document.getElementById('num_dias').value = '';
+        document.getElementById('data_inicio_periodo').value = '';
+        document.getElementById('data_fim_periodo').value = '';
+        document.getElementById('selecoes-container').innerHTML = '';
+      } else {
+        document.getElementById('data_unica').value = '';
+      }
+    }
+
+    // Limitar datas para o passado
+    document.addEventListener("DOMContentLoaded", function() {
+      const hoje = new Date().toISOString().split('T')[0];
+      document.getElementById("data_unica").setAttribute("max", hoje);
+      document.getElementById("data_inicio_periodo").setAttribute("max", hoje);
+    });
+
+    // Geração da data final para faltas em período
+    document.getElementById('data_inicio_periodo').addEventListener('change', function() {
+      const numDias = parseInt(document.getElementById('num_dias').value, 10);
+      const startDate = new Date(this.value);
+      let daysCounted = 0;
+
+      while (daysCounted < numDias) {
+        startDate.setDate(startDate.getDate() + 1);
+        if (startDate.getDay() !== 0) { // Ignorar domingos
+          daysCounted++;
+        }
+      }
+      document.getElementById('data_fim_periodo').value = startDate.toISOString().split('T')[0];
+      gerarSelecaoCursosPeriodo();
+    });
+
+    // Função para obter o dia da semana em português e maiúsculo a partir de uma data
+    function getDiaSemana(data) {
+      const [year, month, day] = data.split('-');
+      const date = new Date(year, month - 1, day); // Mês começa em 0 no JavaScript
+      return diasSemana[date.getUTCDay()]; // Usar getUTCDay para evitar problemas de fuso horário
+    }
+
+    // Geração de seleção de cursos e disciplinas para uma falta única
+    function gerarSelecaoCursos() {
+      const selectedDate = document.getElementById('data_unica').value;
+      if (!selectedDate) return;
+
+      const container = document.getElementById('selecoes-container');
+      container.innerHTML = ''; // Limpa o container para nova seleção
+
+      const dataLabel = document.createElement('p');
+      dataLabel.textContent = `Data Selecionada: ${selectedDate}`;
+      container.appendChild(dataLabel);
+
+      gerarSelecaoCursosDia(container, selectedDate);
+    }
+
+    // Geração de seleção de cursos e disciplinas para cada data em um período
+    function gerarSelecaoCursosPeriodo() {
+      const container = document.getElementById('selecoes-container');
+      container.innerHTML = ''; // Limpa o container
+
+      const dataInicio = new Date(document.getElementById('data_inicio_periodo').value);
+      const dataFim = new Date(document.getElementById('data_fim_periodo').value);
+
+      let currentDate = new Date(dataInicio);
+
+      while (currentDate <= dataFim) {
+        if (currentDate.getDay() !== 0) { // Ignora domingos
+          const dataLabel = document.createElement('p');
+          dataLabel.textContent = `Data: ${currentDate.toISOString().split('T')[0]}`;
+          container.appendChild(dataLabel);
+
+          gerarSelecaoCursosDia(container, currentDate.toISOString().split('T')[0]);
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    // Função auxiliar para gerar a seleção de cursos e disciplinas por dia
+    function gerarSelecaoCursosDia(container, data) {
+      const cursosSelecionados = [];
+
+      function limitarSelecaoCursos(event) {
+        const cursoCheckboxes = document.querySelectorAll(`input[name="cursos_por_data[${data}][curso][]"]`);
+        const checkedCount = Array.from(cursoCheckboxes).filter(c => c.checked).length;
+
+        if (checkedCount > 2) {
+          alert("Selecione no máximo 2 cursos.");
+          event.target.checked = false;
+        }
+      }
+
+      const cursos = [{
+          id: 1,
+          nome: "DSM"
+        },
+        {
+          id: 2,
+          nome: "GE"
+        },
+        {
+          id: 3,
+          nome: "GPI"
+        },
+        {
+          id: 4,
+          nome: "GTI"
+        },
+        {
+          id: 5,
+          nome: "HAE"
+        }
+      ];
+
+      cursos.forEach(curso => {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = `cursos_por_data[${data}][curso][]`;
+        checkbox.value = curso.id;
+        checkbox.addEventListener('change', limitarSelecaoCursos);
+
+        const label = document.createElement('label');
+        label.textContent = curso.nome;
+        label.appendChild(checkbox);
+        container.appendChild(label);
+
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            cursosSelecionados.push(curso.id);
+            if (curso.id == 5) {
+              gerarSelecaoAtividadesHAE(container, data, curso.id);
+            } else {
+              gerarSelecaoDisciplinasDia(container, data, curso.id, cursosSelecionados.length);
+            }
+            gerarSelecaoNumAulas(container, data, curso.id);
+          } else {
+            cursosSelecionados.splice(cursosSelecionados.indexOf(curso.id), 1);
+            removerSelecaoDisciplinasDia(data, curso.id);
+            removerSelecaoAtividadesHAE(data, curso.id);
+            removerSelecaoNumAulas(data, curso.id);
+          }
+        });
+      });
+    }
+
+    // Função para exibir tipos de atividades HAE
+    function gerarSelecaoAtividadesHAE(container, data, cursoId) {
+      const atividadeList = document.createElement('div');
+      atividadeList.id = `atividades_${data}_${cursoId}`;
+
+      const atividadeLabel = document.createElement('p');
+      atividadeLabel.textContent = `Atividades HAE (Data: ${data}):`;
+      atividadeList.appendChild(atividadeLabel);
+
+      haeAtividades.forEach(atividade => {
+        const option = document.createElement('input');
+        option.type = 'checkbox';
+        option.name = `hae_atividades_${data}_${cursoId}[]`;
+        option.value = atividade.tipo_atividade;
+
+        const labelAtividade = document.createElement('label');
+        labelAtividade.textContent = atividade.tipo_atividade;
+        labelAtividade.appendChild(option);
+        atividadeList.appendChild(labelAtividade);
+      });
+
+      container.appendChild(atividadeList);
+    }
+
+    // Geração dinâmica de disciplinas baseado nas regras de seleção por curso, data e dia da semana
+    function gerarSelecaoDisciplinasDia(container, data, cursoId, numCursos) {
+      const disciplinaList = document.createElement('div');
+      disciplinaList.id = `disciplinas_${data}_${cursoId}`;
+
+      const disciplinaLabel = document.createElement('p');
+      disciplinaLabel.textContent = `Disciplinas para o curso ${cursoId} (Data: ${data}):`;
+      disciplinaList.appendChild(disciplinaLabel);
+
+      const diaSemanaSelecionado = getDiaSemana(data); // Obter o dia da semana selecionado
+
+      disciplinas
+        .filter(disciplina => disciplina.idcursos == cursoId && disciplina.dia_semana === diaSemanaSelecionado)
+        .forEach(disciplina => {
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = `cursos_por_data[${data}][disciplinas_${cursoId}][]`;
+          checkbox.value = disciplina.disciplina;
+
+          const labelDisciplina = document.createElement('label');
+          labelDisciplina.textContent = disciplina.disciplina;
+          labelDisciplina.appendChild(checkbox);
+          disciplinaList.appendChild(labelDisciplina);
+        });
+
+
+      container.appendChild(disciplinaList);
+
+    }
+
+    function gerarSelecaoNumAulas(container, data, cursoId) {
+      const numAulasDiv = document.createElement('div');
+      numAulasDiv.id = `num_aulas_${data}_${cursoId}`;
+
+      const numAulasLabel = document.createElement('label');
+      numAulasLabel.textContent = `Número de Aulas para o curso ${cursoId} (Data: ${data}): `;
+      numAulasDiv.appendChild(numAulasLabel);
+
+      const numAulasInput = document.createElement('input');
+      numAulasInput.type = 'number';
+      numAulasInput.name = `num_aulas_${data}_${cursoId}`;
+      numAulasInput.min = 1;
+      numAulasInput.max = (cursoId === 5) ? 2 : 4; // Limite de 2 para HAE, 4 para os outros
+      numAulasDiv.appendChild(numAulasInput);
+
+      container.appendChild(numAulasDiv);
+    }
+
+    function removerSelecaoDisciplinasDia(data, cursoId) {
+      const disciplinaContainer = document.getElementById(`disciplinas_${data}_${cursoId}`);
+      if (disciplinaContainer) disciplinaContainer.remove();
+    }
+
+    function removerSelecaoAtividadesHAE(data, cursoId) {
+      const atividadeContainer = document.getElementById(`atividades_${data}_${cursoId}`);
+      if (atividadeContainer) atividadeContainer.remove();
+    }
+
+    function removerSelecaoNumAulas(data, cursoId) {
+      const numAulasContainer = document.getElementById(`num_aulas_${data}_${cursoId}`);
+      if (numAulasContainer) numAulasContainer.remove();
+    }
+  </script>
+
   <br><br>
   <footer>
     <div class="containerf">

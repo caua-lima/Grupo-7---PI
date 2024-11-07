@@ -11,7 +11,7 @@ include 'index.html';
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Status - Visualização do Professor</title>
-  <link rel="stylesheet" href="css/cssProfessor.css">
+  <link rel="stylesheet" href="css/Professor.css">
   <script>
     function showDetails(status) {
       let message = '';
