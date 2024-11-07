@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;700;800&display=swap');
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body{
+    background-repeat: no-repeat;
+    background-size:cover;
+    background-image: url(../img/fundo1.jpg);
+    font-family: "Open Sans", sans-serif;
+}
+
+.container{
+    display: flex;
+ 
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+
+}
+.content{
+    border-radius: 15px;
+    background-color: #fff;
+    width: 960px;
+    height: 50%;
+    display: flex;
+    /*separar(deixar um do lado do outro)*/
+    align-items: center;
+    /*centralizar*/
+    justify-content:space-between;
+    /*dar espaco no meio*/
+    position: relative;
+
+}
+.content::before{
+    /*pseudoelemento(inserir conteudo antes do conteudo do elemento selecionado) se tiver postion absolute cobrira tudo o certo e dar positicion relative onde quiser usar */
+    content: "";
+    position: absolute;
+    background-color: #b20000;
+    width: 40%;
+    height: 100%;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    left: 0;
+
+
+}
+.title{
+    font-size: 28px;
+    font-weight: bold;
+    text-transform: none
+}
+.title-primary{
+    color: #fff;
+}
+.title-second{
+    margin: 15px;
+    color:  #b20000;
+    
+}
+.description{
+    font-size: 14px;
+    font-weight: 300;
+    /*para deixar ela fininha*/
+    color: #fff;
+    line-height: 30px;
+    /*altura de linhas */
+}
+.description-primary{
+    color: #fff;
+}
+.btn{
+    border-radius: 15px;
+    font-size: 10px;
+    text-transform: uppercase;
+    /*deixar texto grande*/
+    color: #fff;
+    padding: 10px 50px;
+    /*10 pixels pra cima (top) e 10 pixels para baixo(bottom) e 50 para esquerda(left) e 50 para direita(right)*/
+    cursor: pointer;
+    font-weight: bold;
+    align-self: center;
+    border: none;
+    text-decoration: none;
+}
+.btn-primary{
+    background-color: transparent;
+    border: 1px solid #fff;
+    margin: 10px;
+    transition: background-color .5s;
+}
+.btn-primary:hover{
+    /*funcao que faz quando deslizar pro cima do botao mudar de cor*/
+    background-color: #fff;
+    color: rgb(240, 95, 58);
+}
+.btn-professor{
+    background-color: #b20000;
+    border: 1px solid #b20000;
+    
+
+}
+.btn-professor:hover{
+    background-color: #fff;
+    color: #b20000;
+
+
+}
+.first-column{
+    text-align: center;
+    width: 40%;
+    z-index: 10;
+ 
+}
+.second-column{
+    width: 60%;
+    flex: 2 0 auto;
+       /*forma reduzida de usar a propriedade flex
+    na primeira grow para dividir
+    segundo para dimunir
+    e terceira onde deve comecar*/
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+
+}
+.first-content{
+    display: flex;  
+}
+
+.first-content .second-column{
+    z-index: 11;
+
+}
+
+
+.form{
+    display: flex;
+    flex-direction: column;
+    /*Deixar um embaixo do outro como linhas*/
+    width: 55%;
+    
+    
+    
+}
+.form input{
+    height: 30px;
+    border: none;
+    background-color: #ecf0f1;
+    margin: 8px;
+    width: 100%;
+    
+    
+}
+.label-input{
+    background-color: #ecf0f1;
+    align-items: center;
+    display: flex;
+    margin: 6px;
+
+    
+}
+
+.icon-modify{
+    color: #7d8c8d;
+    padding: 0 5px;
+
+}
+/*          Second Content            */
+.second-content{
+    position: absolute;
+    display: flex;
+}
+
+.second-content .first-column{
+    order: 2; 
+    z-index: -1;
+
+}
+
+.second-content .second-column{
+    order: 1;
+    z-index: -1;
+}
+.btn-cordenador{
+    background-color: #b20000;
+    border: 1px solid #b20000;
+    margin: 15px;
+    transition: background-color .5s;
+}
+.btn-cordenador:hover{
+    background-color: #fff;
+    border: 1px solid #b20000;
+    color: #b20000;
+}
+
+.sign-in-js .first-content .first-column{
+    z-index: -1;
+
+}
+/*quando clicar sign in desaparecer primeiro counteudo e primeira coluna*/
+
+
+.sign-in-js .second-content .second-column{
+    z-index: 11;
+}
+/*quando clicar sign in mostrar segundo counteudo
+sobrepor o primeiro*/
+
+.sign-in-js .second-content .first-column{
+    z-index: 13;
+}
+
+.sign-in-js .content::before{
+    left: 60%;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    animation: slidein 1s;
+
+    z-index: 12;
+}
+/*mudar before totalmente para esquerda para se encaixar*/
+.sign-up-js .second-content .first-column,
+.sign-up-js .second-content .second-column{
+    z-index: -1;
+}
+/*quando clicar sign up desaparecer no segundo counteudo primeira coluna*/
+
+.sign-up-js .first-content .first-column{
+    z-index: 13;
+}
+.sign-up-js .first-content .second-column{
+    z-index: 11;
+}
+/*quando clicar sign up mostrar segundo counteudo
+sobrepor o primerio*/
+.sign-up-js .content::before{
+    animation: slideout 1s;
+
+    z-index: 12;
+  
+}
+
+
+/*Deslocamento animacao atras do content:before*/
+
+.sign-in-js .first-content .second-column{
+    z-index: -1;
+    position: relative;
+    animation: deslocamentoLeft 1s;
+}
+
+.sign-up-js .second-content .second-column{
+    position: relative;
+    z-index: -1;
+    animation: deslocamentoRight 1s;
+}
+
+/*Animacao css para o conteudo*/
+
+@keyframes deslocamentoLeft{
+    from{
+        left: 0;
+        z-index: 12;
+
+    }
+
+    25%{
+        left: -80px;
+        opacity: .5;
+        z-index: 12;
+    }
+
+    50%{
+        left: -100px;
+        opacity: .2;
+    }
+
+    to{
+        left: -110px;
+        z-index: -1;    
+        opacity: 0;
+    }
+}
+
+@keyframes deslocamentoRight{
+    from{
+        left: 0;
+        z-index: 12;
+        opacity: 1;
+    
+    }
+    50%{
+        left: 80px;
+        opacity: .5;
+       
+
+
+    }
+    90%{
+        opacity: 0;
+
+
+    }
+
+    to{
+        left: 110px;
+        z-index: -1;
+        opacity: 0;
+    }
+}
+
+
+
+
+
+
+/*Animacao css*/
+
+@keyframes slidein {
+    from{
+        left: 0;
+        width: 40%;
+    }
+
+    50%{
+        left: 30%;
+        width: 60%;
+    }
+
+    100%{
+        left: 60%;
+        width: 40%;
+    }
+}
+
+@keyframes slideout {
+    from{
+        left: 60%;
+        width: 40%;
+    }
+
+
+    50%{
+        left: 30%;
+        width: 60%;
+    }
+
+
+    100%{
+        left: 0;
+        width: 40%;
+    }
+}
