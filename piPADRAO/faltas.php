@@ -164,26 +164,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
       </div>
     </fieldset>
-
-
     <fieldset class="faltas">
       <legend>Falta Referente</legend>
-      <label>
-        <input type="radio" name="tipo_falta" value="unica" checked onclick="togglePeriodo(false)"> Falta referente ao
-        dia:
-      </label>
-      <input type="date" class="data-falta" name="data_unica" id="data_unica" onchange="gerarSelecaoCursos()">
 
-      <label>
-        <input type="radio" name="tipo_falta" value="periodo" onclick="togglePeriodo(true)"> Período de
-      </label>
-      <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" placeholder="Nº de dias">
-      <label for="data-inicio-periodo">dias: </label>
-      <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
-        onchange="gerarSelecaoCursosPeriodo()">
-      <label for="data-fim-periodo">até</label>
-      <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="tipo_falta" value="unica" id="radio_unica" checked onclick="togglePeriodo(false)">
+          Falta referente ao dia:
+        </label>
+        <input type="date" class="data-falta" name="data_unica" id="data_unica" onchange="gerarSelecaoCursos()">
+      </div>
+
+      <div class="radio-group">
+        <label>
+          <input type="radio" name="tipo_falta" value="periodo" id="radio_periodo" onclick="togglePeriodo(true)">
+          Período de
+        </label>
+        <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" max="15" placeholder="Nº de dias">
+        <label for="data-inicio-periodo">Dias: </label>
+        <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
+          onchange="gerarSelecaoCursosPeriodo()">
+        <label for="data-fim-periodo">Até</label>
+        <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
+      </div>
+
     </fieldset>
+
+    <script>
+    // Desativa o outro rádio quando um é selecionado
+    function togglePeriodo(isPeriodo) {
+      const radioUnica = document.getElementById('radio_unica');
+      const radioPeriodo = document.getElementById('radio_periodo');
+
+      if (isPeriodo) {
+        radioUnica.disabled = true;
+        radioPeriodo.disabled = false;
+      } else {
+        radioUnica.disabled = false;
+        radioPeriodo.disabled = true;
+      }
+    }
+
+    // Configuração inicial para garantir a funcionalidade ao carregar
+    document.addEventListener("DOMContentLoaded", function() {
+      togglePeriodo(document.getElementById('radio_periodo').checked);
+    });
+    </script>
+
+    <style>
+    /* Estilização das divs que contêm os grupos de rádio */
+    .radio-group {
+      margin-bottom: 10px;
+    }
+    </style>
+
 
     <!-- Container dinâmico para seleção de cursos, disciplinas e número de aulas -->
     <div id="selecoes-container"></div>
