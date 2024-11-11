@@ -122,23 +122,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $situacao = $_POST['situacao'] ?? 'Proposta Enviada';
 
   try {
+    // Inicia a transação
+    $conn->beginTransaction();
+
     // Validação inicial para garantir que os campos obrigatórios estão presentes
     if (empty($datasReposicao) || empty($inicioHorarios) || empty($teroHorarios) || empty($disciplinas)) {
       throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
     }
 
     // Insere os dados na tabela formulario_reposicao
-    $stmt = $conn->prepare("INSERT INTO formulario_reposicao (virtude, data_entrega, situacao, idfuncionario) VALUES (?, ?, ?, ?)");
-    $stmt->execute([$virtude, $data_entrega, $situacao, $idFuncionario]);
+    $stmt = $conn->prepare("INSERT INTO formulario_reposicao (virtude, data_entrega, situacao, idfuncionario, idform_faltas) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$virtude, $data_entrega, $situacao, $idFuncionario, $idform]);
+    $id_form_reposicao = $conn->lastInsertId(); // ID do novo formulario_reposicao
 
-    // Obtém o id_form_reposicao gerado
-    $id_form_reposicao = $conn->lastInsertId();
-
-    // Preparação das consultas
-    $stmtAulas = $conn->prepare("INSERT INTO aulas_reposicao (data_reposicao, nome_disciplina, horarioinicio, horariofim) VALUES (?, ?, ?, ?)");
+    // Preparação das consultas de inserção para aulas e relacionamento de tabelas
+    $stmtAulas = $conn->prepare("INSERT INTO aulas_reposicao (data_reposicao, nome_disciplina, horarioinicio, horariofim, idform_reposicao) VALUES (?, ?, ?, ?, ?)");
     $stmtRelacionamento = $conn->prepare("INSERT INTO aulas_reposicoa_formulario_reposicao (idaulas_reposicao, idform_reposicao) VALUES (?, ?)");
     $stmtInserirHAE = $conn->prepare("INSERT INTO horas_hae_professor (idfuncionario, dia_semana, data_atividade, horario_inicio, horario_fim, tipo_atividade, hae_total, hae_usadas) VALUES (?, ?, ?, ?, ?, ?, 0, 0)");
 
+    // Mapeamento de dias da semana para tradução
     $diasSemanaMap = [
       'Sunday' => 'Domingo',
       'Monday' => 'Segunda',
@@ -149,46 +151,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'Saturday' => 'Sábado'
     ];
 
+    // Inserir cada aula e verificar conflitos
     for ($i = 0; $i < count($datasReposicao); $i++) {
-      // Verificação de campos vazios na linha atual
       if (empty($datasReposicao[$i]) || empty($inicioHorarios[$i]) || empty($teroHorarios[$i]) || empty($disciplinas[$i])) {
         throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
       }
 
-      // Capturar os horários de início e término da reposição atual
       $horario_inicio_novo = $inicioHorarios[$i];
       $horario_fim_novo = $teroHorarios[$i];
       $data_reposicao = $datasReposicao[$i];
       $nome_disciplina = $disciplinas[$i];
 
-      // Validações adicionais para evitar conflitos de horário
+      // Verificar conflitos de horário
       $stmtVerificaConflito = $conn->prepare("
               SELECT * FROM horas_hae_professor
               WHERE idfuncionario = ? AND data_atividade = ?
               AND horario_inicio < ? AND horario_fim > ?
           ");
-      $stmtVerificaConflito->execute([
-        $idFuncionario,
-        $data_reposicao,
-        $horario_fim_novo,
-        $horario_inicio_novo
-      ]);
+      $stmtVerificaConflito->execute([$idFuncionario, $data_reposicao, $horario_fim_novo, $horario_inicio_novo]);
       $conflito = $stmtVerificaConflito->fetch(PDO::FETCH_ASSOC);
 
       if ($conflito) {
         throw new Exception("Conflito de horário detectado para a data: " . $data_reposicao . " no horário " . $horario_inicio_novo . " - " . $horario_fim_novo);
       }
 
-      // Insere as aulas de reposição
-      $stmtAulas->execute([$data_reposicao, $nome_disciplina, $horario_inicio_novo, $horario_fim_novo]);
+      // Insere as aulas de reposição, incluindo o id_form_reposicao
+      $stmtAulas->execute([$data_reposicao, $nome_disciplina, $horario_inicio_novo, $horario_fim_novo, $id_form_reposicao]);
       $idaulas_reposicao = $conn->lastInsertId();
+
+      // Relaciona a aula ao formulário de reposição
       $stmtRelacionamento->execute([$idaulas_reposicao, $id_form_reposicao]);
 
-      // Verifica o dia da semana da data de reposição
+      // Determina o dia da semana e insere na tabela horas_hae_professor
       $diaSemana = date('l', strtotime($data_reposicao));
       $diaSemanaPT = $diasSemanaMap[$diaSemana] ?? '-';
-
-      // Insere na tabela horas_hae_professor para manter a agenda completa
       $stmtInserirHAE->execute([$idFuncionario, $diaSemanaPT, $data_reposicao, $horario_inicio_novo, $horario_fim_novo, 'Reposição de Aula']);
     }
 
@@ -203,15 +199,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmtUpdate = $conn->prepare("UPDATE formulario_faltas SET situacao = 'Proposta Enviada' WHERE idform_faltas = ? AND idfuncionario = ?");
     $stmtUpdate->execute([$formularios[0]['idform_faltas'], $idFuncionario]);
 
+    // Confirma a transação
+    $conn->commit();
+
     echo "Formulário de reposição, aulas e cursos salvos com sucesso!";
     header("Location: home.php");
     exit;
   } catch (PDOException $e) {
+    // Desfaz a transação em caso de erro
+    $conn->rollBack();
     echo "Erro ao salvar os dados: " . $e->getMessage();
   } catch (Exception $e) {
+    // Desfaz a transação em caso de erro
+    $conn->rollBack();
     echo "Erro: " . $e->getMessage();
   }
 }
+
 ?>
 
 
