@@ -79,7 +79,7 @@ function formatarData($data)
     <div class="section">
       <p><strong>Professor:</strong> <?php echo htmlspecialchars($reposicaoInfo['nome_professor']); ?></p>
       <p><strong>Motivo da Falta:</strong> <?php echo htmlspecialchars($reposicaoInfo['motivo_falta']); ?></p>
-      <p><strong>Data de Início:</strong> <?php echo htmlspecialchars(formatarData($reposicaoInfo['datainicio'])); ?>
+      <p><strong>Data:</strong> <?php echo htmlspecialchars(formatarData($reposicaoInfo['datainicio'])); ?>
       </p>
 
       <?php if ($reposicaoInfo['datainicio'] !== $reposicaoInfo['datafim']): ?>
@@ -115,7 +115,8 @@ function formatarData($data)
 
     <!-- Detalhes das Aulas de Reposição -->
     <div class="reposition-info section">
-      <p><strong>Datas das Reposições:</strong> <?php echo htmlspecialchars($reposicaoInfo['datas_reposicao']); ?></p>
+      <p><strong>Datas das Reposições:</strong>
+        <?php echo htmlspecialchars(formatarData($reposicaoInfo['datas_reposicao'])); ?></p>
       <p><strong>Disciplinas:</strong> <?php echo htmlspecialchars($reposicaoInfo['disciplinas']); ?></p>
       <p><strong>Horários:</strong> <?php echo htmlspecialchars($reposicaoInfo['horarios']); ?></p>
     </div>
