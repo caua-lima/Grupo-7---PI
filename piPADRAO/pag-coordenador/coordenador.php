@@ -1,6 +1,5 @@
 <?php
 include '../conexao.php';
-include '../header.html';
 
 try {
   // Consulta para buscar dados do formulário de reposição e informações associadas
@@ -37,15 +36,6 @@ try {
 </head>
 
 <body>
-  <header>
-    <img src="../img/fatec.itapira.png" class="logo" alt="Logo Fatec Itapira">
-    <h1 class="form-title">Formulário de Reposição - Coordenação</h1>
-    <img src="../img/cps.png" class="cps-logo" alt="Logo Centro de Paula Souza">
-    <nav class="menu">
-      <a href="home-coordenador.html">Início</a>
-    </nav>
-  </header>
-
   <div class="container">
     <h1>Lista de Formulários de Reposição</h1>
     <ul class="teacher-list">
@@ -56,7 +46,6 @@ try {
           <p>Disciplinas: <?php echo htmlspecialchars($formulario['disciplinas']); ?></p>
           <p>Datas de Reposição: <?php echo htmlspecialchars($formulario['datas_reposicao']); ?></p>
           <p>Horários: <?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></p>
-          <p>Data de Entrega: <?php echo htmlspecialchars($formulario['data_entrega']); ?></p>
         </div>
         <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
           <?php echo htmlspecialchars($formulario['situacao']); ?>
