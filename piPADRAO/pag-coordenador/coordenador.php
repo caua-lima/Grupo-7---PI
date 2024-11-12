@@ -3,12 +3,13 @@ include '../conexao.php';
 include '../header.html';
 
 try {
-    // Consulta para buscar dados do formulário de reposição e informações associadas
-    $stmtFormularios = $conn->prepare("
+  // Consulta para buscar dados do formulário de reposição e informações associadas
+  $stmtFormularios = $conn->prepare("
         SELECT 
             fr.idform_reposicao,
             fr.data_entrega,
             fr.situacao,
+            fr.motivo_indeferimento,  -- Seleciona o motivo de indeferimento
             func.nome AS nome_professor,
             GROUP_CONCAT(DISTINCT ar.nome_disciplina ORDER BY ar.nome_disciplina SEPARATOR ', ') AS disciplinas,
             GROUP_CONCAT(DISTINCT ar.data_reposicao ORDER BY ar.data_reposicao SEPARATOR ', ') AS datas_reposicao,
@@ -18,10 +19,10 @@ try {
         LEFT JOIN aulas_reposicao ar ON fr.idform_reposicao = ar.idform_reposicao
         GROUP BY fr.idform_reposicao
     ");
-    $stmtFormularios->execute();
-    $formularios = $stmtFormularios->fetchAll(PDO::FETCH_ASSOC);
+  $stmtFormularios->execute();
+  $formularios = $stmtFormularios->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    echo "Erro ao buscar dados: " . $e->getMessage();
+  echo "Erro ao buscar dados: " . $e->getMessage();
 }
 ?>
 
@@ -60,6 +61,14 @@ try {
         <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
           <?php echo htmlspecialchars($formulario['situacao']); ?>
         </div>
+
+        <!-- Mostrar motivo de indeferimento se a situação for "indeferido" -->
+        <?php if (strtolower($formulario['situacao']) === 'indeferido' && !empty($formulario['motivo_indeferimento'])): ?>
+        <div class="motivo-indeferimento">
+          <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($formulario['motivo_indeferimento']); ?>
+        </div>
+        <?php endif; ?>
+
         <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
           detalhes</button>
       </li>
@@ -73,27 +82,6 @@ try {
     window.location.href = 'detalhes-professor.php?idform_reposicao=' + encodeURIComponent(formId);
   }
   </script>
-
-  <footer class="footer">
-    <div class="footer-container">
-      <div class="footer-section">
-        <h3>Contatos</h3>
-        <ul>
-          <li>Email: contato@fatecitapira.edu.br</li>
-          <li>Telefone: (19) 1234-5678</li>
-          <li>Endereço: Rua das Palmeiras, 123 - Itapira/SP</li>
-        </ul>
-      </div>
-      <div class="footer-section">
-        <h3>Links Úteis</h3>
-        <ul>
-          <li><a href="../links-footer/privacidade.html">Política de Privacidade</a></li>
-          <li><a href="../links-footer/termos.html">Termos de Uso</a></li>
-          <li><a href="../links-footer/faq.html">FAQ</a></li>
-        </ul>
-      </div>
-    </div>
-  </footer>
 </body>
 
 </html>
