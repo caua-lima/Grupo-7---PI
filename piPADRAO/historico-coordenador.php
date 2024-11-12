@@ -1,14 +1,14 @@
 <?php
-include '../conexao.php';
+include 'conexao.php';
 
 try {
-  // Consulta para buscar dados do formulário de reposição e informações associadas
+  // Consulta para buscar dados do formulário de reposição com situação "deferido" ou "indeferido"
   $stmtFormularios = $conn->prepare("
         SELECT 
             fr.idform_reposicao,
             fr.data_entrega,
             fr.situacao,
-            fr.motivo_indeferimento,  -- Seleciona o motivo de indeferimento
+            fr.motivo_indeferimento,
             func.nome AS nome_professor,
             GROUP_CONCAT(DISTINCT ar.nome_disciplina ORDER BY ar.nome_disciplina SEPARATOR ', ') AS disciplinas,
             GROUP_CONCAT(DISTINCT ar.data_reposicao ORDER BY ar.data_reposicao SEPARATOR ', ') AS datas_reposicao,
@@ -16,6 +16,7 @@ try {
         FROM formulario_reposicao fr
         JOIN funcionarios func ON fr.idfuncionario = func.idfuncionario
         LEFT JOIN aulas_reposicao ar ON fr.idform_reposicao = ar.idform_reposicao
+        WHERE fr.situacao IN ('deferido', 'indeferido')
         GROUP BY fr.idform_reposicao
     ");
   $stmtFormularios->execute();
@@ -32,12 +33,12 @@ try {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordenação</title>
-  <link rel="stylesheet" href="../css/cordenador.css">
+  <link rel="stylesheet" href="./css/cordenador.css">
 </head>
 
 <body>
   <div class="container">
-    <h1>Lista de Formulários de Reposição</h1>
+    <h1>Lista de Formulários de Reposição - Deferidos e Indeferidos</h1>
     <ul class="teacher-list">
       <?php foreach ($formularios as $formulario): ?>
       <li class="teacher">

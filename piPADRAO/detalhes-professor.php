@@ -1,6 +1,6 @@
 <?php
-include '../conexao.php';
-include '../header.html';
+include 'conexao.php';
+
 
 if (!isset($_GET['idform_reposicao'])) {
   echo "Formulário de reposição não especificado.";
@@ -45,7 +45,7 @@ try {
     exit;
   }
 
-  $pdfFile = '../uploads/' . $reposicaoInfo['pdf_atestado'];
+  $pdfFile = './uploads/' . $reposicaoInfo['pdf_atestado'];
   if (!file_exists($pdfFile)) {
     $pdfFile = null;
   }
@@ -69,7 +69,7 @@ function formatarData($data)
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes da Reposição de Aulas</title>
-  <link rel="stylesheet" href="../css/detalhes-professor.css">
+  <link rel="stylesheet" href="./css/detalhes-professor.css">
 </head>
 
 <body>
