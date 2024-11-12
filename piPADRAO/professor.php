@@ -1,14 +1,14 @@
 <?php
 // Inclua a conexão ao banco de dados
 include 'conexao.php';
+include 'header.html';
 
 // Obtenha o id do professor logado (supondo que o ID esteja na sessão)
-//session_start();
 $idfuncionario = 1; // $_SESSION['idfuncionario']; // Aqui estamos assumindo que você tem o ID do professor na sessão.
 
-// Prepare a consulta para buscar os registros de faltas
+// Prepare a consulta para buscar os registros de faltas com status
 $query = "
-    SELECT f.idform_faltas, f.datainicio, f.datafim, f.motivo_falta, c.nome_curso 
+    SELECT f.idform_faltas, f.datainicio, f.datafim, f.motivo_falta, f.situacao, c.nome_curso 
     FROM formulario_faltas f
     JOIN formulario_faltas_cursos fc ON f.idform_faltas = fc.idform_faltas
     JOIN cursos c ON fc.idcursos = c.idcursos
@@ -32,18 +32,12 @@ $historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Histórico de Faltas - Professor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="css/professor.css">
 </head>
 
 <body>
-
-  <header>
-    <h1>Histórico de Justificativas de Faltas</h1>
-    <nav>
-      <a href="dashboard.php">Dashboard</a>
-      <a href="logout.php">Sair</a>
-    </nav>
-  </header>
 
   <main>
     <table>
@@ -53,6 +47,7 @@ $historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <th>Curso(s) Envolvido(s)</th>
           <th>Data Início</th>
           <th>Data Fim</th>
+          <th>Situação</th> <!-- Coluna para exibir o status -->
         </tr>
       </thead>
       <tbody>
@@ -63,11 +58,12 @@ $historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
           <td><?php echo htmlspecialchars($registro['nome_curso']); ?></td>
           <td><?php echo htmlspecialchars($registro['datainicio']); ?></td>
           <td><?php echo htmlspecialchars($registro['datafim']); ?></td>
+          <td><?php echo htmlspecialchars($registro['situacao'] === 'deferido' ? 'Deferido' : 'Indeferido'); ?></td> <!-- Exibe deferido ou indeferido -->
         </tr>
         <?php endforeach; ?>
         <?php else: ?>
         <tr>
-          <td colspan="4">Nenhuma falta registrada.</td>
+          <td colspan="5">Nenhuma falta registrada.</td>
         </tr>
         <?php endif; ?>
       </tbody>
