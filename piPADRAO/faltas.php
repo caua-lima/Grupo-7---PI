@@ -1,6 +1,6 @@
 <?php
 include 'conexao.php';
-include 'header.html';
+include 'index.html';
 
 // Definir o ID do funcionário (fixo como 1 por enquanto)
 $idFuncionario = 1;
@@ -133,15 +133,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulário de Faltas</title>
-  <link rel="stylesheet" href="./css/faltas.css">
+  <link rel="stylesheet" href="./css/Faltas.css">
 
 </head>
 
 <body>
   <?php if (!empty($errorMessage)): ?>
-  <div class="error-message">
-    <?php echo htmlspecialchars($errorMessage); ?>
-  </div>
+    <div class="error-message">
+      <?php echo htmlspecialchars($errorMessage); ?>
+    </div>
   <?php endif; ?>
 
   <form method="POST" enctype="multipart/form-data">
@@ -164,60 +164,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
       </div>
     </fieldset>
+
+
     <fieldset class="faltas">
       <legend>Falta Referente</legend>
+      <label>
+        <input type="radio" name="tipo_falta" value="unica" checked onclick="togglePeriodo(false)"> Falta referente ao
+        dia:
+      </label>
+      <input type="date" class="data-falta" name="data_unica" id="data_unica" onchange="gerarSelecaoCursos()">
 
-      <div class="radio-group">
-        <label>
-          <input type="radio" name="tipo_falta" value="unica" id="radio_unica" checked onclick="togglePeriodo(false)">
-          Falta referente ao dia:
-        </label>
-        <input type="date" class="data-falta" name="data_unica" id="data_unica" onchange="gerarSelecaoCursos()">
-      </div>
-
-      <div class="radio-group">
-        <label>
-          <input type="radio" name="tipo_falta" value="periodo" id="radio_periodo" onclick="togglePeriodo(true)">
-          Período de
-        </label>
-        <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" max="15" placeholder="Nº de dias">
-        <label for="data-inicio-periodo">Dias: </label>
-        <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
-          onchange="gerarSelecaoCursosPeriodo()">
-        <label for="data-fim-periodo">Até</label>
-        <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
-      </div>
-
+      <label>
+        <input type="radio" name="tipo_falta" value="periodo" onclick="togglePeriodo(true)"> Período de
+      </label>
+      <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" placeholder="Nº de dias">
+      <label for="data-inicio-periodo">dias: </label>
+      <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
+        onchange="gerarSelecaoCursosPeriodo()">
+      <label for="data-fim-periodo">até</label>
+      <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
     </fieldset>
-
-    <script>
-    // Desativa o outro rádio quando um é selecionado
-    function togglePeriodo(isPeriodo) {
-      const radioUnica = document.getElementById('radio_unica');
-      const radioPeriodo = document.getElementById('radio_periodo');
-
-      if (isPeriodo) {
-        radioUnica.disabled = true;
-        radioPeriodo.disabled = false;
-      } else {
-        radioUnica.disabled = false;
-        radioPeriodo.disabled = true;
-      }
-    }
-
-    // Configuração inicial para garantir a funcionalidade ao carregar
-    document.addEventListener("DOMContentLoaded", function() {
-      togglePeriodo(document.getElementById('radio_periodo').checked);
-    });
-    </script>
-
-    <style>
-    /* Estilização das divs que contêm os grupos de rádio */
-    .radio-group {
-      margin-bottom: 10px;
-    }
-    </style>
-
 
     <!-- Container dinâmico para seleção de cursos, disciplinas e número de aulas -->
     <div id="selecoes-container"></div>
@@ -316,26 +282,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </div>
       </div>
       <script>
-      // Função para exibir as opções de acordo com a categoria dos motivos selecionada
-      document.getElementById('motivo').addEventListener('change', function() {
-        // Esconder as divs de opções
-        document.getElementById('opcoes_licenca-falta-medica').style.display = 'none';
-        document.getElementById('opcoes_falta-injustificada').style.display = 'none';
-        document.getElementById('opcoes_faltas-justificadas').style.display = 'none';
-        document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'none';
+        // Função para exibir as opções de acordo com a categoria dos motivos selecionada
+        document.getElementById('motivo').addEventListener('change', function() {
+          // Esconder as divs de opções
+          document.getElementById('opcoes_licenca-falta-medica').style.display = 'none';
+          document.getElementById('opcoes_falta-injustificada').style.display = 'none';
+          document.getElementById('opcoes_faltas-justificadas').style.display = 'none';
+          document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'none';
 
-        // Mostrar a div correspondente à categoria dos motivos escolhida
-        var categoriaSelecionada = this.value;
-        if (categoriaSelecionada == 'licenca-falta-medica') {
-          document.getElementById('opcoes_licenca-falta-medica').style.display = 'block';
-        } else if (categoriaSelecionada == 'falta-injustificada') {
-          document.getElementById('opcoes_falta-injustificada').style.display = 'block';
-        } else if (categoriaSelecionada == 'faltas-justificadas') {
-          document.getElementById('opcoes_faltas-justificadas').style.display = 'block';
-        } else if (categoriaSelecionada == 'faltas-previstas-legislacao') {
-          document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'block';
-        }
-      });
+          // Mostrar a div correspondente à categoria dos motivos escolhida
+          var categoriaSelecionada = this.value;
+          if (categoriaSelecionada == 'licenca-falta-medica') {
+            document.getElementById('opcoes_licenca-falta-medica').style.display = 'block';
+          } else if (categoriaSelecionada == 'falta-injustificada') {
+            document.getElementById('opcoes_falta-injustificada').style.display = 'block';
+          } else if (categoriaSelecionada == 'faltas-justificadas') {
+            document.getElementById('opcoes_faltas-justificadas').style.display = 'block';
+          } else if (categoriaSelecionada == 'faltas-previstas-legislacao') {
+            document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'block';
+          }
+        });
       </script>
     </fieldset>
 
@@ -354,250 +320,250 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <!-- Script para a area de datas e materias e cursos -->
   <script>
-  // Dados de disciplinas e atividades HAE obtidos do PHP
-  const disciplinas = <?php echo $disciplinasJson; ?>;
-  const haeAtividades = <?php echo $haeAtividadesJson; ?>;
+    // Dados de disciplinas e atividades HAE obtidos do PHP
+    const disciplinas = <?php echo $disciplinasJson; ?>;
+    const haeAtividades = <?php echo $haeAtividadesJson; ?>;
 
-  // Mapeamento dos dias da semana para português em maiúsculas
-  const diasSemana = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
+    // Mapeamento dos dias da semana para português em maiúsculas
+    const diasSemana = ["DOMINGO", "SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO"];
 
-  // Função para alternar entre Falta Única e Período
-  function togglePeriodo(isPeriodo) {
-    document.getElementById('data_unica').disabled = isPeriodo;
-    document.getElementById('num_dias').disabled = !isPeriodo;
-    document.getElementById('data_inicio_periodo').disabled = !isPeriodo;
-    document.getElementById('data_fim_periodo').disabled = !isPeriodo;
+    // Função para alternar entre Falta Única e Período
+    function togglePeriodo(isPeriodo) {
+      document.getElementById('data_unica').disabled = isPeriodo;
+      document.getElementById('num_dias').disabled = !isPeriodo;
+      document.getElementById('data_inicio_periodo').disabled = !isPeriodo;
+      document.getElementById('data_fim_periodo').disabled = !isPeriodo;
 
-    if (!isPeriodo) {
-      document.getElementById('num_dias').value = '';
-      document.getElementById('data_inicio_periodo').value = '';
-      document.getElementById('data_fim_periodo').value = '';
-      document.getElementById('selecoes-container').innerHTML = '';
-    } else {
-      document.getElementById('data_unica').value = '';
-    }
-  }
-
-  // Limitar datas para o passado
-  document.addEventListener("DOMContentLoaded", function() {
-    const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById("data_unica").setAttribute("max", hoje);
-    document.getElementById("data_inicio_periodo").setAttribute("max", hoje);
-  });
-
-  // Geração da data final para faltas em período
-  document.getElementById('data_inicio_periodo').addEventListener('change', function() {
-    const numDias = parseInt(document.getElementById('num_dias').value, 10);
-    const startDate = new Date(this.value);
-    let daysCounted = 0;
-
-    while (daysCounted < numDias) {
-      startDate.setDate(startDate.getDate() + 1);
-      if (startDate.getDay() !== 0) { // Ignorar domingos
-        daysCounted++;
-      }
-    }
-    document.getElementById('data_fim_periodo').value = startDate.toISOString().split('T')[0];
-    gerarSelecaoCursosPeriodo();
-  });
-
-  // Função para obter o dia da semana em português e maiúsculo a partir de uma data
-  function getDiaSemana(data) {
-    const [year, month, day] = data.split('-');
-    const date = new Date(year, month - 1, day); // Mês começa em 0 no JavaScript
-    return diasSemana[date.getUTCDay()]; // Usar getUTCDay para evitar problemas de fuso horário
-  }
-
-  // Geração de seleção de cursos e disciplinas para uma falta única
-  function gerarSelecaoCursos() {
-    const selectedDate = document.getElementById('data_unica').value;
-    if (!selectedDate) return;
-
-    const container = document.getElementById('selecoes-container');
-    container.innerHTML = ''; // Limpa o container para nova seleção
-
-    const dataLabel = document.createElement('p');
-    dataLabel.textContent = `Data Selecionada: ${selectedDate}`;
-    container.appendChild(dataLabel);
-
-    gerarSelecaoCursosDia(container, selectedDate);
-  }
-
-  // Geração de seleção de cursos e disciplinas para cada data em um período
-  function gerarSelecaoCursosPeriodo() {
-    const container = document.getElementById('selecoes-container');
-    container.innerHTML = ''; // Limpa o container
-
-    const dataInicio = new Date(document.getElementById('data_inicio_periodo').value);
-    const dataFim = new Date(document.getElementById('data_fim_periodo').value);
-
-    let currentDate = new Date(dataInicio);
-
-    while (currentDate <= dataFim) {
-      if (currentDate.getDay() !== 0) { // Ignora domingos
-        const dataLabel = document.createElement('p');
-        dataLabel.textContent = `Data: ${currentDate.toISOString().split('T')[0]}`;
-        container.appendChild(dataLabel);
-
-        gerarSelecaoCursosDia(container, currentDate.toISOString().split('T')[0]);
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-  }
-
-  // Função auxiliar para gerar a seleção de cursos e disciplinas por dia
-  function gerarSelecaoCursosDia(container, data) {
-    const cursosSelecionados = [];
-
-    function limitarSelecaoCursos(event) {
-      const cursoCheckboxes = document.querySelectorAll(`input[name="cursos_por_data[${data}][curso][]"]`);
-      const checkedCount = Array.from(cursoCheckboxes).filter(c => c.checked).length;
-
-      if (checkedCount > 2) {
-        alert("Selecione no máximo 2 cursos.");
-        event.target.checked = false;
+      if (!isPeriodo) {
+        document.getElementById('num_dias').value = '';
+        document.getElementById('data_inicio_periodo').value = '';
+        document.getElementById('data_fim_periodo').value = '';
+        document.getElementById('selecoes-container').innerHTML = '';
+      } else {
+        document.getElementById('data_unica').value = '';
       }
     }
 
-    const cursos = [{
-        id: 1,
-        nome: "DSM"
-      },
-      {
-        id: 2,
-        nome: "GE"
-      },
-      {
-        id: 3,
-        nome: "GPI"
-      },
-      {
-        id: 4,
-        nome: "GTI"
-      },
-      {
-        id: 5,
-        nome: "HAE"
-      }
-    ];
+    // Limitar datas para o passado
+    document.addEventListener("DOMContentLoaded", function() {
+      const hoje = new Date().toISOString().split('T')[0];
+      document.getElementById("data_unica").setAttribute("max", hoje);
+      document.getElementById("data_inicio_periodo").setAttribute("max", hoje);
+    });
 
-    cursos.forEach(curso => {
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.name = `cursos_por_data[${data}][curso][]`;
-      checkbox.value = curso.id;
-      checkbox.addEventListener('change', limitarSelecaoCursos);
+    // Geração da data final para faltas em período
+    document.getElementById('data_inicio_periodo').addEventListener('change', function() {
+      const numDias = parseInt(document.getElementById('num_dias').value, 10);
+      const startDate = new Date(this.value);
+      let daysCounted = 0;
 
-      const label = document.createElement('label');
-      label.textContent = curso.nome;
-      label.appendChild(checkbox);
-      container.appendChild(label);
-
-      checkbox.addEventListener('change', function() {
-        if (this.checked) {
-          cursosSelecionados.push(curso.id);
-          if (curso.id == 5) {
-            gerarSelecaoAtividadesHAE(container, data, curso.id);
-          } else {
-            gerarSelecaoDisciplinasDia(container, data, curso.id, cursosSelecionados.length);
-          }
-          gerarSelecaoNumAulas(container, data, curso.id);
-        } else {
-          cursosSelecionados.splice(cursosSelecionados.indexOf(curso.id), 1);
-          removerSelecaoDisciplinasDia(data, curso.id);
-          removerSelecaoAtividadesHAE(data, curso.id);
-          removerSelecaoNumAulas(data, curso.id);
+      while (daysCounted < numDias) {
+        startDate.setDate(startDate.getDate() + 1);
+        if (startDate.getDay() !== 0) { // Ignorar domingos
+          daysCounted++;
         }
-      });
-    });
-  }
-
-  // Função para exibir tipos de atividades HAE
-  function gerarSelecaoAtividadesHAE(container, data, cursoId) {
-    const atividadeList = document.createElement('div');
-    atividadeList.id = `atividades_${data}_${cursoId}`;
-
-    const atividadeLabel = document.createElement('p');
-    atividadeLabel.textContent = `Atividades HAE (Data: ${data}):`;
-    atividadeList.appendChild(atividadeLabel);
-
-    haeAtividades.forEach(atividade => {
-      const option = document.createElement('input');
-      option.type = 'checkbox';
-      option.name = `hae_atividades_${data}_${cursoId}[]`;
-      option.value = atividade.tipo_atividade;
-
-      const labelAtividade = document.createElement('label');
-      labelAtividade.textContent = atividade.tipo_atividade;
-      labelAtividade.appendChild(option);
-      atividadeList.appendChild(labelAtividade);
+      }
+      document.getElementById('data_fim_periodo').value = startDate.toISOString().split('T')[0];
+      gerarSelecaoCursosPeriodo();
     });
 
-    container.appendChild(atividadeList);
-  }
+    // Função para obter o dia da semana em português e maiúsculo a partir de uma data
+    function getDiaSemana(data) {
+      const [year, month, day] = data.split('-');
+      const date = new Date(year, month - 1, day); // Mês começa em 0 no JavaScript
+      return diasSemana[date.getUTCDay()]; // Usar getUTCDay para evitar problemas de fuso horário
+    }
 
-  // Geração dinâmica de disciplinas baseado nas regras de seleção por curso, data e dia da semana
-  function gerarSelecaoDisciplinasDia(container, data, cursoId, numCursos) {
-    const disciplinaList = document.createElement('div');
-    disciplinaList.id = `disciplinas_${data}_${cursoId}`;
+    // Geração de seleção de cursos e disciplinas para uma falta única
+    function gerarSelecaoCursos() {
+      const selectedDate = document.getElementById('data_unica').value;
+      if (!selectedDate) return;
 
-    const disciplinaLabel = document.createElement('p');
-    disciplinaLabel.textContent = `Disciplinas para o curso ${cursoId} (Data: ${data}):`;
-    disciplinaList.appendChild(disciplinaLabel);
+      const container = document.getElementById('selecoes-container');
+      container.innerHTML = ''; // Limpa o container para nova seleção
 
-    const diaSemanaSelecionado = getDiaSemana(data); // Obter o dia da semana selecionado
+      const dataLabel = document.createElement('p');
+      dataLabel.textContent = `Data Selecionada: ${selectedDate}`;
+      container.appendChild(dataLabel);
 
-    disciplinas
-      .filter(disciplina => disciplina.idcursos == cursoId && disciplina.dia_semana === diaSemanaSelecionado)
-      .forEach(disciplina => {
+      gerarSelecaoCursosDia(container, selectedDate);
+    }
+
+    // Geração de seleção de cursos e disciplinas para cada data em um período
+    function gerarSelecaoCursosPeriodo() {
+      const container = document.getElementById('selecoes-container');
+      container.innerHTML = ''; // Limpa o container
+
+      const dataInicio = new Date(document.getElementById('data_inicio_periodo').value);
+      const dataFim = new Date(document.getElementById('data_fim_periodo').value);
+
+      let currentDate = new Date(dataInicio);
+
+      while (currentDate <= dataFim) {
+        if (currentDate.getDay() !== 0) { // Ignora domingos
+          const dataLabel = document.createElement('p');
+          dataLabel.textContent = `Data: ${currentDate.toISOString().split('T')[0]}`;
+          container.appendChild(dataLabel);
+
+          gerarSelecaoCursosDia(container, currentDate.toISOString().split('T')[0]);
+        }
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+    }
+
+    // Função auxiliar para gerar a seleção de cursos e disciplinas por dia
+    function gerarSelecaoCursosDia(container, data) {
+      const cursosSelecionados = [];
+
+      function limitarSelecaoCursos(event) {
+        const cursoCheckboxes = document.querySelectorAll(`input[name="cursos_por_data[${data}][curso][]"]`);
+        const checkedCount = Array.from(cursoCheckboxes).filter(c => c.checked).length;
+
+        if (checkedCount > 2) {
+          alert("Selecione no máximo 2 cursos.");
+          event.target.checked = false;
+        }
+      }
+
+      const cursos = [{
+          id: 1,
+          nome: "DSM"
+        },
+        {
+          id: 2,
+          nome: "GE"
+        },
+        {
+          id: 3,
+          nome: "GPI"
+        },
+        {
+          id: 4,
+          nome: "GTI"
+        },
+        {
+          id: 5,
+          nome: "HAE"
+        }
+      ];
+
+      cursos.forEach(curso => {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.name = `cursos_por_data[${data}][disciplinas_${cursoId}][]`;
-        checkbox.value = disciplina.disciplina;
+        checkbox.name = `cursos_por_data[${data}][curso][]`;
+        checkbox.value = curso.id;
+        checkbox.addEventListener('change', limitarSelecaoCursos);
 
-        const labelDisciplina = document.createElement('label');
-        labelDisciplina.textContent = disciplina.disciplina;
-        labelDisciplina.appendChild(checkbox);
-        disciplinaList.appendChild(labelDisciplina);
+        const label = document.createElement('label');
+        label.textContent = curso.nome;
+        label.appendChild(checkbox);
+        container.appendChild(label);
+
+        checkbox.addEventListener('change', function() {
+          if (this.checked) {
+            cursosSelecionados.push(curso.id);
+            if (curso.id == 5) {
+              gerarSelecaoAtividadesHAE(container, data, curso.id);
+            } else {
+              gerarSelecaoDisciplinasDia(container, data, curso.id, cursosSelecionados.length);
+            }
+            gerarSelecaoNumAulas(container, data, curso.id);
+          } else {
+            cursosSelecionados.splice(cursosSelecionados.indexOf(curso.id), 1);
+            removerSelecaoDisciplinasDia(data, curso.id);
+            removerSelecaoAtividadesHAE(data, curso.id);
+            removerSelecaoNumAulas(data, curso.id);
+          }
+        });
+      });
+    }
+
+    // Função para exibir tipos de atividades HAE
+    function gerarSelecaoAtividadesHAE(container, data, cursoId) {
+      const atividadeList = document.createElement('div');
+      atividadeList.id = `atividades_${data}_${cursoId}`;
+
+      const atividadeLabel = document.createElement('p');
+      atividadeLabel.textContent = `Atividades HAE (Data: ${data}):`;
+      atividadeList.appendChild(atividadeLabel);
+
+      haeAtividades.forEach(atividade => {
+        const option = document.createElement('input');
+        option.type = 'checkbox';
+        option.name = `hae_atividades_${data}_${cursoId}[]`;
+        option.value = atividade.tipo_atividade;
+
+        const labelAtividade = document.createElement('label');
+        labelAtividade.textContent = atividade.tipo_atividade;
+        labelAtividade.appendChild(option);
+        atividadeList.appendChild(labelAtividade);
       });
 
+      container.appendChild(atividadeList);
+    }
 
-    container.appendChild(disciplinaList);
+    // Geração dinâmica de disciplinas baseado nas regras de seleção por curso, data e dia da semana
+    function gerarSelecaoDisciplinasDia(container, data, cursoId, numCursos) {
+      const disciplinaList = document.createElement('div');
+      disciplinaList.id = `disciplinas_${data}_${cursoId}`;
 
-  }
+      const disciplinaLabel = document.createElement('p');
+      disciplinaLabel.textContent = `Disciplinas para o curso ${cursoId} (Data: ${data}):`;
+      disciplinaList.appendChild(disciplinaLabel);
 
-  function gerarSelecaoNumAulas(container, data, cursoId) {
-    const numAulasDiv = document.createElement('div');
-    numAulasDiv.id = `num_aulas_${data}_${cursoId}`;
+      const diaSemanaSelecionado = getDiaSemana(data); // Obter o dia da semana selecionado
 
-    const numAulasLabel = document.createElement('label');
-    numAulasLabel.textContent = `Número de Aulas para o curso ${cursoId} (Data: ${data}): `;
-    numAulasDiv.appendChild(numAulasLabel);
+      disciplinas
+        .filter(disciplina => disciplina.idcursos == cursoId && disciplina.dia_semana === diaSemanaSelecionado)
+        .forEach(disciplina => {
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.name = `cursos_por_data[${data}][disciplinas_${cursoId}][]`;
+          checkbox.value = disciplina.disciplina;
 
-    const numAulasInput = document.createElement('input');
-    numAulasInput.type = 'number';
-    numAulasInput.name = `num_aulas_${data}_${cursoId}`;
-    numAulasInput.min = 1;
-    numAulasInput.max = (cursoId === 5) ? 2 : 4; // Limite de 2 para HAE, 4 para os outros
-    numAulasDiv.appendChild(numAulasInput);
+          const labelDisciplina = document.createElement('label');
+          labelDisciplina.textContent = disciplina.disciplina;
+          labelDisciplina.appendChild(checkbox);
+          disciplinaList.appendChild(labelDisciplina);
+        });
 
-    container.appendChild(numAulasDiv);
-  }
 
-  function removerSelecaoDisciplinasDia(data, cursoId) {
-    const disciplinaContainer = document.getElementById(`disciplinas_${data}_${cursoId}`);
-    if (disciplinaContainer) disciplinaContainer.remove();
-  }
+      container.appendChild(disciplinaList);
 
-  function removerSelecaoAtividadesHAE(data, cursoId) {
-    const atividadeContainer = document.getElementById(`atividades_${data}_${cursoId}`);
-    if (atividadeContainer) atividadeContainer.remove();
-  }
+    }
 
-  function removerSelecaoNumAulas(data, cursoId) {
-    const numAulasContainer = document.getElementById(`num_aulas_${data}_${cursoId}`);
-    if (numAulasContainer) numAulasContainer.remove();
-  }
+    function gerarSelecaoNumAulas(container, data, cursoId) {
+      const numAulasDiv = document.createElement('div');
+      numAulasDiv.id = `num_aulas_${data}_${cursoId}`;
+
+      const numAulasLabel = document.createElement('label');
+      numAulasLabel.textContent = `Número de Aulas para o curso ${cursoId} (Data: ${data}): `;
+      numAulasDiv.appendChild(numAulasLabel);
+
+      const numAulasInput = document.createElement('input');
+      numAulasInput.type = 'number';
+      numAulasInput.name = `num_aulas_${data}_${cursoId}`;
+      numAulasInput.min = 1;
+      numAulasInput.max = (cursoId === 5) ? 2 : 4; // Limite de 2 para HAE, 4 para os outros
+      numAulasDiv.appendChild(numAulasInput);
+
+      container.appendChild(numAulasDiv);
+    }
+
+    function removerSelecaoDisciplinasDia(data, cursoId) {
+      const disciplinaContainer = document.getElementById(`disciplinas_${data}_${cursoId}`);
+      if (disciplinaContainer) disciplinaContainer.remove();
+    }
+
+    function removerSelecaoAtividadesHAE(data, cursoId) {
+      const atividadeContainer = document.getElementById(`atividades_${data}_${cursoId}`);
+      if (atividadeContainer) atividadeContainer.remove();
+    }
+
+    function removerSelecaoNumAulas(data, cursoId) {
+      const numAulasContainer = document.getElementById(`num_aulas_${data}_${cursoId}`);
+      if (numAulasContainer) numAulasContainer.remove();
+    }
   </script>
 
   <br><br>

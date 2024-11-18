@@ -1,29 +1,8 @@
 <?php
-// Inclua a conexão ao banco de dados
 include 'conexao.php';
-include 'header.html';
-
-// Obtenha o id do professor logado (supondo que o ID esteja na sessão)
-$idfuncionario = 1; // $_SESSION['idfuncionario']; // Aqui estamos assumindo que você tem o ID do professor na sessão.
-
-// Prepare a consulta para buscar os registros de faltas com status
-$query = "
-    SELECT f.idform_faltas, f.datainicio, f.datafim, f.motivo_falta, f.situacao, c.nome_curso 
-    FROM formulario_faltas f
-    JOIN formulario_faltas_cursos fc ON f.idform_faltas = fc.idform_faltas
-    JOIN cursos c ON fc.idcursos = c.idcursos
-    WHERE f.idfuncionario = :idfuncionario
-    ORDER BY f.datainicio DESC
-";
-
-// Prepare e execute a consulta
-$stmt = $conn->prepare($query);
-$stmt->bindParam(':idfuncionario', $idfuncionario, PDO::PARAM_INT);
-$stmt->execute();
-
-// Fetch os resultados
-$historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
+include 'index.html';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -31,45 +10,67 @@ $historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Histórico de Faltas - Professor</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="css/professor.css">
+  <title>Status - Visualização do Professor</title>
+  <link rel="stylesheet" href="css/Professor.css">
+  <script>
+    function showDetails(status) {
+      let message = '';
+      switch (status) {
+        case 'sent':
+          message = "SUA SOLICITAÇÃO DE REPOSIÇÃO DE AULAS FOI ENVIADA E SERÁ ANALISADA EM BREVE!";
+          break;
+        case 'analyzing':
+          message = 'SUA SOLICITAÇÃO DE REPOSIÇÃO DE AULAS ESTÁ SENDO ANALISADA PELA COORDENADORIA!';
+          break;
+        case 'approved':
+          message = 'SUA SOLICITAÇÃO DE REPOSIÇÃO DE AULAS FOI AUTORIZADA!';
+          break;
+        case 'rejected':
+          message = 'SUA SOLICITAÇÃO DE REPOSIÇÃO DE AULAS FOI NEGADA, POR FALTA DE DOCUMENTAÇÃO!';
+          break;
+      }
+      alert(message);
+    }
+  </script>
 </head>
 
 <body>
 
-  <main>
-    <table>
-      <thead>
-        <tr>
-          <th>Motivo da Falta</th>
-          <th>Curso(s) Envolvido(s)</th>
-          <th>Data Início</th>
-          <th>Data Fim</th>
-          <th>Situação</th> <!-- Coluna para exibir o status -->
-        </tr>
-      </thead>
-      <tbody>
-        <?php if (count($historico) > 0): ?>
-        <?php foreach ($historico as $registro): ?>
-        <tr>
-          <td><?php echo htmlspecialchars($registro['motivo_falta']); ?></td>
-          <td><?php echo htmlspecialchars($registro['nome_curso']); ?></td>
-          <td><?php echo htmlspecialchars($registro['datainicio']); ?></td>
-          <td><?php echo htmlspecialchars($registro['datafim']); ?></td>
-          <td><?php echo htmlspecialchars($registro['situacao'] === 'deferido' ? 'Deferido' : 'Indeferido'); ?></td> <!-- Exibe deferido ou indeferido -->
-        </tr>
-        <?php endforeach; ?>
-        <?php else: ?>
-        <tr>
-          <td colspan="5">Nenhuma falta registrada.</td>
-        </tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
-  </main>
-
+  <div class="container">
+    <h1>Solicitação de Reposição de Aulas</h1>
+    <div class="status-bar">
+      <div class="reposicao">Reposição das faltas dia 26/04/24</div>
+      <div class="status sent">Enviado
+        <button class="details-button" onclick="showDetails('sent')">Ver detalhes</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="reposicao">Reposição das faltas dia 22/02/24</div>
+      <div class="status analyzing">Analisando
+        <button class="details-button" onclick="showDetails('analyzing')">Ver detalhes</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="reposicao">Reposição das faltas dia 19/11/23</div>
+      <div class="status approved">Deferido
+        <button class="details-button" onclick="showDetails('approved')">Ver detalhes</button>
+      </div>
+    </div>
+    <div class="status-bar">
+      <div class="reposicao">Reposição das faltas dia 07/10/34</div>
+      <div class="status rejected">Indeferido
+        <button class="details-button" onclick="showDetails('rejected')">Ver detalhes</button>
+      </div>
+    </div>
+  </div>
+  <br><br>
+  <footer>
+    <div class="containerf">
+      <a href="">
+        <img src="img/logo-governo-do-estado-sp.png">
+      </a>
+    </div>
+  </footer>
 </body>
 
 </html>

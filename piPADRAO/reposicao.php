@@ -1,6 +1,6 @@
 <?php
 include 'conexao.php';
-include 'header.html';
+include 'index.html';
 
 // ID do professor (fixo por enquanto)
 $idFuncionario = 1; // Este valor será substituído pela variável de sessão no futuro
@@ -122,25 +122,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $situacao = $_POST['situacao'] ?? 'Proposta Enviada';
 
   try {
-    // Inicia a transação
-    $conn->beginTransaction();
-
     // Validação inicial para garantir que os campos obrigatórios estão presentes
     if (empty($datasReposicao) || empty($inicioHorarios) || empty($teroHorarios) || empty($disciplinas)) {
       throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
     }
 
     // Insere os dados na tabela formulario_reposicao
-    $stmt = $conn->prepare("INSERT INTO formulario_reposicao (virtude, data_entrega, situacao, idfuncionario, idform_faltas) VALUES (?, ?, ?, ?, ?)");
-    $stmt->execute([$virtude, $data_entrega, $situacao, $idFuncionario, $idform]);
-    $id_form_reposicao = $conn->lastInsertId(); // ID do novo formulario_reposicao
+    $stmt = $conn->prepare("INSERT INTO formulario_reposicao (virtude, data_entrega, situacao, idfuncionario) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$virtude, $data_entrega, $situacao, $idFuncionario]);
 
-    // Preparação das consultas de inserção para aulas e relacionamento de tabelas
-    $stmtAulas = $conn->prepare("INSERT INTO aulas_reposicao (data_reposicao, nome_disciplina, horarioinicio, horariofim, idform_reposicao) VALUES (?, ?, ?, ?, ?)");
+    // Obtém o id_form_reposicao gerado
+    $id_form_reposicao = $conn->lastInsertId();
+
+    // Preparação das consultas
+    $stmtAulas = $conn->prepare("INSERT INTO aulas_reposicao (data_reposicao, nome_disciplina, horarioinicio, horariofim) VALUES (?, ?, ?, ?)");
     $stmtRelacionamento = $conn->prepare("INSERT INTO aulas_reposicoa_formulario_reposicao (idaulas_reposicao, idform_reposicao) VALUES (?, ?)");
     $stmtInserirHAE = $conn->prepare("INSERT INTO horas_hae_professor (idfuncionario, dia_semana, data_atividade, horario_inicio, horario_fim, tipo_atividade, hae_total, hae_usadas) VALUES (?, ?, ?, ?, ?, ?, 0, 0)");
 
-    // Mapeamento de dias da semana para tradução
     $diasSemanaMap = [
       'Sunday' => 'Domingo',
       'Monday' => 'Segunda',
@@ -151,40 +149,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       'Saturday' => 'Sábado'
     ];
 
-    // Inserir cada aula e verificar conflitos
     for ($i = 0; $i < count($datasReposicao); $i++) {
+      // Verificação de campos vazios na linha atual
       if (empty($datasReposicao[$i]) || empty($inicioHorarios[$i]) || empty($teroHorarios[$i]) || empty($disciplinas[$i])) {
         throw new Exception('Todos os campos de datas, horários e disciplinas devem ser preenchidos.');
       }
 
+      // Capturar os horários de início e término da reposição atual
       $horario_inicio_novo = $inicioHorarios[$i];
       $horario_fim_novo = $teroHorarios[$i];
       $data_reposicao = $datasReposicao[$i];
       $nome_disciplina = $disciplinas[$i];
 
-      // Verificar conflitos de horário
+      // Validações adicionais para evitar conflitos de horário
       $stmtVerificaConflito = $conn->prepare("
               SELECT * FROM horas_hae_professor
               WHERE idfuncionario = ? AND data_atividade = ?
               AND horario_inicio < ? AND horario_fim > ?
           ");
-      $stmtVerificaConflito->execute([$idFuncionario, $data_reposicao, $horario_fim_novo, $horario_inicio_novo]);
+      $stmtVerificaConflito->execute([
+        $idFuncionario,
+        $data_reposicao,
+        $horario_fim_novo,
+        $horario_inicio_novo
+      ]);
       $conflito = $stmtVerificaConflito->fetch(PDO::FETCH_ASSOC);
 
       if ($conflito) {
         throw new Exception("Conflito de horário detectado para a data: " . $data_reposicao . " no horário " . $horario_inicio_novo . " - " . $horario_fim_novo);
       }
 
-      // Insere as aulas de reposição, incluindo o id_form_reposicao
-      $stmtAulas->execute([$data_reposicao, $nome_disciplina, $horario_inicio_novo, $horario_fim_novo, $id_form_reposicao]);
+      // Insere as aulas de reposição
+      $stmtAulas->execute([$data_reposicao, $nome_disciplina, $horario_inicio_novo, $horario_fim_novo]);
       $idaulas_reposicao = $conn->lastInsertId();
-
-      // Relaciona a aula ao formulário de reposição
       $stmtRelacionamento->execute([$idaulas_reposicao, $id_form_reposicao]);
 
-      // Determina o dia da semana e insere na tabela horas_hae_professor
+      // Verifica o dia da semana da data de reposição
       $diaSemana = date('l', strtotime($data_reposicao));
       $diaSemanaPT = $diasSemanaMap[$diaSemana] ?? '-';
+
+      // Insere na tabela horas_hae_professor para manter a agenda completa
       $stmtInserirHAE->execute([$idFuncionario, $diaSemanaPT, $data_reposicao, $horario_inicio_novo, $horario_fim_novo, 'Reposição de Aula']);
     }
 
@@ -199,23 +203,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmtUpdate = $conn->prepare("UPDATE formulario_faltas SET situacao = 'Proposta Enviada' WHERE idform_faltas = ? AND idfuncionario = ?");
     $stmtUpdate->execute([$formularios[0]['idform_faltas'], $idFuncionario]);
 
-    // Confirma a transação
-    $conn->commit();
-
     echo "Formulário de reposição, aulas e cursos salvos com sucesso!";
     header("Location: home.php");
     exit;
   } catch (PDOException $e) {
-    // Desfaz a transação em caso de erro
-    $conn->rollBack();
     echo "Erro ao salvar os dados: " . $e->getMessage();
   } catch (Exception $e) {
-    // Desfaz a transação em caso de erro
-    $conn->rollBack();
     echo "Erro: " . $e->getMessage();
   }
 }
-
 ?>
 
 
@@ -225,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
   <meta charset="UTF-8">
   <title>Planejar Reposição</title>
-  <link rel="stylesheet" href="./css/reposicao.css">
+  <link rel="stylesheet" href="./css/Reposicao.css">
 
 </head>
 
@@ -279,8 +275,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Cursos Envolvidos:</label>
         <div class="cursos-envolvidos">
           <?php foreach ($formularios as $formulario): ?>
-          <input type="text" readonly value="<?php echo htmlspecialchars($formulario['nome_curso']); ?>"
-            style="border: none; background-color: #f4f4f4; margin-right: 5px; padding: 5px;">
+            <input type="text" readonly value="<?php echo htmlspecialchars($formulario['nome_curso']); ?>"
+              style="border: none; background-color: #f4f4f4; margin-right: 5px; padding: 5px;">
           <?php endforeach; ?>
         </div>
       </div>
@@ -301,21 +297,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           </thead>
           <tbody>
             <?php if (!empty($aulasFaltas)): ?>
-            <?php foreach ($aulasFaltas as $aula): ?>
-            <tr>
-              <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
-              <td><?php echo htmlspecialchars($aula['num_aulas']); ?></td>
-              <td><?php echo htmlspecialchars($aula['nome_disciplina']); ?></td>
-            </tr>
-            <?php endforeach; ?>
+              <?php foreach ($aulasFaltas as $aula): ?>
+                <tr>
+                  <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
+                  <td><?php echo htmlspecialchars($aula['num_aulas']); ?></td>
+                  <td><?php echo htmlspecialchars($aula['nome_disciplina']); ?></td>
+                </tr>
+              <?php endforeach; ?>
             <?php else: ?>
-            <tr>
-              <td colspan="3">Nenhuma aula registrada.</td>
-            </tr>
+              <tr>
+                <td colspan="3">Nenhuma aula registrada.</td>
+              </tr>
             <?php endif; ?>
           </tbody>
         </table>
       </div>
+
       <!-- Dados das Aulas de Reposição -->
       <div class="form-group">
         <legend>Dados da(s) aulas de reposição:</legend>
@@ -332,88 +329,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           <tbody>
             <?php $ordem = 1; ?>
             <?php if (!empty($aulasFaltas)): ?>
-            <?php foreach ($aulasFaltas as $index => $aula): ?>
-            <tr>
-              <td><?php echo $ordem++; ?></td>
-              <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
-              <td>
-                <input type="date" name="dataReposicao[]" id="dataReposicao-<?php echo $index; ?>" required
-                  onchange="verificarData(<?php echo $index; ?>)" min="<?php echo date('Y-m-d'); ?>">
-              </td>
-              <td>
-                <input type="time" name="inicioHorario[]" id="inicioHorario-<?php echo $index; ?>" min="07:30"
-                  max="20:40" required
-                  onchange="calcularHorarioTermino(<?php echo $index; ?>, <?php echo htmlspecialchars($aula['num_aulas']); ?>)">
-                às
-                <input type="time" name="teroHorario[]" id="teroHorario-<?php echo $index; ?>" readonly>
-              </td>
-              <td>
-                <?php echo htmlspecialchars($aula['nome_disciplina']); ?>
-                <input type="hidden" name="nome_disciplina[]"
-                  value="<?php echo htmlspecialchars($aula['nome_disciplina']); ?>">
-              </td>
-            </tr>
-            <?php endforeach; ?>
+              <?php foreach ($aulasFaltas as $aula): ?>
+                <tr>
+                  <td><?php echo $ordem++; ?></td>
+                  <td><?php echo date('d/m/Y', strtotime(htmlspecialchars($aula['data_aula']))); ?></td>
+                  <td><input type="date" name="dataReposicao[]" required></td>
+                  <td>
+                    <input type="time" name="inicioHorario[]" required> às
+                    <input type="time" name="teroHorario[]" required>
+                  </td>
+                  <td>
+                    <?php echo htmlspecialchars($aula['nome_disciplina']); ?>
+                    <input type="hidden" name="nome_disciplina[]"
+                      value="<?php echo htmlspecialchars($aula['nome_disciplina']); ?>">
+                  </td>
+                </tr>
+              <?php endforeach; ?>
             <?php else: ?>
-            <tr>
-              <td colspan="5">Nenhuma aula registrada para reposição.</td>
-            </tr>
+              <tr>
+                <td colspan="5">Nenhuma aula registrada para reposição.</td>
+              </tr>
             <?php endif; ?>
           </tbody>
         </table>
       </div>
-
-      <script>
-      // Função para restringir a data de reposição a dias futuros, sem domingos
-      function verificarData(index) {
-        const dataSelecionada = document.getElementById(`dataReposicao-${index}`).value;
-        const dataSelecionadaObj = new Date(dataSelecionada);
-
-        // Verifica se a data é domingo (0 representa domingo)
-        if (dataSelecionadaObj.getDay() === 0) {
-          alert("Domingo não é permitido. Por favor, selecione outro dia.");
-          document.getElementById(`dataReposicao-${index}`).value = "";
-          return; // Interrompe para evitar que continue se for domingo
-        }
-
-        // Define a data mínima para a próxima aula com um intervalo de uma semana
-        for (let i = index + 1; i < <?php echo count($aulasFaltas); ?>; i++) {
-          const proximaData = new Date(dataSelecionadaObj);
-          proximaData.setDate(proximaData.getDate() + 7);
-          document.getElementById(`dataReposicao-${i}`).min = proximaData.toISOString().split("T")[0];
-        }
-      }
-
-      // Função para calcular automaticamente o horário de término
-      function calcularHorarioTermino(index, numAulas) {
-        const inicioHorario = document.getElementById(`inicioHorario-${index}`).value;
-
-        if (!inicioHorario) {
-          alert("Por favor, selecione o horário de início.");
-          return;
-        }
-
-        const [horas, minutos] = inicioHorario.split(":").map(Number);
-        const totalMinutos = horas * 60 + minutos + (numAulas * 50);
-
-        const horasTermino = Math.floor(totalMinutos / 60);
-        const minutosTermino = totalMinutos % 60;
-
-        const horarioTermino =
-          `${horasTermino.toString().padStart(2, '0')}:${minutosTermino.toString().padStart(2, '0')}`;
-        document.getElementById(`teroHorario-${index}`).value = horarioTermino;
-
-        // Verifica se o horário de início e término estão dentro dos limites
-        if (inicioHorario > "20:40" || horarioTermino > "22:40") {
-          alert(
-            "O horário de início não pode ultrapassar 20:40, e o término não pode exceder 22:40."
-          );
-          document.getElementById(`inicioHorario-${index}`).value = "";
-          document.getElementById(`teroHorario-${index}`).value = "";
-        }
-      }
-      </script>
-
 
     </div>
     <!-- Tabela de Horários com Informações de Aulas e Atividades de HAE -->
@@ -459,9 +398,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Exibição da tabela com os dados de horários
           foreach ($horariosUnicos as $horario):
           ?>
-          <tr>
-            <td><?php echo htmlspecialchars($horario); ?></td>
-            <?php
+            <tr>
+              <td><?php echo htmlspecialchars($horario); ?></td>
+              <?php
               // Colunas de segunda a sábado
               $diasSemana = ['SEGUNDA', 'TERÇA', 'QUARTA', 'QUINTA', 'SEXTA', 'SÁBADO'];
               foreach ($diasSemana as $dia):
@@ -501,9 +440,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                   $classeEvento = 'reposicao'; // Classe para reposição
                 }
               ?>
-            <td class="<?php echo $classeEvento; ?>"><?php echo htmlspecialchars($eventoEncontrado); ?></td>
-            <?php endforeach; ?>
-          </tr>
+                <td class="<?php echo $classeEvento; ?>"><?php echo htmlspecialchars($eventoEncontrado); ?></td>
+              <?php endforeach; ?>
+            </tr>
           <?php endforeach; ?>
         </table>
         <p style="text-align: center; margin-top: 10px;">Observe as exigências legais: máximo 8 horas diárias de
@@ -523,97 +462,97 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </form>
 
   <script>
-  function atualizarAgendaCompletada() {
-    // Captura os elementos dos inputs do formulário
-    const datasReposicao = document.getElementsByName('dataReposicao[]');
-    const inicioHorarios = document.getElementsByName('inicioHorario[]');
-    const teroHorarios = document.getElementsByName('teroHorario[]');
-    const disciplinas = document.getElementsByName('nome_disciplina[]');
+    function atualizarAgendaCompletada() {
+      // Captura os elementos dos inputs do formulário
+      const datasReposicao = document.getElementsByName('dataReposicao[]');
+      const inicioHorarios = document.getElementsByName('inicioHorario[]');
+      const teroHorarios = document.getElementsByName('teroHorario[]');
+      const disciplinas = document.getElementsByName('nome_disciplina[]');
 
-    const tabela = document.getElementById('tabela-aulas');
-    const linhas = tabela.querySelectorAll('tr');
+      const tabela = document.getElementById('tabela-aulas');
+      const linhas = tabela.querySelectorAll('tr');
 
-    for (let i = 0; i < datasReposicao.length; i++) {
-      if (datasReposicao[i].value && inicioHorarios[i].value && teroHorarios[i].value && disciplinas[i].value) {
-        // Formata o horário de início e término
-        const novoHorario = `${inicioHorarios[i].value} - ${teroHorarios[i].value}`;
+      for (let i = 0; i < datasReposicao.length; i++) {
+        if (datasReposicao[i].value && inicioHorarios[i].value && teroHorarios[i].value && disciplinas[i].value) {
+          // Formata o horário de início e término
+          const novoHorario = `${inicioHorarios[i].value} - ${teroHorarios[i].value}`;
 
-        // Converte a data para obter o dia da semana em formato maiúsculo
-        const data = new Date(datasReposicao[i].value);
-        const diaSemana = data.toLocaleDateString('pt-BR', {
-          weekday: 'long'
-        }).toUpperCase();
+          // Converte a data para obter o dia da semana em formato maiúsculo
+          const data = new Date(datasReposicao[i].value);
+          const diaSemana = data.toLocaleDateString('pt-BR', {
+            weekday: 'long'
+          }).toUpperCase();
 
-        // Mapeia o dia da semana em português para o formato esperado (sem domingo)
-        const diasSemanaMap = {
-          'SEGUNDA-FEIRA': 2,
-          'TERÇA-FEIRA': 3,
-          'QUARTA-FEIRA': 4,
-          'QUINTA-FEIRA': 5,
-          'SEXTA-FEIRA': 6,
-          'SÁBADO': 7
-        };
+          // Mapeia o dia da semana em português para o formato esperado (sem domingo)
+          const diasSemanaMap = {
+            'SEGUNDA-FEIRA': 2,
+            'TERÇA-FEIRA': 3,
+            'QUARTA-FEIRA': 4,
+            'QUINTA-FEIRA': 5,
+            'SEXTA-FEIRA': 6,
+            'SÁBADO': 7
+          };
 
-        const colunaIndex = diasSemanaMap[diaSemana] ?? null;
+          const colunaIndex = diasSemanaMap[diaSemana] ?? null;
 
-        // Verifica se o dia da semana é válido (exclui domingo)
-        if (colunaIndex !== null) {
-          // Verifica se a linha com o horário já existe na tabela
-          let linhaExistente = null;
-          for (let j = 1; j < linhas.length; j++) {
-            const celulaHorario = linhas[j].cells[0].textContent.trim();
-            if (celulaHorario === novoHorario) {
-              linhaExistente = linhas[j];
-              break;
-            }
-          }
-
-          if (linhaExistente) {
-            // Atualiza a célula correspondente ao dia da semana
-            linhaExistente.cells[colunaIndex].textContent = 'Reposição de Aula - ' + disciplinas[i].value;
-            linhaExistente.cells[colunaIndex].classList.add('reposicao');
-          } else {
-            // Cria uma nova linha e insere na posição correta
-            const novaLinha = tabela.insertRow();
-            const celulaHorario = novaLinha.insertCell(0);
-            celulaHorario.textContent = novoHorario;
-
-            // Adiciona células vazias para os dias da semana
-            for (let k = 1; k <= 6; k++) {
-              const celulaDia = novaLinha.insertCell(k);
-              if (k === colunaIndex) {
-                celulaDia.textContent = 'Reposição de Aula - ' + disciplinas[i].value;
-                celulaDia.classList.add('reposicao');
-              } else {
-                celulaDia.textContent = '-';
-              }
-            }
-
-            // Insere a nova linha na posição correta para manter a ordem
-            let inserido = false;
-            for (let l = 1; l < linhas.length; l++) {
-              const horarioAtual = linhas[l].cells[0].textContent.trim();
-              if (novoHorario < horarioAtual) {
-                tabela.insertBefore(novaLinha, linhas[l]);
-                inserido = true;
+          // Verifica se o dia da semana é válido (exclui domingo)
+          if (colunaIndex !== null) {
+            // Verifica se a linha com o horário já existe na tabela
+            let linhaExistente = null;
+            for (let j = 1; j < linhas.length; j++) {
+              const celulaHorario = linhas[j].cells[0].textContent.trim();
+              if (celulaHorario === novoHorario) {
+                linhaExistente = linhas[j];
                 break;
               }
             }
 
-            if (!inserido) {
-              tabela.appendChild(novaLinha);
+            if (linhaExistente) {
+              // Atualiza a célula correspondente ao dia da semana
+              linhaExistente.cells[colunaIndex].textContent = 'Reposição de Aula - ' + disciplinas[i].value;
+              linhaExistente.cells[colunaIndex].classList.add('reposicao');
+            } else {
+              // Cria uma nova linha e insere na posição correta
+              const novaLinha = tabela.insertRow();
+              const celulaHorario = novaLinha.insertCell(0);
+              celulaHorario.textContent = novoHorario;
+
+              // Adiciona células vazias para os dias da semana
+              for (let k = 1; k <= 6; k++) {
+                const celulaDia = novaLinha.insertCell(k);
+                if (k === colunaIndex) {
+                  celulaDia.textContent = 'Reposição de Aula - ' + disciplinas[i].value;
+                  celulaDia.classList.add('reposicao');
+                } else {
+                  celulaDia.textContent = '-';
+                }
+              }
+
+              // Insere a nova linha na posição correta para manter a ordem
+              let inserido = false;
+              for (let l = 1; l < linhas.length; l++) {
+                const horarioAtual = linhas[l].cells[0].textContent.trim();
+                if (novoHorario < horarioAtual) {
+                  tabela.insertBefore(novaLinha, linhas[l]);
+                  inserido = true;
+                  break;
+                }
+              }
+
+              if (!inserido) {
+                tabela.appendChild(novaLinha);
+              }
             }
           }
         }
       }
     }
-  }
 
-  // Adiciona eventos de mudança nos campos do formulário para atualizar a agenda automaticamente
-  document.querySelectorAll('input[name="dataReposicao[]"], input[name="inicioHorario[]"], input[name="teroHorario[]"]')
-    .forEach(input => {
-      input.addEventListener('change', atualizarAgendaCompletada);
-    });
+    // Adiciona eventos de mudança nos campos do formulário para atualizar a agenda automaticamente
+    document.querySelectorAll('input[name="dataReposicao[]"], input[name="inicioHorario[]"], input[name="teroHorario[]"]')
+      .forEach(input => {
+        input.addEventListener('change', atualizarAgendaCompletada);
+      });
   </script>
   <br><br>
   <footer>

@@ -273,10 +273,6 @@ header{
     justify-content: center;
     height: 122px;
     width: 100%;
-    background-color: rgb(209, 209, 209);
-}
-
-.img-footer{
-    height: 95px;
+    background-color: black;
 }
 /* Fim Rodapé */
