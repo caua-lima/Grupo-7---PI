@@ -241,12 +241,6 @@ INSERT INTO `horas_hae_professor` (`idhae`, `idfuncionario`, `dia_semana`, `data
 (2, 1, 'TERÇA', '2024-11-14', '14:00:00', '16:00:00', 'Correção de Provas', 40, 2),
 (3, 1, 'Quarta', '2024-11-15', '17:00:00', '18:30:00', 'Atendimento a Alunos', 40, 2),
 (4, 1, 'Sexta', '2024-11-17', '08:00:00', '10:00:00', 'Revisão de Conteúdos', 40, 2),
-(18, 1, 'Domingo', '2024-11-10', '17:09:00', '20:29:00', 'Reposição de Aula', 0, 0),
-(19, 1, 'Terça', '2024-11-12', '17:56:00', '21:16:00', 'Reposição de Aula', 0, 0),
-(20, 1, 'Sábado', '2024-11-16', '18:10:00', '21:30:00', 'Reposição de Aula', 0, 0),
-(21, 1, 'Terça', '2024-11-12', '13:14:00', '16:34:00', 'Reposição de Aula', 0, 0),
-(22, 1, 'Domingo', '2024-11-17', '18:28:00', '21:48:00', 'Reposição de Aula', 0, 0),
-(23, 1, 'Sábado', '2024-11-16', '12:30:00', '15:50:00', 'Reposição de Aula', 0, 0);
 
 --
 -- Índices para tabelas despejadas
