@@ -1,423 +1,422 @@
 
 /* Estilo base */
 body {
-    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-    color: #333;
-  }
+  font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+/* Container principal */
+.container {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  margin: 20px auto;
+  width: 100%; /* Utiliza a tela inteira */
+}
+
+/* Layout principal */
+.layout {
+  display: flex;
+  gap: 20px;
+  justify-content: center; /* Centraliza os elementos horizontalmente */
+}
+
+/* Títulos centralizados */
+h1, h2 {
+  text-align: center;
+  margin-bottom: 15px;
   
-  /* Container principal */
-  .container {
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    width: 100%; /* Utiliza a tela inteira */
-  }
+  color: #333;
+}
+
+/* Reposições pendentes */
+.reposicoes-pendentes {
+  flex: 1;
+  max-width: 40%; /* Aumentado ligeiramente */
+  padding: 20px; /* Padding ligeiramente maior */
+  background-color: #fafafa;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  text-align: center; /* Centraliza o texto */
+}
+
+/* Estilo das reposições */
+.reposicao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem; /* Aumentado */
+  margin-bottom: 15px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin: 0 5px;
+  border-radius: 4px;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  background-color: #007bff;
+  width: 40%;
+}
+
+
+.sent {
+  background-color: #007bff;
+}
+
+.reposicao .label {
+  font-size: 1.1rem; /* Aumentado */
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.reposicao .data {
+  background-color: #f4f4f4;
+  padding: 6px 12px; /* Aumentado */
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+.reposicao .data:hover {
+  background-color: #ddd;
+  transform: scale(1.05);
+}
+
+/* Barra de status */
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+/* Botão de detalhes */
+.ver {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 5px 12px; /* Aumentado */
+  border-radius: 5px;
+  font-size: 0.9rem; /* Aumentado */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.ver:hover {
+  background-color: #555;
+  transform: scale(1.05);
+}
+
+/* Tabelas */
+.styled-table {
+  width: 95%; /* Aumentado */
+  border-collapse: collapse;
+  margin: 15px auto; /* Centraliza a tabela */
+  font-size: 0.85rem; /* Ajustado */
+  text-align: center; /* Centraliza o texto */
+}
+
+.styled-table th, .styled-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px; /* Reduzido verticalmente */
+}
+
+.styled-table th {
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.styled-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.styled-table tr:hover {
+  background-color: #e6f7ff;
   
-  /* Layout principal */
+  transform: scale(1.05);
+}
+
+/* Botões com ícones */
+.icon-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 3px; /* Ajustado */
+  font-size: 0.9rem; /* Ajustado */
+  transition: color 0.3s;
+}
+
+.icon-button:hover {
+  color: #0056b3;
+}
+
+.icon-button.delete:hover {
+  color: #c00;
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 20px; /* Ajustado */
+  border-radius: 10px;
+  max-width: 600px; /* Reduzido */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+/* Botão de fechar */
+.close {
+  color: #aaa;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-weight: bold;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* Tabela no modal */
+.modal-table {
+  width: 100%; /* Ajustado */
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 0.85rem; /* Ajustado */
+}
+
+.modal-table th, .modal-table td {
+  border: 1px solid #ddd;
+  padding: 6px; /* Ajustado */
+}
+
+.modal-table th {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.modal-table th, td:hover{
+  transform: scale(1.05);
+}
+/* Botão de ação no modal */
+.details-button {
+  background-color: #28a745;
+  color: #fff;
+  text-decoration: none;
+  padding: 6px 12px; /* Ajustado */
+  display: inline-block;
+  border-radius: 5px;
+  margin-top: 10px;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.details-button:hover {
+  background-color: #218838;
+  transform: scale(1.05);
+}
+
+/* Formulários */
+input, select, textarea {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 8px; /* Ajustado */
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.menu a:hover {
+  background-color: #555;
+  color: #fff;
+}
+/* Responsividade */
+@media (max-width: 768px) {
   .layout {
-    display: flex;
-    gap: 20px;
-    justify-content: center; /* Centraliza os elementos horizontalmente */
-  }
-  
-  /* Títulos centralizados */
-  h1, h2 {
-    text-align: center;
-    margin-bottom: 15px;
-    
-    color: #333;
-  }
-  
-  /* Reposições pendentes */
-  .reposicoes-pendentes {
-    flex: 1;
-    max-width: 40%; /* Aumentado ligeiramente */
-    padding: 20px; /* Padding ligeiramente maior */
-    background-color: #fafafa;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    text-align: center; /* Centraliza o texto */
-  }
-  
-  /* Estilo das reposições */
-  .reposicao {
-    display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem; /* Aumentado */
-    margin-bottom: 15px;
-    transition: background-color 0.3s, transform 0.3s;
   }
-  
-  .status-bar {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    margin-top: 20px;
+
+  .reposicoes-pendentes, .atividades-e-agenda {
+    max-width: 100%;
   }
-  
-  .status {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    margin: 0 5px;
-    border-radius: 4px;
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    background-color: #007bff;
-    width: 40%;
+
+  .styled-table, .modal-table {
+    font-size: 0.8rem; /* Reduzido para dispositivos menores */
   }
-  
-  
-  .sent {
-    background-color: #007bff;
-  }
-  
-  .reposicao .label {
-    font-size: 1.1rem; /* Aumentado */
-    font-weight: bold;
-    margin-bottom: 5px;
-  }
-  
-  .reposicao .data {
-    background-color: #f4f4f4;
-    padding: 6px 12px; /* Aumentado */
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    text-align: center;
-  }
-  
-  .reposicao .data:hover {
-    background-color: #ddd;
-    transform: scale(1.05);
-  }
-  
-  /* Barra de status */
-  .status-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    margin-bottom: 10px;
-  }
-  
-  /* Botão de detalhes */
-  .ver {
-    background-color: #333;
-    color: #fff;
-    border: none;
-    padding: 5px 12px; /* Aumentado */
-    border-radius: 5px;
-    font-size: 0.9rem; /* Aumentado */
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  .ver:hover {
-    background-color: #555;
-    transform: scale(1.05);
-  }
-  
-  /* Tabelas */
-  .styled-table {
-    width: 95%; /* Aumentado */
-    border-collapse: collapse;
-    margin: 15px auto; /* Centraliza a tabela */
-    font-size: 0.85rem; /* Ajustado */
-    text-align: center; /* Centraliza o texto */
-  }
-  
-  .styled-table th, .styled-table td {
-    border: 1px solid #ddd;
-    padding: 6px 8px; /* Reduzido verticalmente */
-  }
-  
-  .styled-table th {
-    background-color: #007bff;
-    color: #fff;
-    font-weight: bold;
-  }
-  
-  .styled-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
-  
-  .styled-table tr:hover {
-    background-color: #e6f7ff;
-    
-    transform: scale(1.05);
-  }
-  
-  /* Botões com ícones */
-  .icon-button {
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 3px; /* Ajustado */
-    font-size: 0.9rem; /* Ajustado */
-    transition: color 0.3s;
-  }
-  
-  .icon-button:hover {
-    color: #0056b3;
-  }
-  
-  .icon-button.delete:hover {
-    color: #c00;
-  }
-  
-  /* Modal */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-  
-  .modal-content {
-    background-color: #fff;
-    margin: 5% auto;
-    padding: 20px; /* Ajustado */
-    border-radius: 10px;
-    max-width: 600px; /* Reduzido */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    position: relative;
-  }
-  
-  /* Botão de fechar */
-  .close {
-    color: #aaa;
-    font-size: 1.5rem;
-    cursor: pointer;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-weight: bold;
-  }
-  
-  .close:hover {
-    color: #000;
-  }
-  
-  /* Tabela no modal */
-  .modal-table {
-    width: 100%; /* Ajustado */
-    border-collapse: collapse;
-    margin-top: 15px;
-    font-size: 0.85rem; /* Ajustado */
-  }
-  
-  .modal-table th, .modal-table td {
-    border: 1px solid #ddd;
-    padding: 6px; /* Ajustado */
-  }
-  
-  .modal-table th {
-    background-color: #007bff;
-    color: #fff;
-  }
-  
-  .modal-table th, td:hover{
-    transform: scale(1.05);
-  }
-  /* Botão de ação no modal */
-  .details-button {
-    background-color: #28a745;
-    color: #fff;
-    text-decoration: none;
-    padding: 6px 12px; /* Ajustado */
-    display: inline-block;
-    border-radius: 5px;
-    margin-top: 10px;
-    transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  .details-button:hover {
-    background-color: #218838;
-    transform: scale(1.05);
-  }
-  
-  /* Formulários */
-  input, select, textarea {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 8px; /* Ajustado */
-    margin-bottom: 10px;
-    width: 100%;
-  }
-  
-  .menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    padding: 10px 20px;
-    border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  
-  .menu a:hover {
-    background-color: #555;
-    color: #fff;
-  }
-  /* Responsividade */
-  @media (max-width: 768px) {
-    .layout {
-      flex-direction: column;
-    }
-  
-    .reposicoes-pendentes, .atividades-e-agenda {
-      max-width: 100%;
-    }
-  
-    .styled-table, .modal-table {
-      font-size: 0.8rem; /* Reduzido para dispositivos menores */
-    }
-  }
-  /* Estilo geral do modal */
-  .modal {
-    display: none; /* Oculto por padrão */
-    position: fixed;
-    z-index: 1000;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
-  }
-  
-  /* Conteúdo do modal */
-  .modal-content {
-    background-color: #fff;
-    margin: 5% auto; /* Centraliza verticalmente */
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 600px; /* Ajuste conforme necessário */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Espaçamento entre os elementos */
-    position: relative;
-  }
-  
-  /* Cabeçalho do modal */
-  .modal-content h3 {
-    text-align: center;
-    width: 100%;
-    margin-bottom: 20px;
-    color: #333;
-  }
-  
-  /* Botão de fechar */
-  .close {
-    color: #aaa;
-    font-size: 1.5rem;
-    cursor: pointer;
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-weight: bold;
-    transition: color 0.3s;
-  }
-  
-  .close:hover {
-    color: #000;
-  }
-  
-  /* Estilo do formulário */
-  form {
-    display: grid;
-    align-items: center;
-    justify-content: center; 
-    grid-template-columns: repeat(2, 1fr); /* Define duas colunas de tamanhos iguais */
-    gap: 15px; /* Espaçamento entre os elementos */
-  }
-  
-  label {
-    grid-column: span 2; /* Faz o label ocupar as duas colunas */
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-  }
-  
-  input[type="text"],
-  input[type="date"],
-  input[type="time"] {
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
-    width: 70%; /* Ajusta para ocupar o espaço da coluna */
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    display: flex;
-  }
-  
-  /* Botões do formulário */
-  button[type="submit"],
-  button[type="button"] {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    grid-column: span 1; /* Cada botão ocupa uma coluna */
-  }
-  
-  button[type="submit"] {
-    background-color: #28a745;
-    color: #fff;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #218838;
-  }
-  
-  button[type="button"] {
-    background-color: #dc3545;
-    color: #fff;
-  }
-  
-  button[type="button"]:hover {
-    background-color: #c82333;
-  }
-  
-  /* Botão de abrir o modal */
-  button[onclick="showAddForm()"] {
-    background-color: #007bff;
-    color: #fff;
-    padding: 8px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s, transform 0.3s;
-  }
-  
-  /* Ajuste para alinhar o botão com o título */
-  .hae-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  button[onclick="showAddForm()"]:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-  }
-  
+}
+/* Estilo geral do modal */
+.modal {
+  display: none; /* Oculto por padrão */
+  position: fixed;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+}
+
+/* Conteúdo do modal */
+.modal-content {
+  background-color: #fff;
+  margin: 5% auto; /* Centraliza verticalmente */
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px; /* Ajuste conforme necessário */
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Espaçamento entre os elementos */
+  position: relative;
+}
+
+/* Cabeçalho do modal */
+.modal-content h3 {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Botão de fechar */
+.close {
+  color: #aaa;
+  font-size: 1.5rem;
+  cursor: pointer;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.close:hover {
+  color: #000;
+}
+
+/* Estilo do formulário */
+form {
+  display: grid;
+  align-items: center;
+  justify-content: center; 
+  grid-template-columns: repeat(2, 1fr); /* Define duas colunas de tamanhos iguais */
+  gap: 15px; /* Espaçamento entre os elementos */
+}
+
+label {
+  grid-column: span 2; /* Faz o label ocupar as duas colunas */
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="time"] {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  width: 70%; /* Ajusta para ocupar o espaço da coluna */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  display: flex;
+}
+
+/* Botões do formulário */
+button[type="submit"],
+button[type="button"] {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  grid-column: span 1; /* Cada botão ocupa uma coluna */
+}
+
+button[type="submit"] {
+  background-color: #28a745;
+  color: #fff;
+}
+
+button[type="submit"]:hover {
+  background-color: #218838;
+}
+
+button[type="button"] {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+button[type="button"]:hover {
+  background-color: #c82333;
+}
+
+/* Botão de abrir o modal */
+button[onclick="showAddForm()"] {
+  background-color: #007bff;
+  color: #fff;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Ajuste para alinhar o botão com o título */
+.hae-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button[onclick="showAddForm()"]:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
