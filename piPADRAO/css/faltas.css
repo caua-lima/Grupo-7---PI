@@ -1,8 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-body {
-    font-family: Arial, sans-serif;
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container{
+    margin: 50px 10px;
+    height: 100vh;
 }
 
 .logo, .cps-logo {
@@ -42,6 +54,10 @@ body {
         align-items: center;
         margin-bottom: 10px;
     }
+    .fieldset{
+        margin-top: 25px;
+    }
+    
     .input-row label {
         flex: 0 0 120px;
     }
@@ -146,6 +162,15 @@ body {
     align-items: center;
 }
 
+.num-dias{
+    width: 58px; 
+    height: 36px;
+    border: 1px solid #ff6961;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+
 .menu a {
     text-decoration: none;
     color: #333;
@@ -160,22 +185,26 @@ body {
     color: #fff;
 }
 
-.btn-enviar {
-    text-decoration: none;
-    color: #fff;
-    background-color: #007bff; /* Cor de fundo azul */
-    border: none;
-    padding: 10px 20px;
+.btn-enviar{
     border-radius: 5px;
-    transition: background-color 0.3s, color 0.3s;
+    color: black;
+    font-size: 15px;
     cursor: pointer;
-    bottom: 20px; /* Distância do rodapé */
-    z-index: 999; /* Garante que o botão fique acima de todos os outros elementos */
+    font-weight:600;
+    width: 160px;
+    height: 45px;
+    border: 1px solid #AE0C0D;
+    background-color: transparent;
+    margin-top: 5px;
+    transition: background-color .3s;
 }
 
-.btn-enviar:hover {
-    background-color: #0056b3; /* Cor de fundo azul mais escura no hover */
+.btn-enviar:hover{
+    background-color: #AE0C0D;
+    color: #fff;
 }
+
+
 
 /* Estilos do footer */
 .footer {
@@ -226,7 +255,7 @@ body {
 }
 
 .footer-bottom {
-    background-color: #ddd;
+    background-color: #000000;
     padding: 10px 0;
 }
 
@@ -266,3 +295,83 @@ body {
 .radio-group {
     margin-bottom: 10px;
   }
+
+
+  .container-sc{
+    top: 0;
+    display: flex;
+    background-color: #fff;
+    width: 100%;
+    height: 120px;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #AE0C0D;
+}
+
+.first-column-sc{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+}
+
+.logo-ita{
+    height: 80px;
+    margin-left: 65px;
+}
+
+.logo-cps{
+    height: 80px;
+    margin-left: 15px;
+}
+
+.second-column-sc{
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title{
+    font-family: "Montserrat", sans-serif;
+}
+
+.third-column-sc{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex: 1;
+    height: 100%;
+    right: 0;
+}
+
+.logo-padrao{
+    height: 110px;
+}
+
+.btn{
+    border-radius: 5px;
+    color: black;
+    font-size: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    width: 60px;
+    border: 1px solid #AE0C0D;
+    background-color: transparent;
+    margin-top: 5px;
+    height: 30px;
+    transition: background-color .3s;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn:hover{
+    background-color: #AE0C0D;
+    color: #fff;
+}
+
+    
+/* Fim Sub-Cabeçalho*/
