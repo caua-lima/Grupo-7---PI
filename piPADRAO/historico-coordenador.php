@@ -1,5 +1,6 @@
 <?php
 include 'conexao.php';
+include 'header.html';
 
 // Inicializa as variáveis de filtro para evitar erros de undefined variable
 $filtroNome = '';
@@ -73,7 +74,7 @@ try {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordenação</title>
-  <link rel="stylesheet" href="./css/cordenador.css">
+  <link rel="stylesheet" href="css/historico-coordenador.css">
   <style>
   /* Estilos para o modal */
   .modal {
@@ -109,11 +110,30 @@ try {
 </head>
 
 <body>
+  <!-- Sub Cabeçalho -->
+  <div class="container-sc">
+        <div class="first-column-sc">
+            <a href="#">
+                <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+            </a>
+            <a href="#">
+                <img class="logo-cps" src="img/logo-cps.png" alt="">
+            </a>
+        </div>
+        <div class="second-column-sc">
+            <h2 class="title">Programa para Ausências Docentes</h2>
+            <h2 class="title">e Reposição de Aulas Oficiais</h2>
+        </div>
+        <div class="third-column-sc">
+            <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+            <a class="btn" href="home_coordenador.php"><btn>VOLTAR</btn></a>
+        </div>
+    </div>
   <div class="container">
     <h1>Lista de Formulários de Reposição - Deferidos e Indeferidos</h1>
 
     <!-- Botão para abrir o modal de filtro -->
-    <button onclick="document.getElementById('filterModal').style.display='block'">Abrir Filtros</button>
+    <button onclick="document.getElementById('filterModal').style.display='block'" class="btn-filtro" >Abrir Filtros</button>
 
     <!-- Modal de Filtro -->
     <div id="filterModal" class="modal">
@@ -122,36 +142,40 @@ try {
         <h2>Filtrar Formulários</h2>
 
         <!-- Formulário de Filtro no Modal -->
-        <form method="GET" action="">
-          <label>Nome do Professor:</label>
-          <input type="text" name="nome_professor" value="<?php echo htmlspecialchars($filtroNome); ?>"
-            placeholder="Nome do Professor">
+         <div class="form-modal">
+            <form method="GET" action="">
+              <label>Nome do Professor:</label>
+              <input type="text" name="nome_professor" value="<?php echo htmlspecialchars($filtroNome); ?>"
+                placeholder="Nome do Professor">
 
-          <label>Data de Reposição:</label>
-          <input type="date" name="data_reposicao" value="<?php echo htmlspecialchars($filtroData); ?>">
+              <label>Data de Reposição:</label>
+              <input type="date" name="data_reposicao" value="<?php echo htmlspecialchars($filtroData); ?>">
 
-          <label>Status:</label>
-          <select name="status">
-            <option value="">Todos</option>
-            <option value="deferido" <?php if ($filtroStatus == 'deferido') echo 'selected'; ?>>Deferido</option>
-            <option value="indeferido" <?php if ($filtroStatus == 'indeferido') echo 'selected'; ?>>Indeferido</option>
-          </select>
+              <label>Status:</label>
+              <select name="status">
+                <option value="">Todos</option>
+                <option value="deferido" <?php if ($filtroStatus == 'deferido') echo 'selected'; ?>>Deferido</option>
+                <option value="indeferido" <?php if ($filtroStatus == 'indeferido') echo 'selected'; ?>>Indeferido</option>
+              </select>
 
-          <label>Disciplina:</label>
-          <input type="text" name="disciplina" value="<?php echo htmlspecialchars($filtroDisciplina); ?>"
-            placeholder="Disciplina">
+              <label>Disciplina:</label>
+              <input type="text" name="disciplina" value="<?php echo htmlspecialchars($filtroDisciplina); ?>"
+                placeholder="Disciplina">
 
-          <label>Ordenação:</label>
-          <select name="ordenacao">
-            <option value="fr.data_entrega DESC" <?php if ($ordenacao == 'fr.data_entrega DESC') echo 'selected'; ?>>
-              Data de Entrega (mais recente)</option>
-            <option value="func.nome ASC" <?php if ($ordenacao == 'func.nome ASC') echo 'selected'; ?>>Nome do Professor
-              (A-Z)</option>
-          </select>
+              <label>Ordenação:</label>
+              <select name="ordenacao">
+                <option value="fr.data_entrega DESC" <?php if ($ordenacao == 'fr.data_entrega DESC') echo 'selected'; ?>>
+                  Data de Entrega (mais recente)</option>
+                <option value="func.nome ASC" <?php if ($ordenacao == 'func.nome ASC') echo 'selected'; ?>>Nome do Professor
+                  (A-Z)</option>
+              </select>
 
-          <button type="submit">Aplicar Filtros</button>
-          <a href="historico-coordenador.php" style="margin-left: 10px;">Limpar Filtros</a>
-        </form>
+            <div class="btns">
+              <button class="btn-aplica" type="submit" >Aplicar Filtros</button>
+              <a class="btn-limpa" href="historico-coordenador.php" style="margin-left: 10px;">Limpar Filtros</a>
+            </div>
+            </form>
+          </div>
       </div>
     </div>
 
