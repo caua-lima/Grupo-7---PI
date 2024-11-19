@@ -1,370 +1,369 @@
 
 
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+html, body {
+  margin: 0;
+  padding: 0;
+  
+  height: 100%;
+}
+
+
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #333;
+  }
+  
+  form {
+    margin: 0 auto; 
+    background-color: #fff;
+    padding: 30px;
+    width: 100%;
+    margin: auto;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  input[type="text"],
+  input[type="date"],
+  input[type="number"],
+  input[type="time"],
+  input[type="month"],
+  input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+    text-align: center; /* Centraliza o texto */
+  }
+  
+  label {
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+    display: block;
+    text-align: center; /* Centraliza as labels */
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+    margin-top: 20px;
+  }
+  
+  table {
+    width: auto; /* Ajusta conforme o conteúdo */
+    border-collapse: collapse;
+    margin: auto; /* Centraliza as tabelas */
+    margin-bottom: 20px;
+  }
+  .form-footer {
+    margin-top: 20px; /* Ajuste o valor conforme necessário */
+}
+
+
+  
+  th, td {
+    border: 1px solid #333;
+    padding: 6px; /* Espessura menor */
+    text-align: center;
+    white-space: nowrap; /* Evita quebra de texto */
+  }
+  
+  th {
+    background-color: #ddd;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  .turno {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  .turno label {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 0;
+  }
+  legend {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+    text-align: center;
+  }
+  
+  ul {
+    list-style: none;
     padding: 0;
   }
-  html, body {
+  
+  ul li {
+    display: inline-block;
+    padding: 5px;
+    margin-right: 5px;
+  }
+  
+  
+  
+  .checkbox-group label {
+    display: inline-block;
+    margin-right: 15px;
+  }
+  
+  .form-group-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .form-group-inline .form-field {
+    flex: 1;
+  }
+  
+  fieldset {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  
+  fieldset legend {
+    font-weight: bold;
+    padding: 0 10px;
+    text-align: center;
+  }
+  
+  .footer {
+    background-color: #333;
+    color: #fff;
+    padding: 15px 0;
+    text-align: center;
+    margin-top: 30px;
+    border-radius: 5px;
+  }
+  
+  .footer p {
     margin: 0;
-    padding: 0;
-    
-    height: 100%;
+    font-size: 14px;
   }
   
-  
-    h1 {
-      text-align: center;
-      font-size: 28px;
-      color: #333;
-    }
-    
-    form {
-      margin: 0 auto; 
-      background-color: #fff;
-      padding: 30px;
-      width: 100%;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    input[type="text"],
-    input[type="date"],
-    input[type="number"],
-    input[type="time"],
-    input[type="month"],
-    input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      margin: 5px 0 15px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      box-sizing: border-box;
-      text-align: center; /* Centraliza o texto */
-    }
-    
-    label {
-      font-weight: bold;
-      color: #333;
-      margin-bottom: 5px;
-      display: block;
-      text-align: center; /* Centraliza as labels */
-    }
-    
-    .table-wrapper {
-      overflow-x: auto;
-      margin-top: 20px;
-    }
-    
-    table {
-      width: auto; /* Ajusta conforme o conteúdo */
-      border-collapse: collapse;
-      margin: auto; /* Centraliza as tabelas */
-      margin-bottom: 20px;
-    }
-    .form-footer {
-      margin-top: 20px; /* Ajuste o valor conforme necessário */
+  input[type="checkbox"] {
+    margin-right: 10px;
   }
   
+  input[type="number"] {
+    width: 60px;
+    text-align: center;
+  }
   
-    
-    th, td {
-      border: 1px solid #333;
-      padding: 6px; /* Espessura menor */
-      text-align: center;
-      white-space: nowrap; /* Evita quebra de texto */
-    }
-    
-    th {
-      background-color: #ddd;
-      font-size: 14px;
-      font-weight: bold;
-    }
-    .turno {
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-    }
-    
-    .turno label {
-      display: inline-flex;
-      align-items: center;
-      margin-bottom: 0;
-    }
-    legend {
-      font-size: 20px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      color: #333;
-      text-align: center;
-    }
-    
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    
-    ul li {
-      display: inline-block;
-      padding: 5px;
-      margin-right: 5px;
-    }
-    
-    
-    
-    .checkbox-group label {
-      display: inline-block;
-      margin-right: 15px;
-    }
-    
-    .form-group-inline {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-    
-    .form-group-inline .form-field {
-      flex: 1;
-    }
-    
-    fieldset {
-      border: 1px solid #ccc;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-    }
-    
-    fieldset legend {
-      font-weight: bold;
-      padding: 0 10px;
-      text-align: center;
-    }
-    
-    .footer {
-      background-color: #333;
-      color: #fff;
-      padding: 15px 0;
-      text-align: center;
-      margin-top: 30px;
-      border-radius: 5px;
-    }
-    
-    .footer p {
-      margin: 0;
-      font-size: 14px;
-    }
-    
-    input[type="checkbox"] {
-      margin-right: 10px;
-    }
-    
-    input[type="number"] {
-      width: 60px;
-      text-align: center;
-    }
-    
-    .signature {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 20px;
-    }
-    
-    .btn-enviar {
-      background-color: #007bff;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      display: block;
-      margin: auto;
-      text-align: center;
-    }
-    
-    .btn-enviar:hover {
-      background-color: #0056b3;
-    }
-    
-    .menu a {
-      display: inline-block;
-      margin: 0 10px;
-      color: #333;
-      font-weight: bold;
-      text-decoration: none;
-    }
-    
-    .menu a:hover {
-      background-color: #555;
-      color: #fff;
-      padding: 5px;
-      border-radius: 5px;
-    }
-    
-    /* Custom styles for courses and tables alignment */
-    .cursos-envolvidos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      align-items: center;
-      justify-content: center; /* Centraliza os inputs */
-    }
-    
-    .cursos-envolvidos input[type="text"] {
-      border: none;
-      background-color: #f4f4f4;
-      padding: 5px;
-      margin-right: 5px;
-      display: inline-block;
-      width: auto;
-    }
-    
+  .signature {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .btn-enviar {
+    background-color: #007bff;
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .btn-enviar:hover {
+    background-color: #0056b3;
+  }
+  
+  .menu a {
+    display: inline-block;
+    margin: 0 10px;
+    color: #333;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  
+  .menu a:hover {
+    background-color: #555;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  /* Custom styles for courses and tables alignment */
+  .cursos-envolvidos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    align-items: center;
+    justify-content: center; /* Centraliza os inputs */
+  }
+  
+  .cursos-envolvidos input[type="text"] {
+    border: none;
+    background-color: #f4f4f4;
+    padding: 5px;
+    margin-right: 5px;
+    display: inline-block;
+    width: auto;
+  }
+  
+  .tables-side-by-side {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .tables-side-by-side .form-group {
+    flex: 1;
+    min-width: 45%; /* Permite ajuste automático */
+    max-width: 48%; /* Ajusta para ocupar melhor o espaço */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  @media (max-width: 768px) {
     .tables-side-by-side {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      justify-content: space-between;
+      flex-direction: column; /* Empilha as tabelas verticalmente em telas menores */
     }
-    
+  
     .tables-side-by-side .form-group {
-      flex: 1;
-      min-width: 45%; /* Permite ajuste automático */
-      max-width: 48%; /* Ajusta para ocupar melhor o espaço */
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      padding: 10px;
-      border-radius: 5px;
-    }
-    
-    @media (max-width: 768px) {
-      .tables-side-by-side {
-        flex-direction: column; /* Empilha as tabelas verticalmente em telas menores */
-      }
-    
-      .tables-side-by-side .form-group {
-        min-width: 100%; /* Garante que as tabelas ocupem toda a largura da tela */
-        max-width: 100%;
-      }
-    }
-    
-    input[type="time"] {
-      width: 80px; /* Reduz o tamanho do campo de horário */
-    }
-    
-    .styled-table th,
-    .styled-table td {
-      text-align: center;
-    }
-    
-    .styled-table {
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      border-radius: 5px;
-      margin-bottom: 15px;
-    }
-    
-    /* Title styling */
-    .title {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    
-  
-  
-  /* Título mais simples */
-  .title h1 {
-      font-size: 36px;
-      color: #333;
-      font-weight: bold;
-      /* Remover gradiente e sombra de texto */
-      background: none;
-      text-shadow: none;
-      -webkit-background-clip: initial;
-      -webkit-text-fill-color: initial;
-    }
-  
-    .title h1:hover {
-      text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
-      transition: text-shadow 0.3s ease-in-out;
-    }
-    .centralizado {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    *, *::before, *::after {
-      box-sizing: border-box;
-  }
-  @media print {
-    /* Aplica uma margem consistente ao conteúdo */
-    #form-reposicao {
-      margin: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 800px; /* Ajuste a largura máxima para caber bem na página */
-      color: #000;
-      font-size: 14px;
-      background-color: #fff; /* Garante que o fundo seja branco */
-    }
-  
-    /* Remove sombras e bordas complexas de inputs e elementos */
-    input, textarea, select {
-      border: 1px solid #000;
-      box-shadow: none;
-      padding: 5px;
-    }
-  
-    /* Esconde elementos que não são necessários para impressão */
-    .form-footer, button, .no-print {
-      display: none;
-    }
-  
-    /* Ajusta as tabelas para impressão */
-    table.styled-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-  
-    table.styled-table th, table.styled-table td {
-      border: 1px solid #000;
-      padding: 8px;
-      text-align: left;
-    }
-  
-    /* Corrige estilos de layout flex para evitar distorções */
-    .form-group-inline {
-      display: block; /* Força os elementos a serem exibidos em bloco */
-    }
-  
-    /* Ajustes para headings e textos */
-    h1, h2, h3, h4, h5, h6 {
-      color: #000;
-      margin-bottom: 10px;
-    }
-  
-    /* Remove margens desnecessárias de elementos de bloco */
-    div, p {
-      margin: 0;
-      padding: 5px 0;
+      min-width: 100%; /* Garante que as tabelas ocupem toda a largura da tela */
+      max-width: 100%;
     }
   }
   
-  /* Estilo para células de aula */
-  .aula {
-    background-color: #05fda2; 
+  input[type="time"] {
+    width: 80px; /* Reduz o tamanho do campo de horário */
   }
   
-  /* Estilo para células de HAE */
-  .hae {
-    background-color: #02c0ff; 
+  .styled-table th,
+  .styled-table td {
+    text-align: center;
   }
   
-  /* Estilo para células de reposição */
-  .reposicao {
-    background-color: #ffcccb;
+  .styled-table {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    margin-bottom: 15px;
   }
   
+  /* Title styling */
+  .title {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+
+
+/* Título mais simples */
+.title h1 {
+    font-size: 36px;
+    color: #333;
+    font-weight: bold;
+    /* Remover gradiente e sombra de texto */
+    background: none;
+    text-shadow: none;
+    -webkit-background-clip: initial;
+    -webkit-text-fill-color: initial;
+  }
+
+  .title h1:hover {
+    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+    transition: text-shadow 0.3s ease-in-out;
+  }
+  .centralizado {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  *, *::before, *::after {
+    box-sizing: border-box;
+}
+@media print {
+  /* Aplica uma margem consistente ao conteúdo */
+  #form-reposicao {
+    margin: 20px;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px; /* Ajuste a largura máxima para caber bem na página */
+    color: #000;
+    font-size: 14px;
+    background-color: #fff; /* Garante que o fundo seja branco */
+  }
+
+  /* Remove sombras e bordas complexas de inputs e elementos */
+  input, textarea, select {
+    border: 1px solid #000;
+    box-shadow: none;
+    padding: 5px;
+  }
+
+  /* Esconde elementos que não são necessários para impressão */
+  .form-footer, button, .no-print {
+    display: none;
+  }
+
+  /* Ajusta as tabelas para impressão */
+  table.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  table.styled-table th, table.styled-table td {
+    border: 1px solid #000;
+    padding: 8px;
+    text-align: left;
+  }
+
+  /* Corrige estilos de layout flex para evitar distorções */
+  .form-group-inline {
+    display: block; /* Força os elementos a serem exibidos em bloco */
+  }
+
+  /* Ajustes para headings e textos */
+  h1, h2, h3, h4, h5, h6 {
+    color: #000;
+    margin-bottom: 10px;
+  }
+
+  /* Remove margens desnecessárias de elementos de bloco */
+  div, p {
+    margin: 0;
+    padding: 5px 0;
+  }
+}
+
+/* Estilo para células de aula */
+.aula {
+  background-color: #05fda2; 
+}
+
+/* Estilo para células de HAE */
+.hae {
+  background-color: #02c0ff; 
+}
+
+/* Estilo para células de reposição */
+.reposicao {
+  background-color: #ffcccb;
+}
