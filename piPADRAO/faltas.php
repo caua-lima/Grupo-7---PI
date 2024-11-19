@@ -138,6 +138,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body>
+  <!-- Sub Cabeçalho -->
+  <div class="container-sc">
+        <div class="first-column-sc">
+            <a href="#">
+                <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+            </a>
+            <a href="#">
+                <img class="logo-cps" src="img/logo-cps.png" alt="">
+            </a>
+        </div>
+        <div class="second-column-sc">
+            <h2 class="title">Programa para Ausências Docentes</h2>
+            <h2 class="title">e Reposição de Aulas Oficiais</h2>
+        </div>
+        <div class="third-column-sc">
+            <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+            <a class="btn" href="home.php"><btn>VOLTAR</btn></a>
+        </div>
+    </div>
   <?php if (!empty($errorMessage)): ?>
   <div class="error-message">
     <?php echo htmlspecialchars($errorMessage); ?>
@@ -145,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php endif; ?>
 
   <form method="POST" enctype="multipart/form-data">
-    <fieldset>
+    <fieldset class="fieldset">
       <legend>Informações Pessoais</legend>
       <div class="input-row">
         <label for="nome">Nome:</label>
@@ -184,7 +203,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label for="data-inicio-periodo">Dias: </label>
         <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
           onchange="gerarSelecaoCursosPeriodo()">
-        <label for="data-fim-periodo">Até</label>
+        <label for="data-fim-periodo" class="ate">Até: </label>
         <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo" readonly>
       </div>
 
@@ -351,6 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <button class="btn-enviar" type="submit">Enviar Formulário</button>
     </div>
   </form>
+</div>
 
   <!-- Script para a area de datas e materias e cursos -->
   <script>
