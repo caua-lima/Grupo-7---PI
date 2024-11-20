@@ -221,7 +221,6 @@ h1 {
   font-size: 13px;
   text-align: center;
   transition: all 0.3s ease;
-  /* Removido max-width e overflow */
 }
 
 .btn:hover {
