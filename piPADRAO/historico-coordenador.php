@@ -97,7 +97,7 @@ try {
       </a>
     </div>
     <div class="second-column-sc">
-      <h2 class="title"> Lista de Formulários de Reposição </h2>
+      <h2 class="title"> Historico </h2>
     </div>
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="">
