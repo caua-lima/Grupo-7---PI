@@ -141,9 +141,18 @@ function formatarData($data)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes da Reposição de Aulas</title>
   <link rel="stylesheet" href="./css/detalhes-professor.css">
+
 </head>
 
 <body>
+  <!-- Modal -->
+  <div id="pdfModal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <iframe src="gerar_pdf.php?idform_reposicao=<?php echo $idform_reposicao; ?>" width="100%" height="100%"
+        frameborder="0"></iframe>
+    </div>
+  </div>
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
@@ -181,6 +190,11 @@ function formatarData($data)
   <div class="action-buttons">
     <button class="btn" onclick="updateStatus('deferido')">Deferir</button>
     <button class="btn" onclick="showIndeferForm()">Indeferir</button>
+    <!-- Botão para abrir o modal -->
+    <button class="btn" onclick="showModal()">Gerar PDF</button>
+
+
+
   </div>
 
 
@@ -190,10 +204,31 @@ function formatarData($data)
     <label for="reason">Motivo da Indeferência:</label><br>
     <textarea id="reason" name="reason" rows="4" cols="50"></textarea><br>
     <button class="btn" type="button" onclick="updateStatus('indeferido')">Enviar</button>
+    <!-- Botão para gerar PDF -->
+
+
   </form>
   </div>
   <div class="container">
     <!-- Título e Justificativa da Falta -->
+    <!-- Modal -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel"
+      aria-hidden="true">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title"><strong>Detalhes da Reposição de Aulas</strong></h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <iframe src="gerar_pdf.php?idform_reposicao=<?php echo $idform_reposicao; ?>" width="100%"
+              height="600px"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="flex-container">
 
@@ -391,6 +426,14 @@ function formatarData($data)
 
 
   <script>
+  function showModal() {
+    document.getElementById('pdfModal').classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('pdfModal').classList.remove('show');
+  }
+
   function showIndeferForm() {
     document.getElementById('reasonForm').style.display = 'block';
   }
