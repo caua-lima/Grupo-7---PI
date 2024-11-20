@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 11-Nov-2024 às 22:46
+-- Tempo de geração: 20-Nov-2024 às 18:32
 -- Versão do servidor: 9.0.1
 -- versão do PHP: 7.4.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `bancopi`
 --
+CREATE DATABASE IF NOT EXISTS `bancopi` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `bancopi`;
 
 -- --------------------------------------------------------
 
@@ -32,7 +34,8 @@ CREATE TABLE `aulas_falta` (
   `num_aulas` varchar(3) NOT NULL,
   `data_aula` date NOT NULL,
   `nome_disciplina` varchar(40) NOT NULL,
-  `idform_faltas` int DEFAULT NULL
+  `idform_faltas` int DEFAULT NULL,
+  `idcursos` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -88,7 +91,7 @@ CREATE TABLE `aulas_semanal_professor` (
   `horario_fim` time NOT NULL,
   `disciplina` varchar(100) NOT NULL,
   `idcursos` int NOT NULL
-) ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Extraindo dados da tabela `aulas_semanal_professor`
@@ -212,7 +215,9 @@ CREATE TABLE `funcionarios` (
 --
 
 INSERT INTO `funcionarios` (`idfuncionario`, `nome`, `email`, `matricula`, `funcao`, `regime_juridico`, `senha`) VALUES
-(1, 'Tiago Alvez', 'thiago.alves16@fatec.sp.gov.br', '1234567', 'Professor de Ensino Superior', 'CLT', '');
+(1, 'Tiago Alvez', 'thiago.alves16@fatec.sp.gov.br', '1234567', 'Professor de Ensino Superior', 'CLT', '$2y$10$uLQ1xlwLr8kXOIwM2kIVieZxaKtqIor3mqE0my1svjgXDB/m/r7ty'),
+(2, 'marco', 'marco.bubola@fatec.sp.gov.br', '123456789', 'Professor de Ensino Superior', 'CLT', '$2y$10$uLQ1xlwLr8kXOIwM2kIVieZxaKtqIor3mqE0my1svjgXDB/m/r7ty'),
+(3, 'Pedro', 'cordenador@fatec.sp.gov.br', '123456789', 'COORDENADOR', 'CLT', '$2y$10$uLQ1xlwLr8kXOIwM2kIVieZxaKtqIor3mqE0my1svjgXDB/m/r7ty');
 
 -- --------------------------------------------------------
 
@@ -241,7 +246,7 @@ INSERT INTO `horas_hae_professor` (`idhae`, `idfuncionario`, `dia_semana`, `data
 (2, 1, 'TERÇA', '2024-11-14', '14:00:00', '16:00:00', 'Correção de Provas', 40, 2),
 (3, 1, 'Quarta', '2024-11-15', '17:00:00', '18:30:00', 'Atendimento a Alunos', 40, 2),
 (4, 1, 'Sexta', '2024-11-17', '08:00:00', '10:00:00', 'Revisão de Conteúdos', 40, 2),
-
+(27, 1, 'segunda', '2024-11-11', '21:13:00', '21:13:00', 'CORRIGIR FALTAS', 40, 0),
 --
 -- Índices para tabelas despejadas
 --
@@ -251,7 +256,8 @@ INSERT INTO `horas_hae_professor` (`idhae`, `idfuncionario`, `dia_semana`, `data
 --
 ALTER TABLE `aulas_falta`
   ADD PRIMARY KEY (`idaulas_falta`),
-  ADD KEY `idform_faltas_idx` (`idform_faltas`);
+  ADD KEY `idform_faltas_idx` (`idform_faltas`),
+  ADD KEY `idcursos_idx` (`idcursos`);
 
 --
 -- Índices para tabela `aulas_reposicao`
@@ -352,7 +358,7 @@ ALTER TABLE `aulas_reposicoa_formulario_reposicao`
 -- AUTO_INCREMENT de tabela `aulas_semanal_professor`
 --
 ALTER TABLE `aulas_semanal_professor`
-  MODIFY `idaula` int NOT NULL AUTO_INCREMENT;
+  MODIFY `idaula` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de tabela `cursos`
@@ -388,13 +394,13 @@ ALTER TABLE `formulario_reposicao_cursos`
 -- AUTO_INCREMENT de tabela `funcionarios`
 --
 ALTER TABLE `funcionarios`
-  MODIFY `idfuncionario` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `idfuncionario` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `horas_hae_professor`
 --
 ALTER TABLE `horas_hae_professor`
-  MODIFY `idhae` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `idhae` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- Restrições para despejos de tabelas
@@ -404,6 +410,7 @@ ALTER TABLE `horas_hae_professor`
 -- Limitadores para a tabela `aulas_falta`
 --
 ALTER TABLE `aulas_falta`
+  ADD CONSTRAINT `idcursos` FOREIGN KEY (`idcursos`) REFERENCES `cursos` (`idcursos`),
   ADD CONSTRAINT `idform_faltas` FOREIGN KEY (`idform_faltas`) REFERENCES `formulario_faltas` (`idform_faltas`);
 
 --

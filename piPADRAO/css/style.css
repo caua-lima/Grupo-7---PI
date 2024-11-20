@@ -1,4 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+.bem-vindo-nome {
+    margin: 0 10px; /* Espaçamento entre os elementos */
+    font-size: 16px; /* Tamanho da fonte */
+    font-weight: bold; /* Negrito para destaque */
+    color: #333; /* Cor do texto */
+    text-transform: capitalize; /* Primeira letra maiúscula */
+    font-family: Arial, sans-serif; /* Fonte padrão */
+    display: inline-block; /* Mantém na mesma linha que os outros elementos */
+    vertical-align: middle; /* Alinha verticalmente com os outros elementos */
+}
 
 * {
     margin: 0;

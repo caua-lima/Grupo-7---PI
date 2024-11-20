@@ -1,9 +1,16 @@
 <?php
 include 'conexao.php';
 include 'header.html';
+include 'auth.php';
 
-// ID do professor (fixo por enquanto)
-$idProfessor = 1;
+// Obtém o ID do funcionário logado da sessão
+if (!isset($_SESSION['idfuncionario'])) {
+  // Redireciona para o login caso a sessão não esteja configurada
+  header("Location: index.php");
+  exit;
+}
+
+$idfuncionario = $_SESSION['idfuncionario'];
 
 // Função para calcular o total de horas usadas e restantes
 function calcularHorasTotais($atividadesHAE, $aulas, $limiteHoras = 28)
@@ -15,8 +22,6 @@ function calcularHorasTotais($atividadesHAE, $aulas, $limiteHoras = 28)
   foreach ($atividadesHAE as $atividade) {
     $inicio = new DateTime($atividade['horario_inicio']);
     $fim = new DateTime($atividade['horario_fim']);
-
-    // Calcula o intervalo direto em minutos entre horário de início e fim
     $intervaloEmMinutos = ($fim->getTimestamp() - $inicio->getTimestamp()) / 60;
     $totalMinutosHAE += $intervaloEmMinutos;
   }
@@ -25,8 +30,6 @@ function calcularHorasTotais($atividadesHAE, $aulas, $limiteHoras = 28)
   foreach ($aulas as $aula) {
     $inicio = new DateTime($aula['horario_inicio']);
     $fim = new DateTime($aula['horario_fim']);
-
-    // Calcula o intervalo direto em minutos entre horário de início e fim
     $intervaloEmMinutos = ($fim->getTimestamp() - $inicio->getTimestamp()) / 60;
     $totalMinutosAulas += $intervaloEmMinutos;
   }
@@ -53,7 +56,7 @@ try {
         WHERE idfuncionario = ?
         ORDER BY FIELD(dia_semana, 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'), horario_inicio
     ");
-  $stmtAulas->execute([$idProfessor]);
+  $stmtAulas->execute([$idfuncionario]);
   $aulas = $stmtAulas->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   echo "Erro ao buscar aulas: " . $e->getMessage();
@@ -67,7 +70,7 @@ try {
         WHERE idfuncionario = ?
         ORDER BY data_atividade
     ");
-  $stmtHAE->execute([$idProfessor]);
+  $stmtHAE->execute([$idfuncionario]);
   $atividadesHAE = $stmtHAE->fetchAll(PDO::FETCH_ASSOC);
 
   // Chama a função para calcular o total de horas usadas e horas restantes
@@ -97,15 +100,14 @@ try {
         JOIN formulario_faltas_cursos fc ON f.idform_faltas = fc.idform_faltas
         JOIN cursos c ON fc.idcursos = c.idcursos
         LEFT JOIN aulas_falta af ON f.idform_faltas = af.idform_faltas
-        WHERE f.situacao = 'Aguardando Reposição'
+        WHERE f.situacao = 'Aguardando Reposição' AND f.idfuncionario = ?
         GROUP BY f.idform_faltas
     ");
-  $stmtFormularios->execute();
+  $stmtFormularios->execute([$idfuncionario]);
   $formularios = $stmtFormularios->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
   echo "Erro ao buscar formulários: " . $e->getMessage();
 }
-
 ?>
 
 
@@ -138,12 +140,41 @@ try {
 </head>
 
 <body>
+  <!-- Sub Cabeçalho -->
+  <div class="container-sc">
+    <div class="first-column-sc">
+      <a href="#">
+        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+      </a>
+      <a href="#">
+        <img class="logo-cps" src="img/logo-cps.png" alt="">
+      </a>
+    </div>
+    <div class="second-column-sc">
+      <h2 class="title">Reposições Pendentes</h2>
+    </div>
+    <div class="third-column-sc">
+      <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+      <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
+        <?php echo htmlspecialchars($_SESSION['nome']); ?>
+      </span>
+      <a class="btn" href="home.php">
+        <btn>VOLTAR</btn>
+      </a>
+    </div>
+  </div>
+  <?php if (!empty($errorMessage)): ?>
+  <div class="error-message">
+    <?php echo htmlspecialchars($errorMessage); ?>
+  </div>
+  <?php endif; ?>
+
   <div class="container">
 
     <div class="layout">
       <!-- Reposições Pendentes à esquerda -->
       <div class="reposicoes-pendentes">
-        <h2>Reposições Pendentes</h2>
+
         <?php if (!empty($formularios)): ?>
         <?php foreach ($formularios as $formulario): ?>
         <div class="status-bar">
@@ -273,11 +304,6 @@ try {
               <input type="text" name="tipo_atividade" id="add_tipo_atividade" required>
             </div>
 
-            <!-- Botões de ação -->
-            <div style="grid-column: span 2; display: flex; justify-content: space-between;">
-              <button type="submit">Adicionar Atividade</button>
-              <button type="button" onclick="hideAddForm()">Cancelar</button>
-            </div>
           </form>
         </div>
       </div>
@@ -346,7 +372,7 @@ try {
 
           <div class="hae-header">
             <h2>Atividades de HAE</h2>
-            <button onclick="showAddForm()">Adicionar HAE</button>
+
           </div>
 
           <table class="styled-table">
@@ -356,7 +382,7 @@ try {
               <th>Horário de Início</th>
               <th>Horário de Fim</th>
               <th>Tipo de Atividade</th>
-              <th>Ações</th>
+
             </tr>
             <?php foreach ($atividadesHAE as $atividade): ?>
             <tr data-id="<?php echo $atividade['idhae']; ?>">
@@ -365,14 +391,7 @@ try {
               <td><?php echo htmlspecialchars($atividade['horario_inicio']); ?></td>
               <td><?php echo htmlspecialchars($atividade['horario_fim']); ?></td>
               <td><?php echo htmlspecialchars($atividade['tipo_atividade']); ?></td>
-              <td>
-                <button class="icon-button" onclick="showEditForm('<?php echo $atividade['idhae']; ?>')">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button class="icon-button delete" onclick="deleteHAE('<?php echo $atividade['idhae']; ?>')">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
+
             </tr>
             <?php endforeach; ?>
           </table>

@@ -1,6 +1,15 @@
 <?php
 include 'conexao.php';
-include 'header.html';
+include 'header_coordenador.html';
+include 'auth.php';
+
+// Verifica se o funcionário está logado
+if (!isset($_SESSION['idfuncionario'])) {
+  header("Location: index.php");
+  exit;
+}
+
+$idfuncionario = $_SESSION['idfuncionario'];
 
 // Inicializa as variáveis de filtro para evitar erros de undefined variable
 $filtroNome = '';
@@ -66,7 +75,6 @@ try {
   echo "Erro ao buscar dados: " . $e->getMessage();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -74,108 +82,81 @@ try {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordenação</title>
-  <link rel="stylesheet" href="css/historico-coordenador.css">
-  <style>
-  /* Estilos para o modal */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-  }
-
-  .modal-content {
-    background-color: #fff;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
-  }
-
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  </style>
+  <link rel="stylesheet" href="./css/historico-coordenador.css">
 </head>
 
 <body>
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
-        <div class="first-column-sc">
-            <a href="#">
-                <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
-            </a>
-            <a href="#">
-                <img class="logo-cps" src="img/logo-cps.png" alt="">
-            </a>
-        </div>
-        <div class="second-column-sc">
-            <h2 class="title">Programa para Ausências Docentes</h2>
-            <h2 class="title">e Reposição de Aulas Oficiais</h2>
-        </div>
-        <div class="third-column-sc">
-            <img class="logo-padrao" src="img/logo-padrao.png" alt="">
-            <a class="btn" href="home_coordenador.php"><btn>VOLTAR</btn></a>
-        </div>
+    <div class="first-column-sc">
+      <a href="#">
+        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+      </a>
+      <a href="#">
+        <img class="logo-cps" src="img/logo-cps.png" alt="">
+      </a>
     </div>
+    <div class="second-column-sc">
+      <h2 class="title"> Lista de Formulários de Reposição </h2>
+    </div>
+    <div class="third-column-sc">
+      <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+      <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
+        <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
+
+      </span>
+      <a class="btn" href="home_coordenador.php">
+        <btn>VOLTAR</btn>
+      </a>
+    </div>
+  </div>
+  <?php if (!empty($errorMessage)): ?>
+  <div class="error-message">
+    <?php echo htmlspecialchars($errorMessage); ?>
+  </div>
+  <?php endif; ?>
   <div class="container">
-    <h1>Lista de Formulários de Reposição - Deferidos e Indeferidos</h1>
 
     <!-- Botão para abrir o modal de filtro -->
-    <button onclick="document.getElementById('filterModal').style.display='block'" class="btn-filtro" >Abrir Filtros</button>
+    <button onclick="document.getElementById('filterModal').style.display='block'" class="btn-filtro">Filtrar</button>
 
     <!-- Modal de Filtro -->
     <div id="filterModal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="document.getElementById('filterModal').style.display='none'">&times;</span>
         <h2>Filtrar Formulários</h2>
+        <form method="GET" action="">
+          <label for="nome_professor">Nome do Professor:</label>
+          <input type="text" id="nome_professor" name="nome_professor"
+            value="<?php echo htmlspecialchars($filtroNome); ?>" placeholder="Nome do Professor">
 
-        <!-- Formulário de Filtro no Modal -->
-         <div class="form-modal">
-            <form method="GET" action="">
-              <label>Nome do Professor:</label>
-              <input type="text" name="nome_professor" value="<?php echo htmlspecialchars($filtroNome); ?>"
-                placeholder="Nome do Professor">
+          <label for="data_reposicao">Data de Reposição:</label>
+          <input type="date" id="data_reposicao" name="data_reposicao"
+            value="<?php echo htmlspecialchars($filtroData); ?>">
 
-              <label>Data de Reposição:</label>
-              <input type="date" name="data_reposicao" value="<?php echo htmlspecialchars($filtroData); ?>">
+          <label for="status">Status:</label>
+          <select id="status" name="status">
+            <option value="">Todos</option>
+            <option value="deferido" <?php if ($filtroStatus === 'deferido') echo 'selected'; ?>>Deferido</option>
+            <option value="indeferido" <?php if ($filtroStatus === 'indeferido') echo 'selected'; ?>>Indeferido</option>
+          </select>
 
-              <label>Status:</label>
-              <select name="status">
-                <option value="">Todos</option>
-                <option value="deferido" <?php if ($filtroStatus == 'deferido') echo 'selected'; ?>>Deferido</option>
-                <option value="indeferido" <?php if ($filtroStatus == 'indeferido') echo 'selected'; ?>>Indeferido</option>
-              </select>
+          <label for="disciplina">Disciplina:</label>
+          <input type="text" id="disciplina" name="disciplina"
+            value="<?php echo htmlspecialchars($filtroDisciplina); ?>" placeholder="Disciplina">
 
-              <label>Disciplina:</label>
-              <input type="text" name="disciplina" value="<?php echo htmlspecialchars($filtroDisciplina); ?>"
-                placeholder="Disciplina">
+          <label for="ordenacao">Ordenação:</label>
+          <select id="ordenacao" name="ordenacao">
+            <option value="fr.data_entrega DESC" <?php if ($ordenacao === 'fr.data_entrega DESC') echo 'selected'; ?>>
+              Data de Entrega (mais recente)</option>
+            <option value="func.nome ASC" <?php if ($ordenacao === 'func.nome ASC') echo 'selected'; ?>>Nome do
+              Professor (A-Z)</option>
+          </select>
 
-              <label>Ordenação:</label>
-              <select name="ordenacao">
-                <option value="fr.data_entrega DESC" <?php if ($ordenacao == 'fr.data_entrega DESC') echo 'selected'; ?>>
-                  Data de Entrega (mais recente)</option>
-                <option value="func.nome ASC" <?php if ($ordenacao == 'func.nome ASC') echo 'selected'; ?>>Nome do Professor
-                  (A-Z)</option>
-              </select>
-
-            <div class="btns">
-              <button class="btn-aplica" type="submit" >Aplicar Filtros</button>
-              <a class="btn-limpa" href="historico-coordenador.php" style="margin-left: 10px;">Limpar Filtros</a>
-            </div>
-            </form>
-          </div>
+          <button type="submit" class="btn-filtro">Aplicar Filtros</button>
+          <a href="historico-coordenador.php" class="btn-filtro"
+            style="background-color: #dc3545; margin-left: 10px;">Limpar Filtros</a>
+        </form>
       </div>
     </div>
 
@@ -189,18 +170,16 @@ try {
           <p>Datas de Reposição: <?php echo htmlspecialchars($formulario['datas_reposicao']); ?></p>
           <p>Horários: <?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></p>
         </div>
-        <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
+        <div class="status <?php echo strtolower($formulario['situacao']); ?>">
           <?php echo htmlspecialchars($formulario['situacao']); ?>
         </div>
-
         <?php if (strtolower($formulario['situacao']) === 'indeferido' && !empty($formulario['motivo_indeferimento'])): ?>
         <div class="motivo-indeferimento">
           <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($formulario['motivo_indeferimento']); ?>
         </div>
         <?php endif; ?>
-
         <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
-          detalhes</button>
+          Detalhes</button>
       </li>
       <?php endforeach; ?>
     </ul>
@@ -218,7 +197,7 @@ try {
     if (event.target == modal) {
       modal.style.display = "none";
     }
-  }
+  };
   </script>
 </body>
 

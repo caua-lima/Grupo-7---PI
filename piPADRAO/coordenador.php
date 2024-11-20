@@ -1,5 +1,15 @@
 <?php
 include 'conexao.php';
+include 'header_coordenador.html';
+include 'auth.php';
+
+// Verifica se o funcionário está logado
+if (!isset($_SESSION['idfuncionario'])) {
+  header("Location: index.php");
+  exit;
+}
+
+$idfuncionario = $_SESSION['idfuncionario'];
 
 try {
   // Consulta para buscar dados do formulário de reposição, excluindo os que estão como "deferido" e "indeferido"
@@ -33,12 +43,43 @@ try {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordenação</title>
-  <link rel="stylesheet" href="./css/cordenador.css">
+  <link rel="stylesheet" href="./css/historico-coordenador.css">
 </head>
 
 <body>
+
+  <!-- Sub Cabeçalho -->
+  <div class="container-sc">
+    <div class="first-column-sc">
+      <a href="#">
+        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+      </a>
+      <a href="#">
+        <img class="logo-cps" src="img/logo-cps.png" alt="">
+      </a>
+    </div>
+    <div class="second-column-sc">
+      <h2 class="title"> Lista de Formulários de Reposição </h2><br>
+      <h2 class="title"> Deferir / Indiferir </h2>
+    </div>
+    <div class="third-column-sc">
+      <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+      <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
+        <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
+
+      </span>
+      <a class="btn" href="home_coordenador.php">
+        <btn>VOLTAR</btn>
+      </a>
+    </div>
+  </div>
+  <?php if (!empty($errorMessage)): ?>
+  <div class="error-message">
+    <?php echo htmlspecialchars($errorMessage); ?>
+  </div>
+  <?php endif; ?>
+
   <div class="container">
-    <h1>Lista de Formulários de Reposição</h1>
     <ul class="teacher-list">
       <?php foreach ($formularios as $formulario): ?>
       <li class="teacher">

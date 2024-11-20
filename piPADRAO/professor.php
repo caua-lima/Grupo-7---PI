@@ -1,75 +1,218 @@
 <?php
-// Inclua a conexão ao banco de dados
 include 'conexao.php';
 include 'header.html';
+include 'auth.php';
 
-// Obtenha o id do professor logado (supondo que o ID esteja na sessão)
-$idfuncionario = 1; // $_SESSION['idfuncionario']; // Aqui estamos assumindo que você tem o ID do professor na sessão.
+// Verifica se o funcionário está logado
+if (!isset($_SESSION['idfuncionario'])) {
+  header("Location: index.php");
+  exit;
+}
 
-// Prepare a consulta para buscar os registros de faltas com status
-$query = "
-    SELECT f.idform_faltas, f.datainicio, f.datafim, f.motivo_falta, f.situacao, c.nome_curso 
-    FROM formulario_faltas f
-    JOIN formulario_faltas_cursos fc ON f.idform_faltas = fc.idform_faltas
-    JOIN cursos c ON fc.idcursos = c.idcursos
-    WHERE f.idfuncionario = :idfuncionario
-    ORDER BY f.datainicio DESC
-";
+$idfuncionario = $_SESSION['idfuncionario'];
 
-// Prepare e execute a consulta
-$stmt = $conn->prepare($query);
-$stmt->bindParam(':idfuncionario', $idfuncionario, PDO::PARAM_INT);
-$stmt->execute();
+// Inicializa variáveis de filtro para evitar erros de "undefined variable"
+$filtroMotivo = $_GET['motivo_falta'] ?? '';
+$filtroDataEntrega = $_GET['data_entrega'] ?? '';
+$filtroStatus = $_GET['status'] ?? '';
+$filtroDisciplina = $_GET['disciplina'] ?? '';
+$ordenacao = $_GET['ordenacao'] ?? 'fr.data_entrega DESC';
 
-// Fetch os resultados
-$historico = $stmt->fetchAll(PDO::FETCH_ASSOC);
+try {
+  // Consulta para buscar os dados filtrados do formulário de faltas
+  $query = "
+        SELECT 
+            fr.idform_reposicao,
+            fr.idform_faltas,
+            fr.data_entrega,
+            fr.situacao,
+            fr.motivo_indeferimento,
+            f.motivo_falta,
+            func.nome AS nome_professor,
+            GROUP_CONCAT(DISTINCT ar.nome_disciplina ORDER BY ar.nome_disciplina SEPARATOR ', ') AS disciplinas,
+            GROUP_CONCAT(DISTINCT ar.data_reposicao ORDER BY ar.data_reposicao SEPARATOR ', ') AS datas_reposicao,
+            GROUP_CONCAT(DISTINCT CONCAT(ar.horarioinicio, ' às ', ar.horariofim) ORDER BY ar.horarioinicio SEPARATOR ', ') AS horarios_reposicao
+        FROM formulario_reposicao fr
+        JOIN funcionarios func ON fr.idfuncionario = func.idfuncionario
+        JOIN formulario_faltas f ON fr.idform_faltas = f.idform_faltas
+        LEFT JOIN aulas_reposicao ar ON fr.idform_reposicao = ar.idform_reposicao
+        WHERE fr.situacao IN ('deferido', 'indeferido') 
+          AND fr.idfuncionario = ?";
+
+  $params = [$idfuncionario];
+
+  // Adiciona filtros dinâmicos
+  if (!empty($filtroMotivo)) {
+    $query .= " AND f.motivo_falta LIKE ?";
+    $params[] = "%$filtroMotivo%";
+  }
+  if (!empty($filtroDataEntrega)) {
+    $query .= " AND fr.data_entrega >= ?";
+    $params[] = $filtroDataEntrega;
+  }
+  if (!empty($filtroStatus)) {
+    $query .= " AND fr.situacao = ?";
+    $params[] = $filtroStatus;
+  }
+  if (!empty($filtroDisciplina)) {
+    $query .= " AND ar.nome_disciplina LIKE ?";
+    $params[] = "%$filtroDisciplina%";
+  }
+
+  // Adiciona agrupamento e ordenação
+  $query .= " GROUP BY fr.idform_reposicao ORDER BY $ordenacao";
+
+  // Prepara e executa a consulta
+  $stmt = $conn->prepare($query);
+  $stmt->execute($params);
+  $faltas = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+  echo "Erro ao buscar dados: " . htmlspecialchars($e->getMessage());
+}
+
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Histórico de Faltas - Professor</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <title>Histórico de Faltas e Reposições</title>
   <link rel="stylesheet" href="css/professor.css">
 </head>
 
 <body>
+  <!-- Sub Cabeçalho -->
+  <div class="container-sc">
+    <div class="first-column-sc">
+      <a href="#">
+        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+      </a>
+      <a href="#">
+        <img class="logo-cps" src="img/logo-cps.png" alt="">
+      </a>
+    </div>
+    <div class="second-column-sc">
+      <h2 class="title"> Histórico de Faltas </h2>
+    </div>
+    <div class="third-column-sc">
+      <img class="logo-padrao" src="img/logo-padrao.png" alt="">
+      <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
+        <?php echo htmlspecialchars($_SESSION['nome']); ?>
+      </span>
+      <a class="btn" href="home.php">
+        <btn>VOLTAR</btn>
+      </a>
+    </div>
+  </div>
+  <?php if (!empty($errorMessage)): ?>
+  <div class="error-message">
+    <?php echo htmlspecialchars($errorMessage); ?>
+  </div>
+  <?php endif; ?>
+  <div class="container">
+    <!-- Botão para abrir o modal de filtro -->
+    <button class="btn-filtro" onclick="abrirModal()">Filtrar</button>
 
-  <main>
-    <table>
-      <thead>
-        <tr>
-          <th>Motivo da Falta</th>
-          <th>Curso(s) Envolvido(s)</th>
-          <th>Data Início</th>
-          <th>Data Fim</th>
-          <th>Situação</th> <!-- Coluna para exibir o status -->
-        </tr>
-      </thead>
-      <tbody>
-        <?php if (count($historico) > 0): ?>
-        <?php foreach ($historico as $registro): ?>
-        <tr>
-          <td><?php echo htmlspecialchars($registro['motivo_falta']); ?></td>
-          <td><?php echo htmlspecialchars($registro['nome_curso']); ?></td>
-          <td><?php echo htmlspecialchars($registro['datainicio']); ?></td>
-          <td><?php echo htmlspecialchars($registro['datafim']); ?></td>
-          <td><?php echo htmlspecialchars($registro['situacao'] === 'deferido' ? 'Deferido' : 'Indeferido'); ?></td> <!-- Exibe deferido ou indeferido -->
-        </tr>
-        <?php endforeach; ?>
-        <?php else: ?>
-        <tr>
-          <td colspan="5">Nenhuma falta registrada.</td>
-        </tr>
-        <?php endif; ?>
-      </tbody>
-    </table>
-  </main>
+    <!-- Modal de Filtro -->
+    <div id="filterModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <h2>Filtrar Dados</h2>
+        <form method="GET" action="">
+          <label for="motivo_falta">Motivo da Falta:</label>
+          <input type="text" id="motivo_falta" name="motivo_falta"
+            value="<?php echo htmlspecialchars($filtroMotivo); ?>" placeholder="Digite o motivo">
 
+          <label for="data_entrega">Data de Entrega:</label>
+          <input type="date" id="data_entrega" name="data_entrega"
+            value="<?php echo htmlspecialchars($filtroDataEntrega); ?>">
+
+          <label for="status">Situação:</label>
+          <select id="status" name="status">
+            <option value="">Todos</option>
+            <option value="deferido" <?php if ($filtroStatus === 'deferido') echo 'selected'; ?>>Deferido</option>
+            <option value="indeferido" <?php if ($filtroStatus === 'indeferido') echo 'selected'; ?>>Indeferido</option>
+          </select>
+
+          <label for="disciplina">Disciplina:</label>
+          <input type="text" id="disciplina" name="disciplina"
+            value="<?php echo htmlspecialchars($filtroDisciplina); ?>" placeholder="Digite a disciplina">
+
+          <label for="ordenacao">Ordenar por:</label>
+          <select id="ordenacao" name="ordenacao">
+            <option value="fr.data_entrega DESC" <?php if ($ordenacao === 'fr.data_entrega DESC') echo 'selected'; ?>>
+              Data de Entrega (mais recente)</option>
+            <option value="fr.data_entrega ASC" <?php if ($ordenacao === 'fr.data_entrega ASC') echo 'selected'; ?>>Data
+              de Entrega (mais antiga)</option>
+          </select>
+
+          <button type="submit" class="btn-aplicar">Aplicar Filtros</button>
+          <a href="historico.php" class="btn-limpar">Limpar Filtros</a>
+        </form>
+      </div>
+    </div>
+
+    <!-- Lista de Registros -->
+    <ul class="teacher-list">
+      <?php if (count($faltas) > 0): ?>
+      <?php foreach ($faltas as $falta): ?>
+      <li class="teacher">
+        <div class="teacher-info">
+          <h2>Prof. <?php echo htmlspecialchars($falta['nome_professor']); ?></h2>
+          <p><strong>Disciplinas:</strong> <?php echo htmlspecialchars($falta['disciplinas']); ?></p>
+          <p><strong>Datas de Reposição:</strong> <?php echo htmlspecialchars($falta['datas_reposicao']); ?></p>
+          <p><strong>Horários:</strong> <?php echo htmlspecialchars($falta['horarios_reposicao']); ?></p>
+          <?php if (strtolower($falta['situacao']) === 'indeferido'): ?>
+          <div class="motivo-indeferimento">
+            <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($falta['motivo_indeferimento']); ?>
+          </div>
+          <?php endif; ?>
+        </div>
+        <div class="teacher-actions">
+          <div class="status <?php echo strtolower($falta['situacao']); ?>">
+            <?php echo ucfirst(htmlspecialchars($falta['situacao'])); ?>
+          </div>
+          <?php if (strtolower($falta['situacao']) === 'indeferido'): ?>
+          <button class="btn-editar" onclick="editarFalta(<?php echo $falta['idform_faltas']; ?>)">Editar Falta</button>
+          <button class="btn-editar-reposicao"
+            onclick="editarReposicao(<?php echo $falta['idform_reposicao']; ?>)">Editar Reposição</button>
+          <?php else: ?>
+          <button class="btn-desativado" disabled>Não Editável</button>
+          <?php endif; ?>
+        </div>
+      </li>
+      <?php endforeach; ?>
+      <?php else: ?>
+      <li class="no-data">Nenhuma falta registrada.</li>
+      <?php endif; ?>
+    </ul>
+  </div>
+
+  <script>
+  function abrirModal() {
+    document.getElementById('filterModal').style.display = 'block';
+  }
+
+  function fecharModal() {
+    document.getElementById('filterModal').style.display = 'none';
+  }
+
+  function editarFalta(id) {
+    window.location.href = 'faltas.php?idform_faltas=' + id;
+  }
+
+  function editarReposicao(id) {
+    window.location.href = 'reposicao.php?idform_reposicao=' + id;
+  }
+
+  window.onclick = function(event) {
+    const modal = document.getElementById('filterModal');
+    if (event.target === modal) {
+      fecharModal();
+    }
+  }
+  </script>
 </body>
 
 </html>
