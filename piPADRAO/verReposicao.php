@@ -520,6 +520,15 @@ try {
     return false;
   }
   </script>
+
+  <footer>
+    <div class="containerf">
+      <a href="#">
+        <img src="img/logo-governo-do-estado-sp.png" alt="Logo Governo do Estado SP">
+      </a>
+    </div>
+  </footer>
+
 </body>
 
 </html>
