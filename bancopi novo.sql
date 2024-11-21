@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 20-Nov-2024 às 18:32
+-- Tempo de geração: 21-Nov-2024 às 17:58
 -- Versão do servidor: 9.0.1
 -- versão do PHP: 7.4.12
 
@@ -112,6 +112,20 @@ INSERT INTO `aulas_semanal_professor` (`idaula`, `idfuncionario`, `dia_semana`, 
 (12, 1, 'SÁBADO', '11:00:00', '12:50:00', 'Estrutura de Dados', 1);
 
 -- --------------------------------------------------------
+
+INSERT INTO `aulas_semanal_professor` (`idaula`, `idfuncionario`, `dia_semana`, `horario_inicio`, `horario_fim`, `disciplina`, `idcursos`) VALUES
+(13, 2, 'SEGUNDA', '19:00:00', '20:40:00', 'Programação Avançada', 1),
+(14, 2, 'SEGUNDA', '20:50:00', '22:30:00', 'Programação Avançada', 1),
+(15, 2, 'TERÇA', '19:00:00', '20:40:00', 'Design Digital', 1),
+(16, 2, 'TERÇA', '20:50:00', '22:30:00', 'Design Digital', 1),
+(17, 2, 'QUARTA', '19:00:00', '20:40:00', 'Sistemas Operacionais', 1),
+(18, 2, 'QUARTA', '20:50:00', '22:30:00', ' Introdução à Gestão da Produção', 3),
+(19, 2, 'QUINTA', '19:00:00', '20:40:00', 'Desenvolvimento Web I', 1),
+(20, 2, 'QUINTA', '20:50:00', '22:30:00', 'Desenvolvimento Web I', 1),
+(21, 2, 'SEXTA', '19:00:00', '20:40:00', 'Redes de Computadores', 1),
+(22, 2, 'SEXTA', '20:50:00', '22:30:00', 'Redes de Computadores', 1),
+(23, 2, 'SÁBADO', '09:20:00', '11:00:00', 'Estrutura de Dados', 1),
+(24, 2, 'SÁBADO', '11:00:00', '12:50:00', 'Estrutura de Dados', 1);
 
 --
 -- Estrutura da tabela `cursos`
@@ -246,7 +260,16 @@ INSERT INTO `horas_hae_professor` (`idhae`, `idfuncionario`, `dia_semana`, `data
 (2, 1, 'TERÇA', '2024-11-14', '14:00:00', '16:00:00', 'Correção de Provas', 40, 2),
 (3, 1, 'Quarta', '2024-11-15', '17:00:00', '18:30:00', 'Atendimento a Alunos', 40, 2),
 (4, 1, 'Sexta', '2024-11-17', '08:00:00', '10:00:00', 'Revisão de Conteúdos', 40, 2),
-(27, 1, 'segunda', '2024-11-11', '21:13:00', '21:13:00', 'CORRIGIR FALTAS', 40, 0),
+(5, 1, 'segunda', '2024-11-11', '21:13:00', '21:13:00', 'CORRIGIR FALTAS', 40, 0);
+
+
+INSERT INTO `horas_hae_professor` (`idhae`, `idfuncionario`, `dia_semana`, `data_atividade`, `horario_inicio`, `horario_fim`, `tipo_atividade`, `hae_total`, `hae_usadas`) VALUES
+(6, 2, 'Segunda', '2024-11-13', '10:00:00', '12:00:00', 'Planejamento de Aulas', 40, 2),
+(7, 2, 'TERÇA', '2024-11-14', '14:00:00', '16:00:00', 'Correção de Provas', 40, 2),
+(8, 2, 'Quarta', '2024-11-15', '17:00:00', '18:30:00', 'Atendimento a Alunos', 40, 2),
+(9, 2, 'Sexta', '2024-11-17', '08:00:00', '10:00:00', 'Revisão de Conteúdos', 40, 2),
+(10, 2, 'segunda', '2024-11-11', '21:13:00', '21:13:00', 'CORRIGIR FALTAS', 40, 0);
+
 --
 -- Índices para tabelas despejadas
 --
@@ -423,7 +446,7 @@ ALTER TABLE `aulas_reposicao`
 -- Limitadores para a tabela `aulas_reposicoa_formulario_reposicao`
 --
 ALTER TABLE `aulas_reposicoa_formulario_reposicao`
-  ADD CONSTRAINT `aulas_reposicoa_formulario_reposicao_ibfk_1` FOREIGN KEY (`idaulas_reposicao`) REFERENCES `aulas_reposicao` (`idaulas_reposicao`),
+  ADD CONSTRAINT `aulas_reposicoa_formulario_reposicao_ibfk_1` FOREIGN KEY (`idaulas_reposicao`) REFERENCES `aulas_reposicao` (`idaulas_reposicao`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `aulas_reposicoa_formulario_reposicao_ibfk_2` FOREIGN KEY (`idform_reposicao`) REFERENCES `formulario_reposicao` (`idform_reposicao`);
 
 --

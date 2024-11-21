@@ -353,10 +353,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
-      <a href="#">
+      <a href="home.php">
         <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="Logo FATEC Itapira">
       </a>
-      <a href="#">
+      <a href="home.php">
         <img class="logo-cps" src="img/logo-cps.png" alt="Logo CPS">
       </a>
     </div>
@@ -366,11 +366,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="Logo Padrão">
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        <?php echo htmlspecialchars($_SESSION['nome']); ?>
+        <p>Prof. <br><?php echo htmlspecialchars($_SESSION['nome']); ?></p>
       </span>
-      <a class="btn" href="home.php">
-        <button type="button">VOLTAR</button>
-      </a>
+      <a class="btn-voltar" href="#" onclick="history.back(); return false;">VOLTAR</a>
+
     </div>
   </div>
 
@@ -387,9 +386,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <?php endif; ?>
 
   <form id="form-reposicao" method="POST" enctype="multipart/form-data">
-    <div class="title">
-      <h1>Planejar Reposição</h1>
-    </div>
+
     <!-- Número e Mês -->
     <div class="form-group-inline">
       <!-- Campo de Nome do Funcionário -->

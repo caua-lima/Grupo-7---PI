@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
 .bem-vindo-nome {
     margin: 0 10px; /* Espaçamento entre os elementos */
     font-size: 16px; /* Tamanho da fonte */
@@ -8,7 +9,9 @@
     font-family: Arial, sans-serif; /* Fonte padrão */
     display: inline-block; /* Mantém na mesma linha que os outros elementos */
     vertical-align: middle; /* Alinha verticalmente com os outros elementos */
+    text-align: center; /* Centraliza o texto dentro do elemento */
 }
+
 
 * {
     margin: 0;
@@ -153,24 +156,37 @@ header{
     height: 110px;
 }
 
-.btn{
-    border-radius: 5px;
-    color: black;
-    font-size: 10px;
-    cursor: pointer;
-    font-weight: 600;
-    width: 60px;
-    border: 1px solid #AE0C0D;
-    background-color: transparent;
-    margin-top: 5px;
-    height: 30px;
-    transition: background-color .3s;
+
+/* Estilo exclusivo para o botão sair */
+.btn-sair {
+    display: inline-block;
+    background-color: #ff0011; /* Cor de fundo azul */
+    color: white; /* Cor do texto */
+    padding: 10px 20px; /* Espaçamento interno */
+    font-size: 16px; /* Tamanho da fonte */
+    text-align: center; /* Centralizar o texto */
+    text-decoration: none; /* Remover sublinhado */
+    border-radius: 5px; /* Bordas arredondadas */
+    border: none; /* Remover borda */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adicionar sombra */
+    transition: background-color 0.3s, transform 0.2s; /* Transições suaves para hover */
+    cursor: pointer; /* Alterar o cursor ao passar o mouse */
 }
 
-.btn:hover{
-    background-color: #AE0C0D;
-    color: #fff;
+/* Efeito de hover para o botão VOLTAR */
+.btn-sair:hover {
+    background-color: #b30000; /* Cor mais escura no hover */
+    transform: scale(1.05); /* Leve aumento ao passar o mouse */
 }
+
+/* Ajustes para mobile (opcional) */
+@media (max-width: 768px) {
+    .btn-voltar {
+        font-size: 14px; /* Diminuir o tamanho da fonte */
+        padding: 8px 15px; /* Ajustar o espaçamento interno */
+    }
+}
+
 /* Fim Sub-Cabeçalho*/
 
 

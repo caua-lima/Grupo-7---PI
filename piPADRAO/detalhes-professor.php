@@ -175,7 +175,7 @@ function formatarData($data)
 
       </span>
       <!-- Botão Voltar -->
-      <button class="btn" onclick="goBack()">Voltar</button>
+      <button class="btn-voltar" onclick="goBack()">Voltar</button>
 
 
       </a>

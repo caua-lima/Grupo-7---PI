@@ -4,8 +4,8 @@ include 'auth.php';
 
 // Verifica se o funcionário está logado
 if (!isset($_SESSION['idfuncionario'])) {
-    header("Location: index.php");
-    exit;
+  header("Location: index.php");
+  exit;
 }
 
 $idfuncionario = $_SESSION['idfuncionario'];
@@ -19,6 +19,8 @@ $idfuncionario = $_SESSION['idfuncionario'];
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Padrao - Professor</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/png" href="./img/favicon-32x32.png">
+
   <script src="https://kit.fontawesome.com/f3cc8687d6.js" crossorigin="anonymous"></script>
 </head>
 
@@ -88,7 +90,9 @@ $idfuncionario = $_SESSION['idfuncionario'];
       </span>
       <?php endif; ?>
 
-      <button class="btn"><a href="logout.php">Sair</a></button>
+      <a class="btn-sair" href="logout.php">
+        <btn>Sair</btn>
+      </a>
     </div>
   </div>
 

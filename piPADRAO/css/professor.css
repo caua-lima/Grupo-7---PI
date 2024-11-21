@@ -22,7 +22,7 @@ body {
   .btn-filtro {
     display: block; /* Torna o botão um elemento de bloco */
     margin: 0 auto 20px; /* Centraliza e adiciona margem inferior */
-    background-color: #007bff;
+    background-color: #ff0000;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -33,7 +33,7 @@ body {
   }
   
   .btn-filtro:hover {
-    background-color: #0056b3;
+    background-color: #b30000;
   }
   
   
@@ -255,7 +255,7 @@ body {
 }
 
 .footer-section ul li a:hover {
-  color: #007bff; /* Cor do link no hover */
+  color: #ff0000; /* Cor do link no hover */
 }
 
 .footer-bottom {
@@ -277,3 +277,45 @@ body {
   background-color: black;
 }
 /* Fim Rodapé */
+
+/* Estilo exclusivo para o botão VOLTAR */
+.btn-voltar {
+  display: inline-block;
+  background-color: #ff0011; /* Cor de fundo azul */
+  color: white; /* Cor do texto */
+  padding: 10px 20px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho da fonte */
+  text-align: center; /* Centralizar o texto */
+  text-decoration: none; /* Remover sublinhado */
+  border-radius: 5px; /* Bordas arredondadas */
+  border: none; /* Remover borda */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adicionar sombra */
+  transition: background-color 0.3s, transform 0.2s; /* Transições suaves para hover */
+  cursor: pointer; /* Alterar o cursor ao passar o mouse */
+}
+
+/* Efeito de hover para o botão VOLTAR */
+.btn-voltar:hover {
+  background-color: #b30000; /* Cor mais escura no hover */
+  transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+
+/* Ajustes para mobile (opcional) */
+@media (max-width: 768px) {
+  .btn-voltar {
+      font-size: 14px; /* Diminuir o tamanho da fonte */
+      padding: 8px 15px; /* Ajustar o espaçamento interno */
+  }
+}
+
+.bem-vindo-nome {
+  margin: 0 10px; /* Espaçamento entre os elementos */
+  font-size: 16px; /* Tamanho da fonte */
+  font-weight: bold; /* Negrito para destaque */
+  color: #333; /* Cor do texto */
+  text-transform: capitalize; /* Primeira letra maiúscula */
+  font-family: Arial, sans-serif; /* Fonte padrão */
+  display: inline-block; /* Mantém na mesma linha que os outros elementos */
+  vertical-align: middle; /* Alinha verticalmente com os outros elementos */
+  text-align: center; /* Centraliza o texto dentro do elemento */
+}

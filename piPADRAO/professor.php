@@ -85,10 +85,10 @@ try {
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
-      <a href="#">
+      <a href="home.php">
         <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
       </a>
-      <a href="#">
+      <a href="home.php">
         <img class="logo-cps" src="img/logo-cps.png" alt="">
       </a>
     </div>
@@ -98,9 +98,9 @@ try {
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="">
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        <?php echo htmlspecialchars($_SESSION['nome']); ?>
+        <p>Prof. <br><?php echo htmlspecialchars($_SESSION['nome']); ?></p>
       </span>
-      <a class="btn" href="home.php">
+      <a class="btn-voltar" href="home.php">
         <btn>VOLTAR</btn>
       </a>
     </div>

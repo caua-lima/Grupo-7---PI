@@ -120,7 +120,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $data_fim_periodo = $_POST['data_fim_periodo'] ?? null;
   $motivo_falta_categoria = $_POST['motivo_falta_categoria'] ?? null;
   $motivo_falta = $_POST['motivo_falta'] ?? null;
-  $situacao = $_POST['situacao'] ?? 'Aguardando Reposição';
+  if ($idform_faltas) {
+    // Modo de Edição: Atualiza a situação para "Proposta Enviada"
+    $situacao = 'Proposta Enviada';
+  } else {
+    // Modo de Criação: Mantém a situação como "Aguardando Reposição"
+    $situacao = 'Aguardando Reposição';
+  }
   $cursosSelecionados = $_POST['cursos_por_data'] ?? []; // Captura os cursos selecionados como um array
 
   // Verificação se os campos obrigatórios foram preenchidos
@@ -176,18 +182,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
 
       if ($idform_faltas) {
-        // Atualizar um formulário existente
+        // Edição: Atualizar o formulário existente
+        $situacao = 'Proposta Enviada'; // Definindo a situação como "Proposta Enviada" na edição
+
         $stmt = $conn->prepare("
-          UPDATE formulario_faltas
-          SET datainicio = ?, datafim = ?, pdf_atestado = ?, motivo_falta = ?, situacao = ?
-          WHERE idform_faltas = ? AND idfuncionario = ?
+            UPDATE formulario_faltas
+            SET datainicio = ?, datafim = ?, pdf_atestado = ?, motivo_falta = ?, situacao = ?
+            WHERE idform_faltas = ? AND idfuncionario = ?
         ");
         $stmt->execute([
           $data_unica ?? $data_inicio_periodo,
           $data_unica ?? $data_fim_periodo,
           $nomeArquivo,
           $motivo_falta,
-          $situacao,
+          $situacao, // Passando a situação "Proposta Enviada"
           $idform_faltas,
           $idfuncionario
         ]);
@@ -201,9 +209,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $id_formulario = $idform_faltas; // Reutiliza o ID do formulário existente
       } else {
-        // Inserir novo formulário
+        // Criação: Inserir um novo formulário
+        $situacao = 'Aguardando Reposição'; // Definindo a situação como "Aguardando Reposição" na criação
+
         $stmt = $conn->prepare("INSERT INTO formulario_faltas (idfuncionario, datainicio, datafim, pdf_atestado, motivo_falta, situacao) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$idfuncionario, $data_unica ?? $data_inicio_periodo, $data_unica ?? $data_fim_periodo, $nomeArquivo, $motivo_falta, $situacao]);
+        $stmt->execute([$idfuncionario, $data_unica ?? $data_inicio_periodo, $data_unica ?? $data_fim_periodo, $nomeArquivo, $motivo_falta, $situacao]); // Usando a situação "Aguardando Reposição"
         // Obtém o ID do formulário gerado
         $id_formulario = $conn->lastInsertId();
       }
@@ -258,10 +268,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
-      <a href="#">
+      <a href="home.php">
         <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="Logo FATEC Itapira">
       </a>
-      <a href="#">
+      <a href="home.php">
         <img class="logo-cps" src="img/logo-cps.png" alt="Logo CPS">
       </a>
     </div>
@@ -271,11 +281,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="Logo Padrão">
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        <?php echo htmlspecialchars($_SESSION['nome']); ?>
+        <p>Prof. <br><?php echo htmlspecialchars($_SESSION['nome']); ?></p>
       </span>
-      <a class="btn" href="home.php">
-        <button type="button">VOLTAR</button>
+      <a class="btn-voltar" href="home.php">
+        <btn>VOLTAR</btn>
       </a>
+
     </div>
   </div>
 
@@ -523,13 +534,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           target="_blank"><?php echo htmlspecialchars($formulario['pdf_atestado']); ?></a></p>
       <?php endif; ?>
       <ul id="fileList"></ul>
-    </div>
 
-    <?php if ($idform_faltas): ?>
-    <input type="hidden" name="idform_faltas" value="<?php echo htmlspecialchars($idform_faltas); ?>">
-    <?php endif; ?>
 
-    <div class="form-footer">
+      <?php if ($idform_faltas): ?>
+      <input type="hidden" name="idform_faltas" value="<?php echo htmlspecialchars($idform_faltas); ?>">
+      <?php endif; ?>
+
+
       <button class="btn-enviar"
         type="submit"><?php echo ($idform_faltas) ? 'Atualizar Formulário' : 'Enviar Formulário'; ?></button>
     </div>
@@ -769,7 +780,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     disciplinaList.id = `disciplinas_${data}_${cursoId}`;
 
     const disciplinaLabel = document.createElement('p');
-    disciplinaLabel.textContent = `Disciplinas para o curso ${cursoId} (Data: ${data}):`;
+    disciplinaLabel.textContent = `Disciplinas da Data: ${data}:`;
     disciplinaList.appendChild(disciplinaLabel);
 
     const diaSemanaSelecionado = getDiaSemana(data); // Obter o dia da semana selecionado
@@ -806,8 +817,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     const numAulasDiv = document.createElement('div');
     numAulasDiv.id = `num_aulas_${data}_${cursoId}`;
 
-    const numAulasLabel = document.createElement('label');
-    numAulasLabel.textContent = `Número de Aulas para o curso ${cursoId} (Data: ${data}): `;
+    const numAulasLabel = document.createElement('p');
+    numAulasLabel.textContent = `Nº de Aulas: `;
     numAulasDiv.appendChild(numAulasLabel);
 
     const numAulasInput = document.createElement('input');

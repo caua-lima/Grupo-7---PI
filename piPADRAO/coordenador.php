@@ -32,7 +32,14 @@ try {
   $stmtFormularios->execute();
   $formularios = $stmtFormularios->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+
   echo "Erro ao buscar dados: " . $e->getMessage();
+}
+// Função para formatar datas no formato "09 de novembro"
+function formatarData($data)
+{
+  setlocale(LC_TIME, 'pt_BR.utf8');
+  return strftime('%d de %B', strtotime($data));
 }
 ?>
 
@@ -54,7 +61,7 @@ try {
       <a href="#">
         <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
       </a>
-      <a href="#">
+      <a href="home_coordenador.php">
         <img class="logo-cps" src="img/logo-cps.png" alt="">
       </a>
     </div>
@@ -68,9 +75,10 @@ try {
         <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
 
       </span>
-      <a class="btn" href="home_coordenador.php">
+      <a class="btn-voltar" href="home_coordenador.php">
         <btn>VOLTAR</btn>
       </a>
+
     </div>
   </div>
   <?php if (!empty($errorMessage)): ?>
@@ -86,7 +94,7 @@ try {
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $formulario['nome_professor']); ?></h2>
           <p>Disciplinas: <?php echo htmlspecialchars($formulario['disciplinas']); ?></p>
-          <p>Datas de Reposição: <?php echo htmlspecialchars($formulario['datas_reposicao']); ?></p>
+          <p>Datas de Reposição: <?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></p>
           <p>Horários: <?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></p>
         </div>
         <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">

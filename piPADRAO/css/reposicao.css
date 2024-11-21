@@ -38,10 +38,13 @@ html, body {
     width: 100%;
     padding: 8px;
     margin: 5px 0 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+      border: 1px solid #FF0000; /* Borda vermelha */
+border-radius: 5px;
     box-sizing: border-box;
     text-align: center; /* Centraliza o texto */
+    color: #080808; /* Texto vermelho */
+    background-color: #fff; /* Fundo branco */
+
   }
   
   label {
@@ -78,7 +81,10 @@ html, body {
   
   th {
     background-color: #ddd;
-    font-size: 14px;
+    
+    background-color: #FF0000; /* Cabeçalho vermelho */
+    color: #fff; /* Texto branco */
+  font-size: 14px;
     font-weight: bold;
   }
   .turno {
@@ -174,7 +180,7 @@ html, body {
   }
   
   .btn-enviar {
-    background-color: #007bff;
+    background-color: #ff0000;
     color: #fff;
     padding: 12px 24px;
     border-radius: 5px;
@@ -187,22 +193,7 @@ html, body {
   }
   
   .btn-enviar:hover {
-    background-color: #0056b3;
-  }
-  
-  .menu a {
-    display: inline-block;
-    margin: 0 10px;
-    color: #333;
-    font-weight: bold;
-    text-decoration: none;
-  }
-  
-  .menu a:hover {
-    background-color: #555;
-    color: #fff;
-    padding: 5px;
-    border-radius: 5px;
+    background-color: #b30000;
   }
   
   /* Custom styles for courses and tables alignment */
@@ -412,7 +403,7 @@ html, body {
 }
 
 .footer-section ul li a:hover {
-  color: #007bff; /* Cor do link no hover */
+  color: #ff0008; /* Cor do link no hover */
 }
 
 .footer-bottom {
@@ -434,3 +425,150 @@ html, body {
   background-color: black;
 }
 /* Fim Rodapé */
+
+/* Estilo exclusivo para o botão VOLTAR */
+.btn-voltar {
+  display: inline-block;
+  background-color: #ff0011; /* Cor de fundo azul */
+  color: white; /* Cor do texto */
+  padding: 10px 20px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho da fonte */
+  text-align: center; /* Centralizar o texto */
+  text-decoration: none; /* Remover sublinhado */
+  border-radius: 5px; /* Bordas arredondadas */
+  border: none; /* Remover borda */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adicionar sombra */
+  transition: background-color 0.3s, transform 0.2s; /* Transições suaves para hover */
+  cursor: pointer; /* Alterar o cursor ao passar o mouse */
+}
+
+/* Efeito de hover para o botão VOLTAR */
+.btn-voltar:hover {
+  background-color: #b30000; /* Cor mais escura no hover */
+  transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+
+/* Ajustes para mobile (opcional) */
+@media (max-width: 768px) {
+  .btn-voltar {
+      font-size: 14px; /* Diminuir o tamanho da fonte */
+      padding: 8px 15px; /* Ajustar o espaçamento interno */
+  }
+}
+
+.bem-vindo-nome {
+  margin: 0 10px; /* Espaçamento entre os elementos */
+  font-size: 16px; /* Tamanho da fonte */
+  font-weight: bold; /* Negrito para destaque */
+  color: #333; /* Cor do texto */
+  text-transform: capitalize; /* Primeira letra maiúscula */
+  font-family: Arial, sans-serif; /* Fonte padrão */
+  display: inline-block; /* Mantém na mesma linha que os outros elementos */
+  vertical-align: middle; /* Alinha verticalmente com os outros elementos */
+}
+/* Estilo para inputs com hover e foco */
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="time"],
+input[type="month"],
+input[type="file"] {
+  border: 1px solid #FF0000; /* Borda padrão vermelha */
+  border-radius: 5px;
+  background-color: #fff; /* Fundo branco */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:hover,
+input[type="date"]:hover,
+input[type="number"]:hover,
+input[type="time"]:hover,
+input[type="month"]:hover,
+input[type="file"]:hover,
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+input[type="time"]:focus,
+input[type="month"]:focus,
+input[type="file"]:focus {
+  border-color: #b30000; /* Borda vermelha escura no hover e foco */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho sutil */
+  outline: none; /* Remove o outline padrão */
+}
+
+/* Estilo para radio buttons */
+input[type="radio"] {
+  accent-color: #FF0000; /* Vermelho como cor principal */
+  cursor: pointer; /* Cursor pointer para indicar clicável */
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+input[type="radio"]:hover {
+  transform: scale(1.2); /* Leve aumento no hover */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho sutil */
+}
+
+input[type="radio"]:focus {
+  outline: none; /* Remove outline padrão */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho */
+}
+
+/* Hover para botões */
+.btn-enviar {
+  background-color: #FF0000; /* Vermelho padrão */
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-enviar:hover {
+  background-color: #b30000; /* Vermelho mais escuro no hover */
+  transform: scale(1.05); /* Leve aumento no hover */
+  box-shadow: 0 4px 6px rgba(255, 0, 0, 0.5); /* Sombra no hover */
+}
+
+/* Hover para a tabela */
+th {
+  background-color: #FF0000; /* Vermelho padrão */
+  color: #fff; /* Texto branco */
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+th:hover {
+  background-color: #b30000; /* Vermelho mais escuro no hover */
+  transform: scale(1.05); /* Leve aumento no hover */
+}
+
+td:hover {
+  background-color: rgba(255, 0, 0, 0.1); /* Fundo vermelho claro no hover */
+  transition: background-color 0.3s ease;
+}
+
+/* Hover para o footer */
+.footer {
+  background-color: #000; /* Preto */
+  color: #FF0000; /* Texto vermelho */
+  text-align: center;
+  padding: 15px 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer:hover {
+  background-color: #333; /* Cinza escuro no hover */
+  color: #fff; /* Texto branco no hover */
+}
+
+/* Hover para fieldsets */
+fieldset {
+  border: 1px solid #FF0000; /* Borda vermelha padrão */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+fieldset:hover {
+  border-color: #b30000; /* Borda vermelha escura no hover */
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.5); /* Sombra no hover */
+}

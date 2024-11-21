@@ -176,3 +176,90 @@ header {
     background-color: #AE0C0D;
     color: white;
 }
+/* Estilo do menu e botões */
+.menu {
+  display: flex;
+  justify-content: center; /* Centraliza os botões */
+  align-items: center;
+  gap: 20px; /* Espaçamento entre os botões */
+}
+
+.menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Espaçamento uniforme entre os botões */
+}
+
+.menu-link {
+  text-decoration: none;
+  color: #333;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: 2px solid transparent; /* Borda transparente inicialmente */
+  font-weight: 600;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+/* Hover no link do menu */
+.menu-link:hover {
+  background-color: #AE0C0D; /* Cor de fundo vermelha */
+  color: white; /* Cor do texto branco */
+  border-color: #AE0C0D; /* Borda vermelha visível ao passar o mouse */
+  transform: scale(1.05); /* Aumento suave do botão */
+}
+
+/* Foco no link do menu (quando o botão for focado) */
+.menu-link:focus {
+  border-color: #AE0C0D; /* Borda vermelha ao focar o botão */
+  outline: none; /* Remove o outline padrão do foco */
+}
+
+/* Borda visível para o estado normal dos botões */
+.menu-link {
+  border-color: #ddd; /* Cor da borda normal (cinza claro) */
+}
+
+/* Estilo do menu e botões */
+.menu {
+    display: flex;
+    justify-content: center; /* Centraliza os botões */
+    align-items: center;
+    gap: 20px; /* Espaçamento entre os botões */
+  }
+  
+  .menu-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Espaçamento uniforme entre os botões */
+  }
+  
+  .menu-link {
+    text-decoration: none;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 3px solid #AE0C0D; /* Borda vermelha de 3px */
+    font-weight: 600;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, transform 0.2s;
+  }
+  
+  /* Hover no link do menu */
+  .menu-link:hover {
+    background-color: #AE0C0D; /* Cor de fundo vermelha */
+    color: white; /* Cor do texto branco */
+    border-color: #b02929; /* Borda vermelha mais escura ao passar o mouse */
+    transform: scale(1.05); /* Aumento suave do botão */
+  }
+  
+  /* Foco no link do menu (quando o botão for focado) */
+  .menu-link:focus {
+    border-color: #b02929; /* Borda vermelha mais escura ao focar o botão */
+    outline: none; /* Remove o outline padrão do foco */
+  }
+  

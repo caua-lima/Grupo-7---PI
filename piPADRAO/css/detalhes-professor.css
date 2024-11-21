@@ -82,7 +82,7 @@ h1 {
   font-size: 24px;
   color: #34495e;
   margin-bottom: 15px;
-  border-left: 4px solid #3498db;
+  border-left: 4px solid #db3434;
   padding-left: 10px;
   font-weight: 600;
 }
@@ -140,7 +140,7 @@ h1 {
 }
 
 .styled-table thead tr {
-  background-color: #2980b9;
+  background-color: #b92929;
   color: #ffffff;
   font-weight: 500;
 }
@@ -213,18 +213,47 @@ h1 {
   display: inline-block;
 
   margin: 10px;
-  background-color: #3498db;
+  background-color: #db3434;
   color: #ffffff;
   border: none;
-  border-radius: 25px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 13px;
+
   text-align: center;
   transition: all 0.3s ease;
 }
+/* Botões maiores com ajuste para conteúdo */
+.btn,
+.btn-voltar {
+/* Espaçamento interno maior */
+  font-size: 18px; /* Tamanho da fonte maior */
+  border-radius: 8px; /* Bordas arredondadas */
+  min-width: 150px; /* Largura mínima para evitar que o botão fique pequeno */
+  white-space: nowrap; /* Impede quebra de texto */
+  display: inline-block; /* Garante que o botão não "estique" */
+  text-align: center; /* Centraliza o texto */
+  transition: transform 0.2s, background-color 0.3s; /* Transições suaves */
+}
+
+/* Hover nos botões */
+.btn:hover,
+.btn-voltar:hover {
+  background-color: #990000; /* Cor mais escura no hover */
+  transform: scale(1.1); /* Leve aumento no hover */
+}
+
+/* Ajuste para botões em telas menores */
+@media (max-width: 768px) {
+  .btn,
+  .btn-voltar {
+    padding: 12px 20px; /* Reduz o padding para dispositivos menores */
+    font-size: 16px; /* Fonte um pouco menor */
+    min-width: 120px; /* Ajusta a largura mínima */
+  }
+}
 
 .btn:hover {
-  background-color: #2980b9;
+  background-color: #b92929;
   transform: translateY(-2px);
 }
 
@@ -358,3 +387,47 @@ h1 {
   to { opacity: 1; }
 }
 
+.bem-vindo-nome {
+  margin: 0 10px; /* Espaçamento entre os elementos */
+  font-size: 16px; /* Tamanho da fonte */
+  font-weight: bold; /* Negrito para destaque */
+  color: #333; /* Cor do texto */
+  text-transform: capitalize; /* Primeira letra maiúscula */
+  font-family: Arial, sans-serif; /* Fonte padrão */
+  display: inline-block; /* Mantém na mesma linha que os outros elementos */
+  vertical-align: middle; /* Alinha verticalmente com os outros elementos */
+  text-align: center; /* Centraliza o texto dentro do elemento */
+}
+
+/* Botão de Voltar */
+.btn-voltar {
+  display: inline-block;
+  background-color: #ff0011; /* Cor de fundo vermelho */
+  color: white; /* Cor do texto */
+  padding: 10px 20px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho da fonte */
+  text-align: center; /* Centralizar o texto */
+  text-decoration: none; /* Remover sublinhado */
+  border-radius: 5px; /* Bordas arredondadas */
+  border: none; /* Remover borda */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adicionar sombra */
+  transition: background-color 0.3s, transform 0.2s; /* Transições suaves para hover */
+  cursor: pointer; /* Alterar o cursor ao passar o mouse */
+}
+
+.btn-voltar:hover {
+  background-color: #b30000; /* Cor mais escura no hover */
+  transform: scale(1.05); /* Leve aumento ao passar o mouse */
+}
+/* Hover em linhas das tabelas */
+.styled-table tbody tr:hover {
+  background-color: #f9e6e6; /* Fundo com tom mais claro */
+  cursor: pointer; /* Indica que a linha é interativa */
+}
+
+/* Hover em células das tabelas */
+.styled-table tbody tr td:hover {
+  background-color: #fcdede; /* Fundo mais escuro para destaque */
+  color: #b30000; /* Texto com tom vermelho */
+  transition: background-color 0.3s, color 0.3s; /* Transição suave */
+}

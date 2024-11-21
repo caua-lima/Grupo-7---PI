@@ -74,56 +74,68 @@ try {
 } catch (PDOException $e) {
   echo "Erro ao buscar dados: " . $e->getMessage();
 }
+// Função para formatar datas no formato "09 de novembro"
+function formatarData($data)
+{
+  setlocale(LC_TIME, 'pt_BR.utf8');
+  return strftime('%d de %B', strtotime($data));
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
+  <!-- Meta tags -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Coordenação</title>
+  <!-- CSS externo -->
   <link rel="stylesheet" href="./css/historico-coordenador.css">
+  <!-- Font Awesome para os ícones -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
 </head>
 
 <body>
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
-      <a href="#">
+      <a href="home_coordenador.php">
         <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
       </a>
-      <a href="#">
+      <a href="home_coordenador.php">
         <img class="logo-cps" src="img/logo-cps.png" alt="">
       </a>
     </div>
     <div class="second-column-sc">
-      <h2 class="title"> Historico </h2>
+      <h2 class="title"> Histórico </h2>
     </div>
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="">
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
         <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
-
       </span>
-      <a class="btn" href="home_coordenador.php">
+      <a class="btn-voltar" href="home_coordenador.php">
         <btn>VOLTAR</btn>
       </a>
+
     </div>
   </div>
+
   <?php if (!empty($errorMessage)): ?>
   <div class="error-message">
     <?php echo htmlspecialchars($errorMessage); ?>
   </div>
   <?php endif; ?>
+
   <div class="container">
 
     <!-- Botão para abrir o modal de filtro -->
     <button onclick="document.getElementById('filterModal').style.display='block'" class="btn-filtro">Filtrar</button>
 
     <!-- Modal de Filtro -->
-    <div id="filterModal" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="document.getElementById('filterModal').style.display='none'">&times;</span>
+    <div id="filterModal" class="filter-modal">
+      <div class="filter-modal-content">
+        <span class="filter-close" onclick="document.getElementById('filterModal').style.display='none'">&times;</span>
         <h2>Filtrar Formulários</h2>
         <form method="GET" action="">
           <label for="nome_professor">Nome do Professor:</label>
@@ -167,7 +179,7 @@ try {
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $formulario['nome_professor']); ?></h2>
           <p>Disciplinas: <?php echo htmlspecialchars($formulario['disciplinas']); ?></p>
-          <p>Datas de Reposição: <?php echo htmlspecialchars($formulario['datas_reposicao']); ?></p>
+          <p>Datas de Reposição: <?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></p>
           <p>Horários: <?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></p>
         </div>
         <div class="status <?php echo strtolower($formulario['situacao']); ?>">
@@ -178,27 +190,59 @@ try {
           <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($formulario['motivo_indeferimento']); ?>
         </div>
         <?php endif; ?>
-        <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
-          Detalhes</button>
+        <div class="buttons-container">
+          <!-- Ícone de PDF -->
+          <button class="pdf-btn" onclick="generatePDF('<?php echo $formulario['idform_reposicao']; ?>')">
+            <i class="fas fa-file-pdf"></i>
+          </button>
+          <!-- Botão "Ver Detalhes" -->
+          <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
+            Detalhes</button>
+        </div>
       </li>
       <?php endforeach; ?>
     </ul>
   </div>
 
+  <!-- Modal para exibir o PDF -->
+  <div id="pdfModal" class="pdf-modal">
+    <div class="pdf-modal-content">
+      <span class="pdf-close" onclick="closePDFModal()">&times;</span>
+      <iframe id="pdfIframe" src="" width="100%" height="100%" frameborder="0"></iframe>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script>
   // Função para redirecionar aos detalhes
   function redirectToDetails(formId) {
     window.location.href = 'detalhes-professor.php?idform_reposicao=' + encodeURIComponent(formId);
   }
 
+  // Função para gerar o PDF e exibir no modal
+  function generatePDF(formId) {
+    document.getElementById('pdfIframe').src = 'gerar_pdf.php?idform_reposicao=' + encodeURIComponent(formId);
+    document.getElementById('pdfModal').style.display = 'block';
+  }
+
+  // Função para fechar o modal do PDF
+  function closePDFModal() {
+    document.getElementById('pdfModal').style.display = 'none';
+    document.getElementById('pdfIframe').src = '';
+  }
+
   // Fechar o modal ao clicar fora do conteúdo
   window.onclick = function(event) {
-    const modal = document.getElementById('filterModal');
-    if (event.target == modal) {
-      modal.style.display = "none";
+    const filterModal = document.getElementById('filterModal');
+    const pdfModal = document.getElementById('pdfModal');
+    if (event.target == filterModal) {
+      filterModal.style.display = "none";
+    } else if (event.target == pdfModal) {
+      closePDFModal();
     }
   };
   </script>
+
   <footer>
     <div class="containerf">
       <a href="#">
