@@ -36,7 +36,7 @@ try {
         JOIN funcionarios func ON fr.idfuncionario = func.idfuncionario
         JOIN formulario_faltas f ON fr.idform_faltas = f.idform_faltas
         LEFT JOIN aulas_reposicao ar ON fr.idform_reposicao = ar.idform_reposicao
-        WHERE fr.situacao IN ('deferido', 'indeferido') 
+        WHERE fr.situacao IN ('deferido', 'indeferido', 'Proposta Enviada') 
           AND fr.idfuncionario = ?";
 
   $params = [$idfuncionario];

@@ -17,7 +17,7 @@ $idfuncionario = $_SESSION['idfuncionario'];
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Padrao - Professor</title>
+  <title>Padrao - Coordenador</title>
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" type="image/png" href="./img/favicon-32x32.png">
 
@@ -86,7 +86,7 @@ $idfuncionario = $_SESSION['idfuncionario'];
       <!-- Adicionado nome do funcionário -->
       <?php if (isset($_SESSION['nome'])): ?>
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        Bem-vindo(a)</br>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?>
+        Bem-vindo(a)</br>Coord. <?php echo htmlspecialchars($_SESSION['nome']); ?>
       </span>
       <?php endif; ?>
 
