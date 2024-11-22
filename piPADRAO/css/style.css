@@ -306,3 +306,104 @@ header{
     height: 95px;
 }
 /* Fim Rodapé */
+/* Estilo para a notificação */
+.notificacao {
+    position: absolute;
+    top: -40px; /* Posiciona o balão acima do item "ANÁLISAR SOLICITAÇÕES" */
+    left: 50%; /* Centraliza horizontalmente em relação ao item */
+    transform: translateX(-50%); /* Ajusta para centralizar perfeitamente */
+    background-color: #f8d7da; /* Cor de fundo vermelha */
+    color: #721c24; /* Cor do texto */
+    border: 1px solid #f5c6cb; /* Borda suave */
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000; /* Garante que o balão fique acima de outros elementos */
+}
+
+/* Triângulo para o balão */
+.notificacao::after {
+    content: "";
+    position: absolute;
+    top: 100%; /* Coloca o triângulo abaixo da caixa */
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 10px solid #f8d7da; /* Cor do triângulo */
+}
+
+/* Garantindo que o quadrado "ANÁLISAR SOLICITAÇÕES" tenha posição relativa */
+.first-column {
+    position: relative; /* Necessário para que o balão seja posicionado em relação a esse item */
+    padding-top: 30px; /* Dê um pequeno padding no topo para garantir que o balão não fique cortado */
+}
+
+/* Garantindo que o conteúdo da página tenha uma ordem correta de camadas (z-index) */
+.container-geral {
+    position: relative;
+    z-index: 1;
+}
+
+/* Garantir que o quadrado "ANÁLISAR SOLICITAÇÕES" não seja obscurecido */
+.first-column {
+    z-index: 2;
+}
+
+/* Contêiner para a coluna (link) */
+.link-column {
+    position: relative;  /* Permite que os elementos internos usem o posicionamento absoluto */
+  }
+  
+  /* Notificação de pendentes */
+  .notificacao-pendentes {
+    background-color: #f8d7da;  /* Cor de fundo suave (vermelho claro) */
+    color: #721c24;  /* Texto em vermelho escuro */
+    padding: 8px;  /* Menor padding */
+    border-radius: 5px;
+    position: absolute;
+    top: -15px;  /* Menos distância do topo */
+    right: 20px;  /* Mais à direita */
+    z-index: 10;  /* Garante que a notificação fique em cima de outros elementos */
+    font-size: 14px;  /* Fonte do texto */
+    font-weight: bold;
+    width: 200px;  /* Largura menor para a notificação */
+    text-align: center;  /* Texto centralizado */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombrinha para efeito de flutuação */
+  }
+  
+  /* Notificação de indeferidos */
+  .notificacao-indeferidos {
+    background-color: #fff3cd;  /* Cor de fundo suave (amarelo claro) */
+    color: #856404;  /* Texto em amarelo escuro */
+    padding: 8px;  /* Menor padding */
+    border-radius: 5px;
+    position: absolute;
+    top: -15px;  /* Menos distância do topo */
+    right: 20px;  /* Mais à direita */
+    z-index: 10;  /* Garante que a notificação fique em cima de outros elementos */
+    font-size: 14px;  /* Fonte do texto */
+    font-weight: bold;
+    width: 200px;  /* Largura menor para a notificação */
+    text-align: center;  /* Texto centralizado */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombrinha para efeito de flutuação */
+  }
+  
+  /* Notificação de pendentes e indeferidos com pequenas setas para parecer balão */
+  .notificacao-pendentes::before, .notificacao-indeferidos::before {
+    content: "";
+    position: absolute;
+    border-width: 8px;
+    border-style: solid;
+    top: 100%;  /* Coloca a seta abaixo da notificação */
+    left: 50%;  /* Centraliza a seta */
+    margin-left: -8px;  /* Ajusta a posição da seta */
+    border-color: transparent transparent #f8d7da transparent;  /* Cor da seta (para 'pendentes') */
+  }
+  
+  /* Para o indeferido, muda a cor da seta */
+  .notificacao-indeferidos::before {
+    border-color: transparent transparent #fff3cd transparent;  /* Cor da seta (para 'indeferidos') */
+  }
+  

@@ -599,3 +599,59 @@ input, select, textarea {
         width: 100%;
     }
 }
+/* Container geral para as mensagens */
+.faltas-container {
+    background-color: #f8f9fa;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: 20px auto;
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Estilo básico para as mensagens */
+.message {
+    font-size: 20px; /* Tamanho base dos textos */
+    color: #333; /* Preto suavizado */
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+/* Destaque para o título principal */
+.message-highlight {
+    font-size: 28px; /* Maior que os demais */
+    color: #222; /* Um pouco mais escuro */
+    margin-bottom: 20px;
+}
+
+/* Estilo dos links */
+.link {
+    color: #d9534f; /* Vermelho */
+    text-decoration: underline;
+    font-size: 20px; /* Mesmo tamanho do texto */
+    font-weight: bold;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Hover com efeito de expansão */
+.link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 0;
+    height: 2px;
+    background-color: #d9534f;
+    transition: width 0.3s ease;
+}
+
+.link:hover::after {
+    width: 100%; /* Expansão completa ao hover */
+}
+
+.link:hover {
+    color: #c9302c; /* Vermelho mais escuro ao passar o mouse */
+}

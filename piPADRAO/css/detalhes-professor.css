@@ -103,24 +103,70 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .info-table td {
-  padding: 8px 10px;
-  border: 1px solid #ddd;
-  font-size: 14px;
+  padding: 12px 14px; /* Espaçamento interno maior */
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 1.2rem; /* Aumenta o tamanho da fonte */
+  font-family: 'Arial', sans-serif; /* Escolha de fonte simples e limpa */
+  color: #222; /* Contraste mais forte */
+  text-align: left;
+  line-height: 1.6; /* Maior espaçamento entre linhas para facilitar leitura */
 }
 
 .info-table td:first-child {
   width: 40%;
   font-weight: bold;
-  background-color: #f9f9f9;
+  background-color: #f4f4f4;
+  color: #333; /* Contraste mais forte com fundo */
+  border-right: 1px solid #dcdcdc; /* Divisão clara entre colunas */
 }
 
 .info-table td:last-child {
   width: 60%;
+  color: #444; /* Texto ligeiramente mais escuro */
 }
 
+.info-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Estilo alternado para linhas */
+.info-table tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.info-table tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+.info-table tr:hover {
+  background-color: #eaeaea; /* Destaque mais forte ao passar o mouse */
+}
+
+/* Títulos e cabeçalhos */
+.info-table th {
+  padding: 14px 16px;
+  background-color: #4CAF50; /* Cor de destaque */
+  color: white;
+  text-align: left;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+/* Ajustes para telas menores */
+@media screen and (max-width: 768px) {
+  .info-table td {
+    font-size: 1rem;
+    padding: 10px;
+  }
+}
 /* Estilo do PDF */
 .pdf-container {
   margin-top: 20px;
@@ -137,6 +183,7 @@ h1 {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
+  
 }
 
 .styled-table thead tr {
@@ -430,4 +477,45 @@ h1 {
   background-color: #fcdede; /* Fundo mais escuro para destaque */
   color: #b30000; /* Texto com tom vermelho */
   transition: background-color 0.3s, color 0.3s; /* Transição suave */
+}
+
+.status.proposta-enviada {
+  background-color: #007bff; /* Cor azul */
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.motivo-indeferimento {
+  font-size: 1.2rem;
+  color: #dc3545;
+  margin-top: 10px;
+  border-left: 4px solid #dc3545;
+  padding-left: 10px;
+}
+
+/* Ações e Status */
+.status {
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 3px;
+  display: inline-block;
+  text-align: center;
+}
+
+.status.deferido {
+  background-color: #28a745;
+  color: white;
+  text-align: center;
+}
+
+.status.indeferido {
+  background-color: #dc3545;
+  color: white;
+  text-align: center;
+font-size: 1rem;
 }

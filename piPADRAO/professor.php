@@ -70,6 +70,26 @@ try {
   echo "Erro ao buscar dados: " . htmlspecialchars($e->getMessage());
 }
 
+function formatarData($data)
+{
+  $meses = [
+    'January' => 'Janeiro',
+    'February' => 'Fevereiro',
+    'March' => 'Março',
+    'April' => 'Abril',
+    'May' => 'Maio',
+    'June' => 'Junho',
+    'July' => 'Julho',
+    'August' => 'Agosto',
+    'September' => 'Setembro',
+    'October' => 'Outubro',
+    'November' => 'Novembro',
+    'December' => 'Dezembro'
+  ];
+
+  $dataFormatada = date('d / F', strtotime($data));
+  return strtr($dataFormatada, $meses);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -152,34 +172,54 @@ try {
         </form>
       </div>
     </div>
-
     <!-- Lista de Registros -->
     <ul class="teacher-list">
       <?php if (count($faltas) > 0): ?>
       <?php foreach ($faltas as $falta): ?>
       <li class="teacher">
         <div class="teacher-info">
-          <h2>Prof. <?php echo htmlspecialchars($falta['nome_professor']); ?></h2>
-          <p><strong>Disciplinas:</strong> <?php echo htmlspecialchars($falta['disciplinas']); ?></p>
-          <p><strong>Datas de Reposição:</strong> <?php echo htmlspecialchars($falta['datas_reposicao']); ?></p>
-          <p><strong>Horários:</strong> <?php echo htmlspecialchars($falta['horarios_reposicao']); ?></p>
-          <?php if (strtolower($falta['situacao']) === 'indeferido'): ?>
-          <div class="motivo-indeferimento">
-            <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($falta['motivo_indeferimento']); ?>
+          <h2><?php echo htmlspecialchars("Prof. " . $falta['nome_professor']); ?></h2>
+          <div class="teacher-row">
+            <span class="label">Disciplinas:</span>
+            <span class="value"><?php echo htmlspecialchars($falta['disciplinas']); ?></span>
           </div>
-          <?php endif; ?>
+          <div class="teacher-row">
+            <span class="label">Datas de Reposição:</span>
+            <span class="value"><?php echo htmlspecialchars(formatarData($falta['datas_reposicao'])); ?></span>
+          </div>
+          <div class="teacher-row">
+            <span class="label">Horários:</span>
+            <span class="value"><?php echo htmlspecialchars($falta['horarios_reposicao']); ?></span>
+          </div>
         </div>
+
         <div class="teacher-actions">
-          <div class="status <?php echo strtolower($falta['situacao']); ?>">
+          <div class="status <?php echo strtolower(str_replace(' ', '-', $falta['situacao'])); ?>">
             <?php echo ucfirst(htmlspecialchars($falta['situacao'])); ?>
           </div>
+
           <?php if (strtolower($falta['situacao']) === 'indeferido'): ?>
-          <button class="btn-editar" onclick="editarFalta(<?php echo $falta['idform_faltas']; ?>)">Editar Falta</button>
-          <button class="btn-editar-reposicao"
-            onclick="editarReposicao(<?php echo $falta['idform_reposicao']; ?>)">Editar Reposição</button>
+          <div class="motivo-indeferimento">
+            <strong>Motivo do Indeferimento:</strong>
+            <br><?php echo htmlspecialchars($falta['motivo_indeferimento']); ?>
+          </div>
+          <div class="action-buttons">
+            <button class="btn-editar" onclick="editarFalta(<?php echo $falta['idform_faltas']; ?>)">Editar
+              Falta</button>
+            <button class="btn-editar-reposicao"
+              onclick="editarReposicao(<?php echo $falta['idform_reposicao']; ?>)">Editar Reposição</button>
+          </div>
           <?php else: ?>
           <button class="btn-desativado" disabled>Não Editável</button>
           <?php endif; ?>
+        </div>
+
+        <div class="buttons-container">
+          <button class="pdf-btn" onclick="generatePDF('<?php echo $falta['idform_reposicao']; ?>')">
+            <i class="fas fa-file-pdf"></i>
+          </button>
+          <button class="details-btn" onclick="redirectToDetails('<?php echo $falta['idform_reposicao']; ?>')">Ver
+            Detalhes</button>
         </div>
       </li>
       <?php endforeach; ?>
@@ -187,9 +227,45 @@ try {
       <li class="no-data">Nenhuma falta registrada.</li>
       <?php endif; ?>
     </ul>
+    <!-- Modal para exibir o PDF -->
+    <div id="pdfModal" class="pdf-modal">
+      <div class="pdf-modal-content">
+        <span class="pdf-close" onclick="closePDFModal()">&times;</span>
+        <iframe id="pdfIframe" src="" width="100%" height="100%" frameborder="0"></iframe>
+      </div>
+    </div>
   </div>
 
+  <!-- Scripts -->
   <script>
+  function redirectToDetails(formId) {
+    window.location.href = 'detalhes-historico.php?idform_reposicao=' + encodeURIComponent(formId);
+  }
+
+  // Função para gerar o PDF e exibir no modal
+  function generatePDF(formId) {
+    document.getElementById('pdfIframe').src = 'gerar_pdf.php?idform_reposicao=' + encodeURIComponent(formId);
+    document.getElementById('pdfModal').style.display = 'block';
+  }
+
+
+  // Função para fechar o modal do PDF
+  function closePDFModal() {
+    document.getElementById('pdfModal').style.display = 'none';
+    document.getElementById('pdfIframe').src = '';
+  }
+
+  // Fechar o modal ao clicar fora do conteúdo
+  window.onclick = function(event) {
+    const filterModal = document.getElementById('filterModal');
+    const pdfModal = document.getElementById('pdfModal');
+    if (event.target == filterModal) {
+      filterModal.style.display = "none";
+    } else if (event.target == pdfModal) {
+      closePDFModal();
+    }
+  };
+
   function abrirModal() {
     document.getElementById('filterModal').style.display = 'block';
   }

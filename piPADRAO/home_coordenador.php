@@ -9,6 +9,19 @@ if (!isset($_SESSION['idfuncionario'])) {
 }
 
 $idfuncionario = $_SESSION['idfuncionario'];
+
+try {
+  // Consulta para buscar formulários com a situação "Proposta Enviada"
+  $stmtFormulariosPendentes = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM formulario_reposicao fr
+        WHERE fr.situacao = 'Proposta Enviada'
+    ");
+  $stmtFormulariosPendentes->execute();
+  $pendentes = $stmtFormulariosPendentes->fetchColumn();
+} catch (PDOException $e) {
+  echo "Erro ao buscar dados: " . $e->getMessage();
+}
 ?>
 
 <!DOCTYPE html>
@@ -96,10 +109,17 @@ $idfuncionario = $_SESSION['idfuncionario'];
     </div>
   </div>
 
+
   <div class="container-geral">
     <div class="content">
+
       <a class="link-column" href="coordenador.php">
         <div class="first-column">
+          <?php if ($pendentes > 0): ?>
+          <div class="notificacao">
+            <p>Você tem <strong><?php echo $pendentes; ?> formulário(s)</strong> para análise!</p>
+          </div>
+          <?php endif; ?>
           <ul class="list-window">
             <li class="item-window"><i class="fa-solid fa-magnifying-glass"></i></li>
             <li class="desc-window">
@@ -124,6 +144,7 @@ $idfuncionario = $_SESSION['idfuncionario'];
     </div>
   </div>
 
+
   <footer>
     <div class="containerf">
       <a href="">
@@ -132,3 +153,5 @@ $idfuncionario = $_SESSION['idfuncionario'];
     </div>
   </footer>
 </body>
+
+</html>

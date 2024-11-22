@@ -1,5 +1,5 @@
 <?php
-include 'auth.php';
+include 'auth.php'; // Arquivo de autenticação e início da sessão
 
 // Obtém o ID do funcionário logado da sessão
 if (!isset($_SESSION['idfuncionario'])) {
@@ -9,8 +9,36 @@ if (!isset($_SESSION['idfuncionario'])) {
 }
 
 $idfuncionario = $_SESSION['idfuncionario'];
-?>
 
+// Incluir o arquivo de conexão com o banco de dados
+include 'conexao.php'; // Este arquivo deve definir a variável $conn
+
+// Variáveis para armazenar o número de formulários pendentes e indeferidos
+$pendentes = 0;
+$indeferidos = 0;
+
+try {
+  // Consulta para buscar formulários pendentes para o funcionário logado
+  $stmtFormulariosPendentes = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM formulario_faltas 
+        WHERE situacao = 'Aguardando Reposição' AND idfuncionario = ?
+    ");
+  $stmtFormulariosPendentes->execute([$idfuncionario]);
+  $pendentes = $stmtFormulariosPendentes->fetchColumn();
+
+  // Consulta para buscar formulários indeferidos para o funcionário logado
+  $stmtIndeferido = $conn->prepare("
+        SELECT COUNT(*) 
+        FROM formulario_reposicao 
+        WHERE situacao = 'indeferido' AND idfuncionario = ?
+    ");
+  $stmtIndeferido->execute([$idfuncionario]);
+  $indeferidos = $stmtIndeferido->fetchColumn();
+} catch (PDOException $e) {
+  echo "Erro ao buscar dados: " . $e->getMessage();
+}
+?>
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -27,7 +55,7 @@ $idfuncionario = $_SESSION['idfuncionario'];
 
 <body>
   <header>
-    <!-- Inicio Cabeçalho -->
+    <!-- Início Cabeçalho -->
     <div class="containerh">
       <div class="first-columh">
         <a class="link-sp" href="#">
@@ -98,6 +126,7 @@ $idfuncionario = $_SESSION['idfuncionario'];
 
   </div>
 
+  <!-- Exibição da notificação se houver formulários pendentes -->
   <div class="container-geral">
     <div class="content">
       <a class="link-column" href="faltas.php">
@@ -115,6 +144,12 @@ $idfuncionario = $_SESSION['idfuncionario'];
       </a>
       <a class="link-column" href="verReposicao.php">
         <div class="second-column">
+          <!-- Exibição da notificação se houver formulários pendentes -->
+          <?php if ($pendentes > 0): ?>
+          <div class="notificacao-pendentes">
+            <p>Você tem <strong><?php echo $pendentes; ?> reposição(ões)</strong> para marcar!</p>
+          </div>
+          <?php endif; ?>
           <ul class="list-window">
             <li class="item-window"><i class="fa-regular fa-calendar-days"></i></li>
             <li class="desc-window">
@@ -126,8 +161,15 @@ $idfuncionario = $_SESSION['idfuncionario'];
           </ul>
         </div>
       </a>
+
       <a class="link-column" href="professor.php">
         <div class="third-column">
+          <!-- Exibição da notificação para formulários indeferidos -->
+          <?php if ($indeferidos > 0): ?>
+          <div class="notificacao-indeferidos">
+            <p>Você tem <strong><?php echo $indeferidos; ?> reposição(ões)</strong> indeferido(s)!</p>
+          </div>
+          <?php endif; ?>
           <ul class="list-window">
             <li class="item-window"><i class="fa-regular fa-clock"></i></li>
             <li class="desc-window">
@@ -147,3 +189,5 @@ $idfuncionario = $_SESSION['idfuncionario'];
     </div>
   </footer>
 </body>
+
+</html>

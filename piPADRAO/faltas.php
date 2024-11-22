@@ -301,25 +301,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <legend>Informações Pessoais</legend>
       <div class="input-row">
         <label for="nome">Nome:</label>
-        <input type="text" class="nome" name="nome" value="<?php echo htmlspecialchars($funcionario['nome']); ?>"
-          readonly required>
-      </div>
-      <div class="input-row">
+        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="nome" name="nome"
+          value="<?php echo htmlspecialchars($funcionario['nome']); ?>" readonly required>
+
         <label for="matricula">Matrícula:</label>
-        <input type="text" class="matricula" name="matricula"
-          value="<?php echo htmlspecialchars($funcionario['matricula']); ?>" readonly required>
+        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="matricula"
+          name="matricula" value="<?php echo htmlspecialchars($funcionario['matricula']); ?>" readonly required>
         <label for="funcao">Função:</label>
-        <input type="text" class="funcao" name="funcao" value="<?php echo htmlspecialchars($funcionario['funcao']); ?>"
-          readonly required>
+        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="funcao"
+          name="funcao" value="<?php echo htmlspecialchars($funcionario['funcao']); ?>" readonly required>
         <label for="regime">Regime Jurídico:</label>
-        <input type="text" class="regime" name="regime"
-          value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
+        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="regime"
+          name="regime" value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
       </div>
     </fieldset>
 
     <fieldset class="faltas">
-      <legend>Falta Referente</legend>
-
+      <legend class="legenda">Falta Referente</legend>
+      <p>Selecione a Data ou o Periodo da falta: </p>
       <div class="radio-group">
         <label>
           <input type="radio" name="tipo_falta" value="unica" id="radio_unica"
@@ -349,10 +348,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           value="<?php echo htmlspecialchars($formulario['datafim'] ?? ($_POST['data_fim_periodo'] ?? '')); ?>"
           readonly>
       </div>
+      <!-- Container para Seleções Dinâmicas -->
+      <div id="selecoes-container"></div>
     </fieldset>
-
-    <!-- Container para Seleções Dinâmicas -->
-    <div id="selecoes-container"></div>
 
     <fieldset class="motivo-falta">
       <legend>Motivo da Falta</legend>

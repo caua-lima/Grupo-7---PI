@@ -35,12 +35,27 @@ try {
 
   echo "Erro ao buscar dados: " . $e->getMessage();
 }
-// Função para formatar datas no formato "09 de novembro"
 function formatarData($data)
 {
-  setlocale(LC_TIME, 'pt_BR.utf8');
-  return strftime('%d de %B', strtotime($data));
+  $meses = [
+    'January' => 'Janeiro',
+    'February' => 'Fevereiro',
+    'March' => 'Março',
+    'April' => 'Abril',
+    'May' => 'Maio',
+    'June' => 'Junho',
+    'July' => 'Julho',
+    'August' => 'Agosto',
+    'September' => 'Setembro',
+    'October' => 'Outubro',
+    'November' => 'Novembro',
+    'December' => 'Dezembro'
+  ];
+
+  $dataFormatada = date('d / F', strtotime($data));
+  return strtr($dataFormatada, $meses);
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -66,8 +81,8 @@ function formatarData($data)
       </a>
     </div>
     <div class="second-column-sc">
-      <h2 class="title"> Lista de Formulários de Reposição </h2><br>
-      <h2 class="title"> Deferir / Indiferir </h2>
+      <h2 class="title">Lista de Formulários de Reposição</h2>
+      <h2 class="title">Deferir / Indiferir</h2>
     </div>
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="">
@@ -93,9 +108,18 @@ function formatarData($data)
       <li class="teacher">
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $formulario['nome_professor']); ?></h2>
-          <p>Disciplinas: <?php echo htmlspecialchars($formulario['disciplinas']); ?></p>
-          <p>Datas de Reposição: <?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></p>
-          <p>Horários: <?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></p>
+          <div class="teacher-row">
+            <span class="label">Disciplinas:</span>
+            <span class="value"><?php echo htmlspecialchars($formulario['disciplinas']); ?></span>
+          </div>
+          <div class="teacher-row">
+            <span class="label">Datas de Reposição:</span>
+            <span class="value"><?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></span>
+          </div>
+          <div class="teacher-row">
+            <span class="label">Horários:</span>
+            <span class="value"><?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></span>
+          </div>
         </div>
         <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
           <?php echo htmlspecialchars($formulario['situacao']); ?>

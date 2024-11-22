@@ -113,11 +113,25 @@ try {
   exit;
 }
 
-// Função para formatar datas
 function formatarData($data)
 {
-  setlocale(LC_TIME, 'pt_BR.utf8');
-  return strftime('%d de %B de %Y', strtotime($data));
+  $meses = [
+    'January' => 'janeiro',
+    'February' => 'fevereiro',
+    'March' => 'março',
+    'April' => 'abril',
+    'May' => 'maio',
+    'June' => 'junho',
+    'July' => 'julho',
+    'August' => 'agosto',
+    'September' => 'setembro',
+    'October' => 'outubro',
+    'November' => 'novembro',
+    'December' => 'dezembro'
+  ];
+
+  $dataFormatada = date('d de F de Y', strtotime($data));
+  return strtr($dataFormatada, $meses);
 }
 
 // Cria um novo documento PDF com orientação paisagem

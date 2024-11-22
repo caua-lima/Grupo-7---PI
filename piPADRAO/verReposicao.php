@@ -109,11 +109,6 @@ try {
   echo "Erro ao buscar formulários: " . $e->getMessage();
 }
 ?>
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -267,8 +262,14 @@ try {
         </div>
         <?php endforeach; ?>
         <?php else: ?>
-        <p>Nenhum formulário encontrado.</p>
+        <div class="faltas-container">
+          <h2 class="message message-highlight">Nenhum formulário de Falta encontrado.</h2>
+          <h3 class="message">Crie um novo <a href="faltas.php" class="link">Formulário</a></h3>
+          <h3 class="message">ou</h3>
+          <h3 class="message">Acesse o <a href="professor.php" class="link">Histórico</a> para mais informações.</h3>
+        </div>
         <?php endif; ?>
+
       </div>
 
       <!-- Formulário de Adição (Modal) -->

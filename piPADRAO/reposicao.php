@@ -325,10 +325,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $successMessage = "Formulário de reposição salvo com sucesso!";
     header("Location: home.php?msg=Formulário salvo com sucesso!");
     exit;
-    // Redireciona para a página de histórico com mensagem de sucesso (opcional)
-    // header("Location: home.php?msg=Formulário de reposição salvo com sucesso!");
-    // exit;
-
   } catch (PDOException $e) {
     // Desfaz a transação em caso de erro
     $conn->rollBack();

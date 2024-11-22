@@ -1,6 +1,6 @@
 <?php
 include 'conexao.php';
-include 'header_coordenador.html';
+include 'header.html';
 include 'auth.php';
 
 // Verifica se o funcionário está logado
@@ -185,7 +185,7 @@ function formatarData($data)
     <div class="third-column-sc">
       <img class="logo-padrao" src="img/logo-padrao.png" alt="">
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
+        <p>Prof. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
 
       </span>
       <!-- Botão Voltar -->
@@ -202,25 +202,14 @@ function formatarData($data)
   <?php endif; ?>
   <!-- Botões de Ação -->
   <div class="action-buttons">
-    <button class="btn" onclick="updateStatus('deferido')">Deferir</button>
-    <button class="btn" onclick="showIndeferForm()">Indeferir</button>
-    <!-- Botão para abrir o modal -->
     <button class="btn" onclick="showModal()">Gerar PDF</button>
-
-
-
   </div>
-
-
 
   <!-- Formulário de Indeferimento -->
   <form id="reasonForm" style="display: none;" class="section">
     <label for="reason">Motivo da Indeferência:</label><br>
     <textarea id="reason" name="reason" rows="4" cols="50"></textarea><br>
     <button class="btn" type="button" onclick="updateStatus('indeferido')">Enviar</button>
-    <!-- Botão para gerar PDF -->
-
-
   </form>
   </div>
   <div class="container">
