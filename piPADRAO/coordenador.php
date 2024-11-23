@@ -108,25 +108,38 @@ function formatarData($data)
       <li class="teacher">
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $formulario['nome_professor']); ?></h2>
-          <div class="teacher-row">
-            <span class="label">Disciplinas:</span>
-            <span class="value"><?php echo htmlspecialchars($formulario['disciplinas']); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Datas de Reposição:</span>
-            <span class="value"><?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Horários:</span>
-            <span class="value"><?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></span>
+          <table>
+            <thead>
+              <tr>
+                <th>Informação</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Disciplinas:</td>
+                <td><?php echo htmlspecialchars($formulario['disciplinas']); ?></td>
+              </tr>
+              <tr>
+                <td>Datas de Reposição:</td>
+                <td><?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></td>
+              </tr>
+              <tr>
+                <td>Horários:</td>
+                <td><?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="teacher-actions">
+          <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
+            <?php echo htmlspecialchars($formulario['situacao']); ?>
           </div>
         </div>
-        <div class="status <?php echo strtolower(str_replace(' ', '-', $formulario['situacao'])); ?>">
-          <?php echo htmlspecialchars($formulario['situacao']); ?>
+        <div class="buttons-container">
+          <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
+            detalhes</button>
         </div>
-
-        <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
-          detalhes</button>
       </li>
       <?php endforeach; ?>
     </ul>

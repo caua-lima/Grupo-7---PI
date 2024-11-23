@@ -116,7 +116,7 @@ try {
       <!-- Adicionado nome do funcionário -->
       <?php if (isset($_SESSION['nome'])): ?>
       <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
-        Bem-vindo(a) Prof. <?php echo htmlspecialchars($_SESSION['nome']); ?>
+        Bem-vindo(a) <br> Prof. <?php echo htmlspecialchars($_SESSION['nome']); ?>
       </span>
       <?php endif; ?>
       <a class="btn-sair" href="logout.php">

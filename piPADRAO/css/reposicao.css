@@ -31,277 +31,274 @@ body {
   margin: 0;
   padding: 0;
 }
+
 html, body {
   margin: 0;
   padding: 0;
-  
   height: 100%;
 }
 
-
-  h1 {
-    text-align: center;
-    font-size: 28px;
-    color: #333;
-  }
-  
-  form {
-    margin: 0 auto; 
-    background-color: #fff;
-    padding: 30px;
-    width: 100%;
-    margin: auto;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  input[type="text"],
-  input[type="date"],
-  input[type="number"],
-  input[type="time"],
-  input[type="month"],
-  input[type="file"] {
-    width: 100%;
-    padding: 8px;
-    margin: 5px 0 15px;
-      border: 1px solid #FF0000; /* Borda vermelha */
-border-radius: 5px;
-    box-sizing: border-box;
-    text-align: center; /* Centraliza o texto */
-    color: #080808; /* Texto vermelho */
-    background-color: #fff; /* Fundo branco */
-
-  }
-  
-  label {
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
-    display: block;
-    text-align: center; /* Centraliza as labels */
-  }
-  
-  .table-wrapper {
-    overflow-x: auto;
-    margin-top: 20px;
-  }
-  
-  table {
-    width: auto; /* Ajusta conforme o conteúdo */
-    border-collapse: collapse;
-    margin: auto; /* Centraliza as tabelas */
-    margin-bottom: 20px;
-  }
-  .form-footer {
-    margin-top: 20px; /* Ajuste o valor conforme necessário */
+h1 {
+  text-align: center;
+  font-size: 28px;
+  color: #333;
 }
 
+form {
+  margin: 0 auto; 
+  background-color: #fff;
+  padding: 30px;
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
-  
-  th, td {
-    border: 1px solid #333;
-    padding: 6px; /* Espessura menor */
-    text-align: center;
-    white-space: nowrap; /* Evita quebra de texto */
-  }
-  
-  th {
-    background-color: #ddd;
-    
-    background-color: #FF0000; /* Cabeçalho vermelho */
-    color: #fff; /* Texto branco */
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="time"],
+input[type="month"],
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 15px;
+  border: 1px solid #AE0C0D; /* Substituído de #FF0000 */
+  border-radius: 5px;
+  box-sizing: border-box;
+  text-align: center; /* Centraliza o texto */
+  color: #080808; /* Mantido conforme especificado */
+  background-color: #fff; /* Fundo branco */
+}
+
+label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5px;
+  display: block;
+  text-align: center; /* Centraliza as labels */
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+table {
+  width: auto; /* Ajusta conforme o conteúdo */
+  border-collapse: collapse;
+  margin: auto; /* Centraliza as tabelas */
+  margin-bottom: 20px;
+}
+
+.form-footer {
+  margin-top: 20px; /* Ajuste o valor conforme necessário */
+}
+
+th, td {
+  border: 1px solid #333;
+  padding: 6px; /* Espessura menor */
+  text-align: center;
+  white-space: nowrap; /* Evita quebra de texto */
+}
+
+th {
+  background-color: #AE0C0D; /* Substituído de #FF0000 */
+  color: #fff; /* Texto branco */
   font-size: 14px;
-    font-weight: bold;
-  }
-  .turno {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-  }
-  
-  .turno label {
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 0;
-  }
-  legend {
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
-    text-align: center;
-  }
-  
-  ul {
-    list-style: none;
-    padding: 0;
-  }
-  
-  ul li {
-    display: inline-block;
-    padding: 5px;
-    margin-right: 5px;
-  }
-  
-  
-  
-  .checkbox-group label {
-    display: inline-block;
-    margin-right: 15px;
-  }
-  
-  .form-group-inline {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    align-items: center;
-    margin-bottom: 15px;
-    padding: 10px;
-  }
-  
-  .form-group-inline .form-field {
-    flex: 1;
-  }
-  
-  fieldset {
-   
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    border: 1px solid #e4dfdf;
-  }
-  
-  fieldset legend {
-    font-weight: bold;
-    padding: 0 10px;
-    text-align: center;
-  }
-  
-  .footer {
-    background-color: #333;
-    color: #fff;
-    padding: 15px 0;
-    text-align: center;
-    margin-top: 30px;
-    border-radius: 5px;
-  }
-  
-  .footer p {
-    margin: 0;
-    font-size: 14px;
-  }
-  
-  input[type="checkbox"] {
-    margin-right: 10px;
-  }
-  
-  input[type="number"] {
-    width: 60px;
-    text-align: center;
-  }
-  
-  .signature {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 20px;
-  }
-  
-  .btn-enviar {
-    background-color: #ff0000;
-    color: #fff;
-    padding: 12px 24px;
-    border-radius: 5px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: block;
-    margin: auto;
-    text-align: center;
-  }
-  
-  .btn-enviar:hover {
-    background-color: #b30000;
-  }
-  
-  /* Custom styles for courses and tables alignment */
-  .cursos-envolvidos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    align-items: center;
-    justify-content: center; /* Centraliza os inputs */
-  }
-  
-  .cursos-envolvidos input[type="text"] {
-    border: none;
-    background-color: #f4f4f4;
-    padding: 5px;
-    margin-right: 5px;
-    display: inline-block;
-    width: auto;
-  }
-  
-  .tables-side-by-side {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
- 
-  .tables-side-by-side .form-group {
-    
-    flex: 1;
-    min-width: 45%; /* Permite ajuste automático */
-    max-width: 48%; /* Ajusta para ocupar melhor o espaço */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    padding: 10px;
-    border-radius: 5px;
-  }
-  .form-group:hover {
-    border: 1.5px solid;
-    border-color:#e74c3c; /* Borda vermelha escura no hover */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
-  }
-  .form-group-inline:hover{
-    border: 1.5px solid;
-    border-color: #e74c3c; /* Borda vermelha escura no hover */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
-  }
-  @media (max-width: 768px) {
-    .tables-side-by-side {
-      flex-direction: column; /* Empilha as tabelas verticalmente em telas menores */
-    }
-  
-    .tables-side-by-side .form-group {
-      min-width: 100%; /* Garante que as tabelas ocupem toda a largura da tela */
-      max-width: 100%;
-    }
-  }
-  
-  input[type="time"] {
-    width: 80px; /* Reduz o tamanho do campo de horário */
-  }
-  
-  .styled-table th,
-  .styled-table td {
-    text-align: center;
-  }
-  
-  .styled-table {
-    border-collapse: collapse;
-    width: 80%; /* Ajuste conforme necessário */
-    margin: auto; /* Garantia adicional de centralização */
-    border: 1px solid #ddd; /* Exemplo de borda */
+  font-weight: bold;
 }
-  
-  /* Title styling */
-  .title {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
 
+.turno {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.turno label {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 0;
+}
+
+legend {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+ul li {
+  display: inline-block;
+  padding: 5px;
+  margin-right: 5px;
+}
+
+.checkbox-group label {
+  display: inline-block;
+  margin-right: 15px;
+}
+
+.form-group-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+}
+
+.form-group-inline .form-field {
+  flex: 1;
+}
+
+fieldset {
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #e4dfdf;
+}
+
+fieldset legend {
+  font-weight: bold;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.footer {
+  background-color: #333;
+  color: #AE0C0D; /* Substituído de #FF0000 */
+  padding: 15px 0;
+  text-align: center;
+  margin-top: 30px;
+  border-radius: 5px;
+}
+
+.footer p {
+  margin: 0;
+  font-size: 14px;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+input[type="number"] {
+  width: 60px;
+  text-align: center;
+}
+
+.signature {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.btn-enviar {
+  background-color: #AE0C0D; /* Substituído de #ff0000 */
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  margin: auto;
+  text-align: center;
+}
+
+.btn-enviar:hover {
+  background-color: #b30000; /* Mantido conforme hover */
+}
+
+.cursos-envolvidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: center; /* Centraliza os inputs */
+}
+
+.cursos-envolvidos input[type="text"] {
+  border: none;
+  background-color: #f4f4f4;
+  padding: 5px;
+  margin-right: 5px;
+  display: inline-block;
+  width: auto;
+}
+
+.tables-side-by-side {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.tables-side-by-side .form-group {
+  flex: 1;
+  min-width: 45%; /* Permite ajuste automático */
+  max-width: 48%; /* Ajusta para ocupar melhor o espaço */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.form-group:hover {
+  border: 1.5px solid;
+  border-color: #AE0C0D; /* Substituído de #e74c3c */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
+}
+
+.form-group-inline:hover {
+  border: 1.5px solid;
+  border-color: #AE0C0D; /* Substituído de #e74c3c */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
+}
+
+@media (max-width: 768px) {
+  .tables-side-by-side {
+    flex-direction: column; /* Empilha as tabelas verticalmente em telas menores */
+  }
+
+  .tables-side-by-side .form-group {
+    min-width: 100%; /* Garante que as tabelas ocupem toda a largura da tela */
+    max-width: 100%;
+  }
+
+  .btn-voltar {
+      font-size: 14px; /* Diminuir o tamanho da fonte */
+      padding: 8px 15px; /* Ajustar o espaçamento interno */
+  }
+}
+
+input[type="time"] {
+  width: 80px; /* Reduz o tamanho do campo de horário */
+}
+
+.styled-table th,
+.styled-table td {
+  text-align: center;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  width: 80%; /* Ajuste conforme necessário */
+  margin: auto; /* Garantia adicional de centralização */
+  border: 1px solid #ddd; /* Exemplo de borda */
+}
+
+/* Title styling */
+.title {
+  text-align: center;
+  margin-bottom: 20px;
+}
 
 /* Título mais simples */
 .title h1 {
@@ -313,22 +310,24 @@ border-radius: 5px;
     text-shadow: none;
     -webkit-background-clip: initial;
     -webkit-text-fill-color: initial;
-  }
-
-  .title h1:hover {
-    text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
-    transition: text-shadow 0.3s ease-in-out;
-  }
-  .centralizado {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  *, *::before, *::after {
-    box-sizing: border-box;
 }
+
+.title h1:hover {
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+.centralizado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 @media print {
   /* Aplica uma margem consistente ao conteúdo */
   #form-reposicao {
@@ -397,6 +396,7 @@ border-radius: 5px;
 .reposicao {
   background-color: #ffcccb;
 }
+
 /* Estilos do footer */
 .footer {
   background-color: #f0f0f0;
@@ -442,7 +442,7 @@ border-radius: 5px;
 }
 
 .footer-section ul li a:hover {
-  color: #ff0008; /* Cor do link no hover */
+  color: #AE0C0D; /* Substituído de #ff0008 */
 }
 
 .footer-bottom {
@@ -454,6 +454,7 @@ border-radius: 5px;
   margin: 0;
   font-size: 12px;
 }
+
 /* Rodapé */
 .containerf{
   display: flex;
@@ -468,7 +469,7 @@ border-radius: 5px;
 /* Estilo exclusivo para o botão VOLTAR */
 .btn-voltar {
   display: inline-block;
-  background-color: #ff0011; /* Cor de fundo azul */
+  background-color: #AE0C0D; /* Substituído de #ff0011 */
   color: white; /* Cor do texto */
   padding: 10px 20px; /* Espaçamento interno */
   font-size: 16px; /* Tamanho da fonte */
@@ -505,6 +506,7 @@ border-radius: 5px;
   display: inline-block; /* Mantém na mesma linha que os outros elementos */
   vertical-align: middle; /* Alinha verticalmente com os outros elementos */
 }
+
 /* Estilo para inputs com hover e foco */
 input[type="text"],
 input[type="date"],
@@ -512,7 +514,7 @@ input[type="number"],
 input[type="time"],
 input[type="month"],
 input[type="file"] {
-  border: 1px solid #FF0000; /* Borda padrão vermelha */
+  border: 1px solid #AE0C0D; /* Substituído de #FF0000 */
   border-radius: 5px;
   background-color: #fff; /* Fundo branco */
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
@@ -530,14 +532,14 @@ input[type="number"]:focus,
 input[type="time"]:focus,
 input[type="month"]:focus,
 input[type="file"]:focus {
-  border-color: #b30000; /* Borda vermelha escura no hover e foco */
-  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho sutil */
+  border-color: #AE0C0D; /* Substituído de #b30000 */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Mantido conforme especificado */
   outline: none; /* Remove o outline padrão */
 }
 
 /* Estilo para radio buttons */
 input[type="radio"] {
-  accent-color: #FF0000; /* Vermelho como cor principal */
+  accent-color: #AE0C0D; /* Substituído de #FF0000 */
   cursor: pointer; /* Cursor pointer para indicar clicável */
   transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
@@ -554,7 +556,7 @@ input[type="radio"]:focus {
 
 /* Hover para botões */
 .btn-enviar {
-  background-color: #FF0000; /* Vermelho padrão */
+  background-color: #AE0C0D; /* Substituído de #FF0000 */
   color: #fff;
   padding: 12px 24px;
   border-radius: 5px;
@@ -564,46 +566,44 @@ input[type="radio"]:focus {
 }
 
 .btn-enviar:hover {
-  background-color: #b30000; /* Vermelho mais escuro no hover */
+  background-color: #b30000; /* Mantido conforme hover */
   transform: scale(1.05); /* Leve aumento no hover */
   box-shadow: 0 4px 6px rgba(255, 0, 0, 0.5); /* Sombra no hover */
 }
 
 /* Hover para a tabela */
 th {
-  background-color: #FF0000; /* Vermelho padrão */
+  background-color: #AE0C0D; /* Substituído de #FF0000 */
   color: #fff; /* Texto branco */
   font-weight: bold;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 th:hover {
-  background-color: #b30000; /* Vermelho mais escuro no hover */
+  background-color: #b30000; /* Mantido conforme hover */
   transform: scale(1.05); /* Leve aumento no hover */
 }
 
 td:hover {
-  background-color: rgba(255, 0, 0, 0.1); /* Fundo vermelho claro no hover */
+  background-color: rgba(255, 0, 0, 0.1); /* Mantido conforme especificado */
   transition: background-color 0.3s ease;
 }
 
 /* Hover para o footer */
 .footer {
-  background-color: #000; /* Preto */
-  color: #FF0000; /* Texto vermelho */
+  background-color: #000; /* Mantido conforme especificado */
+  color: #AE0C0D; /* Substituído de #FF0000 */
   text-align: center;
   padding: 15px 0;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .footer:hover {
-  background-color: #333; /* Cinza escuro no hover */
+  background-color: #333; /* Mantido conforme hover */
   color: #fff; /* Texto branco no hover */
 }
 
-
-
 fieldset:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra ao passar o mouse */
-  border-color: var(--primary-color); /* Mudança de cor da borda no hover */
+  border-color: #AE0C0D; /* Substituído de var(--primary-color) para #AE0C0D */
 }

@@ -20,26 +20,27 @@ body {
 /* Título */
 h1 {
   text-align: center;
-  font-size: 2rem;
-  color: #ff0000;
+  font-size: 2rem; /* Mantido */
+  color: #AE0C0D; /* Substituído de #ff0000 */
   margin-bottom: 20px;
 }
 
+/* Botão de Filtro */
 .btn-filtro {
   display: block;
   margin: 0 auto 20px;
-  background-color: #ff0000;
+  background-color: #AE0C0D; /* Substituído de #ff0000 */
   color: white;
   border: none;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 16px; /* Mantido */
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 
 .btn-filtro:hover {
-  background-color: #b30000;
+  background-color: #b30000; /* Mantido conforme hover */
 }
 
 /* Modal */
@@ -98,7 +99,7 @@ h1 {
 .modal-content .btn-limpar {
   display: inline-block;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 16px; /* Mantido */
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -115,13 +116,13 @@ h1 {
 }
 
 .modal-content .btn-limpar {
-  background-color: #dc3545;
+  background-color: #AE0C0D; /* Substituído de #dc3545 */
   color: white;
   margin-left: 15px;
 }
 
 .modal-content .btn-limpar:hover {
-  background-color: #c82333;
+  background-color: #c82333; /* Mantido conforme hover */
 }
 
 /* Lista de Registros */
@@ -135,7 +136,7 @@ h1 {
   justify-content: space-between;
   align-items: center;
   background-color: white;
-  border: 1px solid #ddd;
+  border: 1px solid #ddd; /* Linhas finas */
   border-radius: 8px;
   margin-bottom: 20px;
   padding: 20px;
@@ -148,17 +149,23 @@ h1 {
 }
 
 .teacher-info {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  max-width: 60%;
+  display: table;
+  width: 100%; /* Diminui a largura da tabela */
+  max-width: 400px; /* Define um limite de largura */
+  border-collapse: collapse;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd; /* Linhas finas */
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 1.1em; /* Mantido quase igual */
+  line-height: 1.6em; /* Mantido */
 }
 
 .teacher-info h2 {
-  color: #ff0000;
+  color: #AE0C0D; /* Substituído de #ff0000 */
   margin: 15px 0;
   text-align: center;
-  font-size: 1.4em;
+  font-size: 1.4em; /* Mantido */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -178,24 +185,19 @@ h1 {
   align-items: center;
   flex-wrap: wrap;
   max-width: 30%;
+  
+  /* Garantir que o status fique acima dos botões */
+  flex-direction: column; /* Empilha os elementos verticalmente */
 }
 
-.motivo-indeferimento {
-  font-size: 1.2rem;
-  color: #dc3545;
-  margin-top: 10px;
-  border-left: 4px solid #dc3545;
-  padding-left: 10px;
-}
-
-/* Ações e Status */
 .status {
-  font-size: 1rem;
+  font-size: 1rem; /* Mantido */
   font-weight: bold;
   padding: 5px 10px;
   border-radius: 3px;
   display: inline-block;
   text-align: center;
+  order: -1; /* Garante que o status fique antes dos botões */
 }
 
 .status.deferido {
@@ -205,13 +207,32 @@ h1 {
 }
 
 .status.indeferido {
-  background-color: #dc3545;
+  background-color: #AE0C0D; 
   color: white;
   text-align: center;
-font-size: 1rem;
+  font-size: 1rem; /* Mantido */
 }
 
-/* Botões */
+.status.proposta-enviada {
+  background-color: #000; 
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+  display: inline-block;
+}
+
+/* Motivo de Indeferimento */
+.motivo-indeferimento {
+  font-size: 1.2rem; /* Mantido */
+  color: #AE0C0D; /* Substituído de #dc3545 */
+  margin-top: 10px;
+  border-left: 4px solid #AE0C0D; /* Substituído de #dc3545 */
+  padding-left: 10px;
+}
+
+/* Ações e Status */
 .details-btn,
 .pdf-btn,
 .btn-editar,
@@ -224,35 +245,42 @@ font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s;
   width: fit-content;
-  font-size: 16px;
+  font-size: 16px; /* Mantido */
 }
 
-
+/* Botões de Detalhes */
 .details-btn {
-  background-color: #ff0000;
+  background-color: #AE0C0D; /* Substituído de #ff0000 */
 }
 
 .details-btn:hover {
-  background-color: #b30000;
+  transform: scale(1.04);
+  background-color: #b30000; /* Mantido conforme hover */
 }
 
+/* Botões de Edição */
 .btn-editar,
 .btn-editar-reposicao {
-  background-color: #17a2b8;
-
+  background-color: #000; /* Alterado de #17a2b8 para preto */
 }
 
 .btn-editar:hover,
 .btn-editar-reposicao:hover {
-  background-color: #138496;
+  transform: scale(1.04);transform: scale(1.02);
+  background-color: #333; /* Alterado de #138496 para um tom mais claro de preto */
 }
-
+.pdf-btn:hover{
+  transform: scale(1.044);
+}
+/* Botão Desativado */
 .btn-desativado {
   background-color: #6c757d;
   color: white;
   cursor: not-allowed;
 }
-
+.status:hover{
+  transform: scale(1.044);
+}
 /* Botões personalizados */
 .buttons-container {
   display: flex;
@@ -263,7 +291,7 @@ font-size: 1rem;
   margin-top: 10px;
 }
 
-.buttons-container .pdf-btn {
+.buttons-container.buttons-container .pdf-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -271,18 +299,19 @@ font-size: 1rem;
 }
 
 .buttons-container .pdf-btn i {
-  color: #d9534f;
+  color: #AE0C0D; /* Alterado de #d9534f para mais vermelho */
   font-size: 3rem;
   text-align: center;
 }
 
 .buttons-container .details-btn {
-  background-color: #ff0000;
+  background-color: #AE0C0D; /* Substituído de #ff0000 */
   color: #fff;
   padding: 8px 12px;
   border-radius: 4px;
   cursor: pointer;
 }
+
 
 /* Modal do PDF */
 .pdf-modal {
@@ -326,10 +355,12 @@ font-size: 1rem;
   cursor: pointer;
 }
 
+/* Links no Rodapé */
 .footer-section ul li a:hover {
-  color: #ff0000;
+  color: #AE0C0D; /* Substituído de #ff0000 */
 }
 
+/* Rodapé */
 .footer-bottom {
   background-color: #000000;
   padding: 10px 0;
@@ -357,10 +388,10 @@ font-size: 1rem;
 /* Estilo exclusivo para o botão VOLTAR */
 .btn-voltar {
   display: inline-block;
-  background-color: #ff0011;
+  background-color: #AE0C0D; /* Substituído de #ff0011 */
   color: white;
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 16px; /* Mantido */
   text-align: center;
   text-decoration: none;
   border-radius: 5px;
@@ -371,91 +402,222 @@ font-size: 1rem;
 }
 
 .btn-voltar:hover {
-  background-color: #b30000;
+  background-color: #b30000; /* Mantido conforme hover */
   transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
   .btn-voltar {
-    font-size: 14px;
-    padding: 8px 15px;
+    font-size: 14px; /* Diminuir o tamanho da fonte */
+    padding: 8px 15px; /* Ajustar o espaçamento interno */
+  }
+  
+  .teacher-info {
+    flex: 1;
+  }
+  
+  .teacher-actions {
+    max-width: 100%;
+    margin-top: 10px;
+    flex-direction: column; /* Garante flex-direction para mobile */
   }
 }
 
+/* Bem-vindo Nome */
 .bem-vindo-nome {
   margin: 0 10px;
-  font-size: 16px;
+  font-size: 16px; /* Mantido */
   font-weight: bold;
-  color: #000;
+  color: #000; /* Mantido */
 }
 
+/* Estilos adicionais */
 .left-header {
   display: flex;
   justify-content: flex-start;
 }
 
+/* Estilo para inputs com hover e foco */
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="time"],
+input[type="month"],
+input[type="file"] {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 15px;
+  border: 1px solid #AE0C0D; /* Substituído de #FF0000 */
+  border-radius: 5px;
+  box-sizing: border-box;
+  text-align: center; /* Centraliza o texto */
+  color: #080808; /* Mantido */
+  background-color: #fff; /* Fundo branco */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:hover,
+input[type="date"]:hover,
+input[type="number"]:hover,
+input[type="time"]:hover,
+input[type="month"]:hover,
+input[type="file"]:hover,
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+input[type="time"]:focus,
+input[type="month"]:focus,
+input[type="file"]:focus {
+  border-color: #AE0C0D; /* Substituído de #b30000 */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Mantido */
+  outline: none; /* Remove o outline padrão */
+}
+
+/* Estilo para radio buttons */
+input[type="radio"] {
+  accent-color: #AE0C0D; /* Substituído de #FF0000 */
+  cursor: pointer; /* Cursor pointer para indicar clicável */
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+input[type="radio"]:hover {
+  transform: scale(1.2); /* Leve aumento no hover */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho sutil */
+}
+
+input[type="radio"]:focus {
+  outline: none; /* Remove outline padrão */
+  box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Brilho vermelho */
+}
+
+/* Hover para botões */
+.btn-enviar {
+  background-color: #AE0C0D; /* Substituído de #ff0000 */
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-enviar:hover {
+  background-color: #b30000; /* Mantido conforme hover */
+  transform: scale(1.05); /* Leve aumento no hover */
+  box-shadow: 0 4px 6px rgba(255, 0, 0, 0.5); /* Sombra no hover */
+}
+
+/* Hover para a tabela */
+table{
+  width: 97%;
+  
+}
+th {
+  background-color: #AE0C0D; /* Substituído de #FF0000 */
+  color: #fff; /* Texto branco */
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+th:hover {
+  background-color: #b30000; /* Mantido conforme hover */
+  transform: scale(1.05); /* Leve aumento no hover */
+}
+
+td:hover {
+  background-color: rgba(255, 0, 0, 0.1); /* Mantido conforme especificado */
+  transition: background-color 0.3s ease;
+}
+
+/* Hover para o footer */
+.footer {
+  background-color: #000; /* Mantido conforme especificado */
+  color: #AE0C0D; /* Substituído de #FF0000 */
+  text-align: center;
+  padding: 15px 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.footer:hover {
+  background-color: #333; /* Mantido conforme hover */
+  color: #fff; /* Texto branco no hover */
+}
+
+fieldset:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra ao passar o mouse */
+  border-color: #AE0C0D; /* Substituído de var(--primary-color) */
+}
+
+/* Responsividade para mobile */
 @media (max-width: 768px) {
+  .btn-voltar {
+    font-size: 14px; /* Diminuir o tamanho da fonte */
+    padding: 8px 15px; /* Ajustar o espaçamento interno */
+  }
+  
   .teacher-info {
     flex: 1;
   }
+  
   .teacher-actions {
     max-width: 100%;
     margin-top: 10px;
+    flex-direction: column; /* Garante flex-direction para mobile */
   }
 }
-.status.proposta-enviada {
-  background-color: #007bff; /* Cor azul */
-  color: white;
-  padding: 5px 10px;
-  border-radius: 4px;
-  text-align: center;
+
+/* Bem-vindo Nome */
+.bem-vindo-nome {
+  margin: 0 10px;
+  font-size: 16px; /* Mantido */
   font-weight: bold;
-  display: inline-block;
-}
-.teacher-info {
-  display: table;
-  width: 100%; /* Diminui a largura da tabela */
-  max-width: 400px; /* Define um limite de largura */
-  border-collapse: collapse;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  overflow: hidden;
-  font-size: 1.1em; /* Aumenta o tamanho do texto */
-  line-height: 1.6em; /* Melhora o espaçamento entre linhas */
+  color: #000; /* Mantido */
 }
 
-.teacher-row {
-  display: table-row;
-  transition: background-color 0.3s; /* Suaviza o hover */
+/* Estilos adicionais */
+.left-header {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Arquivo: faltas.css */
+
+/* Centraliza a tabela horizontalmente */
+table {
+  width: 97%;
+  margin: 0 auto; /* Centraliza horizontalmente */
+  border-collapse: collapse; /* Opcional: remove espaços entre bordas */
 }
 
-.teacher-row:nth-child(even) {
-  background-color: #f2f2f2;
-}
 
-.teacher-row:hover {
-  background-color: #e0e0e0; /* Aplica hover apenas nas linhas */
-}
 
-.label {
-  display: table-cell;
-  font-weight: bold;
-  padding: 10px 15px;
-  color: #333;
-  border-bottom: 1px solid #ddd;
-  width: 35%; /* Ajusta a largura da coluna de rótulos */
-}
+/* Responsividade: ajusta a tabela em telas menores */
+@media screen and (max-width: 600px) {
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+  
+  table {
+    width: 100%;
+    margin: 0 auto;
+  }
 
-.value {
-  display: table-cell;
-  padding: 10px 15px;
-  color: #555;
-  border-bottom: 1px solid #ddd;
-  width: 65%; /* Ajusta a largura da coluna de valores */
-}
+  table tr {
+    margin-bottom: 15px;
+  }
 
-.teacher-row:last-child .label,
-.teacher-row:last-child .value {
-  border-bottom: none;
+  table td {
+    text-align: right;
+    padding-left: 50%;
+    position: relative;
+  }
+
+  table td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 0;
+    width: 50%;
+    padding-left: 15px;
+    font-weight: bold;
+    text-align: left;
+  }
 }

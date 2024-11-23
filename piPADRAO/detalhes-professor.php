@@ -9,8 +9,6 @@ if (!isset($_SESSION['idfuncionario'])) {
   exit;
 }
 
-// $idfuncionario = $_SESSION['idfuncionario']; // Não usaremos este idfuncionario
-
 // Verifica se o ID da reposição foi fornecido
 if (!isset($_GET['idform_reposicao'])) {
   echo "Formulário de reposição não especificado.";
@@ -124,6 +122,7 @@ try {
   echo "Erro ao buscar dados: " . $e->getMessage();
   exit;
 }
+
 function formatarData($data)
 {
   $meses = [
@@ -144,7 +143,6 @@ function formatarData($data)
   $dataFormatada = date('d / F', strtotime($data));
   return strtr($dataFormatada, $meses);
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -155,97 +153,66 @@ function formatarData($data)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes da Reposição de Aulas</title>
   <link rel="stylesheet" href="./css/detalhes-professor.css">
-
 </head>
 
 <body>
   <!-- Modal -->
-  <div id="pdfModal">
+  <div id="pdfModal" class="modal">
     <div class="modal-content">
-      <span class="modal-close" onclick="closeModal()">&times;</span>
+      <span class="filter-close" onclick="closeModal()">&times;</span>
       <iframe src="gerar_pdf.php?idform_reposicao=<?php echo $idform_reposicao; ?>" width="100%" height="100%"
         frameborder="0"></iframe>
     </div>
   </div>
+
   <!-- Sub Cabeçalho -->
   <div class="container-sc">
     <div class="first-column-sc">
       <a href="#">
-        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="">
+        <img class="logo-ita" src="img/logo-fatec_itapira.png" alt="Logo FATEC Itapira">
       </a>
       <a href="#">
-        <img class="logo-cps" src="img/logo-cps.png" alt="">
+        <img class="logo-cps" src="img/logo-cps.png" alt="Logo CPS">
       </a>
     </div>
     <div class="second-column-sc">
-      <h2 class="title"> Detalhe do formularios: </h2><br>
-      <h2 class="title">Faltas e Reposicoes</h2><br>
-
+      <h2 class="title">Detalhe do Formulário</h2><br>
+      <h2 class="title">Faltas e Reposições</h2><br>
     </div>
     <div class="third-column-sc">
-      <img class="logo-padrao" src="img/logo-padrao.png" alt="">
-      <span class="bem-vindo-nome" style="margin: 0 10px; font-size: 16px; color: #333;">
+      <img class="logo-padrao" src="img/logo-padrao.png" alt="Logo Padrão">
+      <span class="bem-vindo-nome">
         <p>Cord. <?php echo htmlspecialchars($_SESSION['nome']); ?></p>
-
       </span>
       <!-- Botão Voltar -->
       <button class="btn-voltar" onclick="goBack()">Voltar</button>
-
-
-      </a>
     </div>
   </div>
+
   <?php if (!empty($errorMessage)): ?>
   <div class="error-message">
     <?php echo htmlspecialchars($errorMessage); ?>
   </div>
   <?php endif; ?>
+
   <!-- Botões de Ação -->
   <div class="action-buttons">
     <button class="btn" onclick="updateStatus('deferido')">Deferir</button>
     <button class="btn" onclick="showIndeferForm()">Indeferir</button>
     <!-- Botão para abrir o modal -->
     <button class="btn" onclick="showModal()">Gerar PDF</button>
-
-
-
   </div>
-
-
 
   <!-- Formulário de Indeferimento -->
   <form id="reasonForm" style="display: none;" class="section">
     <label for="reason">Motivo da Indeferência:</label><br>
     <textarea id="reason" name="reason" rows="4" cols="50"></textarea><br>
     <button class="btn" type="button" onclick="updateStatus('indeferido')">Enviar</button>
-    <!-- Botão para gerar PDF -->
-
-
   </form>
-  </div>
+
   <div class="container">
     <!-- Título e Justificativa da Falta -->
-    <!-- Modal -->
-    <div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel"
-      aria-hidden="true">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title"><strong>Detalhes da Reposição de Aulas</strong></h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <iframe src="gerar_pdf.php?idform_reposicao=<?php echo $idform_reposicao; ?>" width="100%"
-              height="600px"></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <div class="flex-container">
-
       <!-- Seção Esquerda -->
       <div class="left-section">
         <h1>Justificativa da Falta</h1>
@@ -297,7 +264,7 @@ function formatarData($data)
 
       <!-- Seção Direita -->
       <div class="right-section">
-        <h1>Formulario da Reposição</h1>
+        <h1>Formulário da Reposição</h1>
         <div class="section">
           <table class="info-table">
             <tr>
@@ -336,18 +303,14 @@ function formatarData($data)
               </td>
             </tr>
             <?php endif; ?>
-
           </table>
         </div>
 
         <h1>Agenda Completa do Professor</h1>
         <!-- Tabela de Horários com Informações de Aulas e Atividades de HAE -->
-        <div id=" agenda-completa" class="tabela">
-
-
+        <div id="agenda-completa" class="tabela">
           <!-- Legenda das cores -->
-          <div class="legenda-cores"
-            style="text-align: center; display: flex; justify-content: center; gap: 15px; align-items: center; margin-bottom: 10px;">
+          <div class="legenda-cores">
             <span
               style="background-color: #d4edda; display: inline-block; width: 20px; height: 20px; margin-right: 5px;"></span>
             Aulas
@@ -443,15 +406,13 @@ function formatarData($data)
     </div>
   </div>
 
-
-
   <script>
   function showModal() {
-    document.getElementById('pdfModal').classList.add('show');
+    document.getElementById('pdfModal').style.display = 'block';
   }
 
   function closeModal() {
-    document.getElementById('pdfModal').classList.remove('show');
+    document.getElementById('pdfModal').style.display = 'none';
   }
 
   function showIndeferForm() {

@@ -193,28 +193,41 @@ function formatarData($data)
       <li class="teacher">
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $formulario['nome_professor']); ?></h2>
-          <div class="teacher-row">
-            <span class="label">Disciplinas:</span>
-            <span class="value"><?php echo htmlspecialchars($formulario['disciplinas']); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Datas de Reposição:</span>
-            <span class="value"><?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Horários:</span>
-            <span class="value"><?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></span>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Informação</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Disciplinas:</td>
+                <td><?php echo htmlspecialchars($formulario['disciplinas']); ?></td>
+              </tr>
+              <tr>
+                <td>Datas de Reposição:</td>
+                <td><?php echo htmlspecialchars(formatarData($formulario['datas_reposicao'])); ?></td>
+              </tr>
+              <tr>
+                <td>Horários:</td>
+                <td><?php echo htmlspecialchars($formulario['horarios_reposicao']); ?></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
 
-        <div class="status <?php echo strtolower($formulario['situacao']); ?>">
-          <?php echo htmlspecialchars($formulario['situacao']); ?>
+        <div class="teacher-actions">
+          <div class="status <?php echo strtolower($formulario['situacao']); ?>">
+            <?php echo htmlspecialchars($formulario['situacao']); ?>
+          </div>
+          <?php if (strtolower($formulario['situacao']) === 'indeferido' && !empty($formulario['motivo_indeferimento'])): ?>
+          <div class="motivo-indeferimento">
+            <strong>Motivo do Indeferimento:</strong>
+            <?php echo htmlspecialchars($formulario['motivo_indeferimento']); ?>
+          </div>
+          <?php endif; ?>
         </div>
-        <?php if (strtolower($formulario['situacao']) === 'indeferido' && !empty($formulario['motivo_indeferimento'])): ?>
-        <div class="motivo-indeferimento">
-          <strong>Motivo do Indeferimento:</strong> <?php echo htmlspecialchars($formulario['motivo_indeferimento']); ?>
-        </div>
-        <?php endif; ?>
         <div class="buttons-container">
           <!-- Ícone de PDF -->
           <button class="pdf-btn" onclick="generatePDF('<?php echo $formulario['idform_reposicao']; ?>')">
@@ -224,6 +237,7 @@ function formatarData($data)
           <button class="details-btn" onclick="redirectToDetails('<?php echo $formulario['idform_reposicao']; ?>')">Ver
             Detalhes</button>
         </div>
+
       </li>
       <?php endforeach; ?>
     </ul>

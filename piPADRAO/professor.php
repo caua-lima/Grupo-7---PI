@@ -179,19 +179,30 @@ function formatarData($data)
       <li class="teacher">
         <div class="teacher-info">
           <h2><?php echo htmlspecialchars("Prof. " . $falta['nome_professor']); ?></h2>
-          <div class="teacher-row">
-            <span class="label">Disciplinas:</span>
-            <span class="value"><?php echo htmlspecialchars($falta['disciplinas']); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Datas de Reposição:</span>
-            <span class="value"><?php echo htmlspecialchars(formatarData($falta['datas_reposicao'])); ?></span>
-          </div>
-          <div class="teacher-row">
-            <span class="label">Horários:</span>
-            <span class="value"><?php echo htmlspecialchars($falta['horarios_reposicao']); ?></span>
-          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Informação</th>
+                <th>Detalhes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Disciplinas:</td>
+                <td><?php echo htmlspecialchars($falta['disciplinas']); ?></td>
+              </tr>
+              <tr>
+                <td>Datas de Reposição:</td>
+                <td><?php echo htmlspecialchars(formatarData($falta['datas_reposicao'])); ?></td>
+              </tr>
+              <tr>
+                <td>Horários:</td>
+                <td><?php echo htmlspecialchars($falta['horarios_reposicao']); ?></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+
 
         <div class="teacher-actions">
           <div class="status <?php echo strtolower(str_replace(' ', '-', $falta['situacao'])); ?>">
@@ -201,13 +212,14 @@ function formatarData($data)
           <?php if (strtolower($falta['situacao']) === 'indeferido'): ?>
           <div class="motivo-indeferimento">
             <strong>Motivo do Indeferimento:</strong>
-            <br><?php echo htmlspecialchars($falta['motivo_indeferimento']); ?>
+            <?php echo htmlspecialchars($falta['motivo_indeferimento']); ?>
           </div>
           <div class="action-buttons">
             <button class="btn-editar" onclick="editarFalta(<?php echo $falta['idform_faltas']; ?>)">Editar
               Falta</button>
             <button class="btn-editar-reposicao"
-              onclick="editarReposicao(<?php echo $falta['idform_reposicao']; ?>)">Editar Reposição</button>
+              onclick="editarReposicao(<?php echo $falta['idform_reposicao']; ?>)">Editar
+              Reposição</button>
           </div>
           <?php else: ?>
           <button class="btn-desativado" disabled>Não Editável</button>

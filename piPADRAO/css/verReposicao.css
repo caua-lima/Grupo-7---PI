@@ -87,7 +87,7 @@ h1, h2 {
 }
 
 .reposicao:hover {
-    background-color: #ffe6e6;
+  background-color:  #ae0c0c39;
     transform: scale(1.02);
 }
 
@@ -453,7 +453,7 @@ input, select, textarea {
 /* Botão de Voltar */
 .btn-voltar {
     display: inline-block;
-    background-color: #ff0011; /* Cor de fundo vermelho */
+    background-color: #AE0C0D; /* Cor de fundo substituída */
     color: white; /* Cor do texto */
     padding: 10px 20px; /* Espaçamento interno */
     font-size: 16px; /* Tamanho da fonte */
@@ -628,7 +628,7 @@ input, select, textarea {
 
 /* Estilo dos links */
 .link {
-    color: #d9534f; /* Vermelho */
+    color: #AE0C0D; /* Substituído de #d9534f para #AE0C0D */
     text-decoration: underline;
     font-size: 20px; /* Mesmo tamanho do texto */
     font-weight: bold;
@@ -644,7 +644,7 @@ input, select, textarea {
     bottom: -3px;
     width: 0;
     height: 2px;
-    background-color: #d9534f;
+    background-color: #AE0C0D; /* Substituído de #d9534f para #AE0C0D */
     transition: width 0.3s ease;
 }
 
