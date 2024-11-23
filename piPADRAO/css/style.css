@@ -18,10 +18,17 @@
     padding: 0;
     box-sizing: border-box;
 }
-
-body{
-    font-family: "Montserrat", sans-serif;
+body {
+    background-image: url('/img/imagem.png'); /* Substitua pelo caminho real da imagem */
+    background-size: cover;            /* Garante que a imagem cubra todo o fundo */
+    background-repeat: no-repeat;      /* Evita repetições da imagem */
+    background-attachment: fixed;      /* Faz com que o fundo permaneça fixo ao rolar */
+    background-position: center;       /* Centraliza a imagem no fundo */
+    font-family: Arial, sans-serif;    /* Opcional: Defina uma fonte padrão */
+    margin: 0;                         /* Remove margens padrão */
+    padding: 0;                        /* Remove espaçamentos padrão */
 }
+
 
 /* Cabeçalho */
 header{
@@ -305,33 +312,38 @@ header{
 .img-footer{
     height: 95px;
 }
-/* Fim Rodapé */
-/* Estilo para a notificação */
+/* Fim Rodapé *//* Estilo para a notificação */
 .notificacao {
     position: absolute;
     top: -40px; /* Posiciona o balão acima do item "ANÁLISAR SOLICITAÇÕES" */
     left: 50%; /* Centraliza horizontalmente em relação ao item */
     transform: translateX(-50%); /* Ajusta para centralizar perfeitamente */
-    background-color: #f8d7da; /* Cor de fundo vermelha */
-    color: #721c24; /* Cor do texto */
-    border: 1px solid #f5c6cb; /* Borda suave */
+    background-color: #ffffff; /* Fundo branco */
+    color: #AE0C0D; /* Cor do texto */
+    border: 1px solid #AE0C0D; /* Borda suave */
     padding: 10px 20px;
     border-radius: 5px;
     font-size: 14px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Sombrinha para efeito de flutuação */
     z-index: 1000; /* Garante que o balão fique acima de outros elementos */
 }
 
-/* Triângulo para o balão */
-.notificacao::after {
+
+/* Notificação de pendentes e indeferidos com pequenas setas para parecer balão */
+.notificacao::before{
     content: "";
     position: absolute;
-    top: 100%; /* Coloca o triângulo abaixo da caixa */
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 10px solid #f8d7da; /* Cor do triângulo */
+    border-width: 8px;
+    border-style: solid;
+    top: 100%; /* Coloca a seta abaixo da notificação */
+    left: 50%; /* Centraliza a seta */
+    margin-left: -8px; /* Ajusta a posição da seta */
+    border-color: transparent transparent #ffffff transparent; /* Cor da seta (branco para combinar com o fundo) */
+}
+
+/* Borda da seta para notificação de pendentes */
+.notificacao::before {
+    border-color: transparent transparent #AE0C0D transparent; /* Borda para destacar */
 }
 
 /* Garantindo que o quadrado "ANÁLISAR SOLICITAÇÕES" tenha posição relativa */
@@ -354,56 +366,63 @@ header{
 /* Contêiner para a coluna (link) */
 .link-column {
     position: relative;  /* Permite que os elementos internos usem o posicionamento absoluto */
-  }
+}
+
   
-  /* Notificação de pendentes */
-  .notificacao-pendentes {
-    background-color: #f8d7da;  /* Cor de fundo suave (vermelho claro) */
-    color: #721c24;  /* Texto em vermelho escuro */
-    padding: 8px;  /* Menor padding */
-    border-radius: 5px;
+ /* Notificação de pendentes */
+.notificacao-pendentes {
+    background-color: #ffffff; /* Fundo branco */
+    color: #AE0C0D; /* Texto vermelho escuro */
+    padding: 8px; /* Menor padding */
+    border-radius: 5px; /* Cantos arredondados */
+    border: 1px solid #AE0C0D; /* Borda na cor do texto */
     position: absolute;
-    top: -15px;  /* Menos distância do topo */
-    right: 20px;  /* Mais à direita */
-    z-index: 10;  /* Garante que a notificação fique em cima de outros elementos */
-    font-size: 14px;  /* Fonte do texto */
+    top: -15px; /* Menos distância do topo */
+    right: 20px; /* Mais à direita */
+    z-index: 10; /* Garante que a notificação fique em cima de outros elementos */
+    font-size: 14px; /* Fonte do texto */
     font-weight: bold;
-    width: 200px;  /* Largura menor para a notificação */
-    text-align: center;  /* Texto centralizado */
+    width: 200px; /* Largura menor para a notificação */
+    text-align: center; /* Texto centralizado */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombrinha para efeito de flutuação */
-  }
-  
-  /* Notificação de indeferidos */
-  .notificacao-indeferidos {
-    background-color: #fff3cd;  /* Cor de fundo suave (amarelo claro) */
-    color: #856404;  /* Texto em amarelo escuro */
-    padding: 8px;  /* Menor padding */
-    border-radius: 5px;
+}
+
+/* Notificação de indeferidos */
+.notificacao-indeferidos {
+    background-color: #ffffff; /* Fundo branco */
+    color: #AE0C0D; /* Texto vermelho escuro */
+    padding: 8px; /* Menor padding */
+    border-radius: 5px; /* Cantos arredondados */
+    border: 1px solid #AE0C0D; /* Borda na cor do texto */
     position: absolute;
-    top: -15px;  /* Menos distância do topo */
-    right: 20px;  /* Mais à direita */
-    z-index: 10;  /* Garante que a notificação fique em cima de outros elementos */
-    font-size: 14px;  /* Fonte do texto */
+    top: -15px; /* Menos distância do topo */
+    right: 20px; /* Mais à direita */
+    z-index: 10; /* Garante que a notificação fique em cima de outros elementos */
+    font-size: 14px; /* Fonte do texto */
     font-weight: bold;
-    width: 200px;  /* Largura menor para a notificação */
-    text-align: center;  /* Texto centralizado */
+    width: 200px; /* Largura menor para a notificação */
+    text-align: center; /* Texto centralizado */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombrinha para efeito de flutuação */
-  }
-  
-  /* Notificação de pendentes e indeferidos com pequenas setas para parecer balão */
-  .notificacao-pendentes::before, .notificacao-indeferidos::before {
+}
+
+/* Notificação de pendentes e indeferidos com pequenas setas para parecer balão */
+.notificacao-pendentes::before, .notificacao-indeferidos::before {
     content: "";
     position: absolute;
     border-width: 8px;
     border-style: solid;
-    top: 100%;  /* Coloca a seta abaixo da notificação */
-    left: 50%;  /* Centraliza a seta */
-    margin-left: -8px;  /* Ajusta a posição da seta */
-    border-color: transparent transparent #f8d7da transparent;  /* Cor da seta (para 'pendentes') */
-  }
-  
-  /* Para o indeferido, muda a cor da seta */
-  .notificacao-indeferidos::before {
-    border-color: transparent transparent #fff3cd transparent;  /* Cor da seta (para 'indeferidos') */
-  }
-  
+    top: 100%; /* Coloca a seta abaixo da notificação */
+    left: 50%; /* Centraliza a seta */
+    margin-left: -8px; /* Ajusta a posição da seta */
+    border-color: transparent transparent #ffffff transparent; /* Cor da seta (branco para combinar com o fundo) */
+}
+
+/* Borda da seta para notificação de pendentes */
+.notificacao-pendentes::before {
+    border-color: transparent transparent #AE0C0D transparent; /* Borda para destacar */
+}
+
+/* Borda da seta para notificação de indeferidos */
+.notificacao-indeferidos::before {
+    border-color: transparent transparent #AE0C0D transparent; /* Borda para destacar */
+}
