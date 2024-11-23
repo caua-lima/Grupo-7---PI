@@ -108,6 +108,27 @@ try {
 } catch (PDOException $e) {
   echo "Erro ao buscar formulários: " . $e->getMessage();
 }
+
+function formatarData($data)
+{
+  $meses = [
+    'January' => 'Janeiro',
+    'February' => 'Fevereiro',
+    'March' => 'Março',
+    'April' => 'Abril',
+    'May' => 'Maio',
+    'June' => 'Junho',
+    'July' => 'Julho',
+    'August' => 'Agosto',
+    'September' => 'Setembro',
+    'October' => 'Outubro',
+    'November' => 'Novembro',
+    'December' => 'Dezembro'
+  ];
+
+  $dataFormatada = date('d / F', strtotime($data));
+  return strtr($dataFormatada, $meses);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">

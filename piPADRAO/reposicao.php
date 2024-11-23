@@ -388,8 +388,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Campo de Nome do Funcionário -->
       <div class="form-field centralizado">
         <label for="nome">Nome: </label>
-        <input type="text" style="text-align: center; border: none; background-color: #f4f4f4; padding: 5px;"
-          class="nome" name="nome" value="<?php echo htmlspecialchars($nomeFuncionario); ?>" readonly>
+        <input type="text"
+          style="text-align: center;  width: 80%; border: none;  background-color: #f4f4f4; padding: 5px;" class="nome"
+          name="nome" value="<?php echo htmlspecialchars($nomeFuncionario); ?>" readonly>
       </div>
       <div class="form-field centralizado">
         <label for="numero">Número:</label>
@@ -466,7 +467,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="tables-side-by-side">
       <!-- Aulas Não Ministradas -->
       <div class="form-group">
-        <legend>Aulas não Ministradas:</legend>
+        <legend>Aulas não Ministradas:</legend><br> <br>
         <table class="styled-table">
           <thead>
             <tr>
@@ -496,82 +497,84 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       <!-- Dados das Aulas de Reposição -->
       <div class="form-group">
         <legend>Dados da(s) aulas de reposição:</legend>
-        <table class="styled-table">
-          <thead>
-            <tr>
-              <th>Ordem</th>
-              <th>Data da Reposição</th>
-              <th>Horário de Início e Término</th>
-              <th>Disciplina(s)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <?php
-            // Determinar o número de reposições
-            if ($idform_reposicao && !empty($aulasReposicao)) {
-              $totalReposicoes = count($aulasReposicao);
-            } elseif (!$idform_reposicao && !empty($aulasFaltas)) {
-              $totalReposicoes = count($aulasFaltas);
-            } else {
-              $totalReposicoes = 1; // Pelo menos uma linha
-            }
-            ?>
-            <?php for ($i = 0; $i < $totalReposicoes; $i++): ?>
-            <tr>
-              <td><?php echo ($i + 1); ?></td>
-              <td>
-                <input type="date" name="dataReposicao[]" id="dataReposicao-<?php echo $i; ?>" required
-                  onchange="verificarData(<?php echo $i; ?>)" min="<?php echo date('Y-m-d'); ?>" value="<?php
-                                                                                                          if ($idform_reposicao && isset($aulasReposicao[$i]['data_reposicao'])) {
-                                                                                                            echo htmlspecialchars($aulasReposicao[$i]['data_reposicao']);
-                                                                                                          } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['data_aula'])) {
-                                                                                                            echo htmlspecialchars(date('Y-m-d', strtotime($aulasFaltas[$i]['data_aula'])));
-                                                                                                          }
-                                                                                                          ?>">
-              </td>
-              <td>
-                <input type="time" name="inicioHorario[]" id="inicioHorario-<?php echo $i; ?>" min="07:30" max="20:40"
-                  required onchange="calcularHorarioTermino(<?php echo $i; ?>, <?php
-                                                                                  if ($idform_reposicao && isset($aulasReposicao[$i]['num_aulas'])) {
-                                                                                    echo htmlspecialchars($aulasReposicao[$i]['num_aulas']);
-                                                                                  } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['num_aulas'])) {
-                                                                                    echo htmlspecialchars($aulasFaltas[$i]['num_aulas']);
-                                                                                  } else {
-                                                                                    echo '1'; // Default
-                                                                                  }
-                                                                                  ?>)" value="<?php
-                                                                                              if ($idform_reposicao && isset($aulasReposicao[$i]['horarioinicio'])) {
-                                                                                                echo htmlspecialchars($aulasReposicao[$i]['horarioinicio']);
-                                                                                              }
-                                                                                              ?>">
-                às
-                <input type="time" name="teroHorario[]" id="teroHorario-<?php echo $i; ?>" readonly value="<?php
-                                                                                                              if ($idform_reposicao && isset($aulasReposicao[$i]['horariofim'])) {
-                                                                                                                echo htmlspecialchars($aulasReposicao[$i]['horariofim']);
-                                                                                                              }
-                                                                                                              ?>">
-              </td>
-              <td>
-                <input type="text" readonly value="<?php
-                                                      if ($idform_reposicao && isset($aulasReposicao[$i]['nome_disciplina'])) {
-                                                        echo htmlspecialchars($aulasReposicao[$i]['nome_disciplina']);
-                                                      } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['nome_disciplina'])) {
-                                                        echo htmlspecialchars($aulasFaltas[$i]['nome_disciplina']);
-                                                      }
-                                                      ?>"
-                  style="border: none; background-color: #f4f4f4; padding: 5px;">
-                <input type="hidden" name="nome_disciplina[]" value="<?php
-                                                                        if ($idform_reposicao && isset($aulasReposicao[$i]['nome_disciplina'])) {
-                                                                          echo htmlspecialchars($aulasReposicao[$i]['nome_disciplina']);
-                                                                        } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['nome_disciplina'])) {
-                                                                          echo htmlspecialchars($aulasFaltas[$i]['nome_disciplina']);
-                                                                        }
-                                                                        ?>">
-              </td>
-            </tr>
-            <?php endfor; ?>
-          </tbody>
-        </table>
+        <div class="table-container">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Ordem</th>
+                <th>Data da Reposição</th>
+                <th>Horário de Início e Término</th>
+                <th>Disciplina(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <?php
+              // Determinar o número de reposições
+              if ($idform_reposicao && !empty($aulasReposicao)) {
+                $totalReposicoes = count($aulasReposicao);
+              } elseif (!$idform_reposicao && !empty($aulasFaltas)) {
+                $totalReposicoes = count($aulasFaltas);
+              } else {
+                $totalReposicoes = 1; // Pelo menos uma linha
+              }
+              ?>
+              <?php for ($i = 0; $i < $totalReposicoes; $i++): ?>
+              <tr>
+                <td><?php echo ($i + 1); ?></td>
+                <td>
+                  <input type="date" name="dataReposicao[]" id="dataReposicao-<?php echo $i; ?>" required
+                    onchange="verificarData(<?php echo $i; ?>)" min="<?php echo date('Y-m-d'); ?>" value="<?php
+                                                                                                            if ($idform_reposicao && isset($aulasReposicao[$i]['data_reposicao'])) {
+                                                                                                              echo htmlspecialchars($aulasReposicao[$i]['data_reposicao']);
+                                                                                                            } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['data_aula'])) {
+                                                                                                              echo htmlspecialchars(date('Y-m-d', strtotime($aulasFaltas[$i]['data_aula'])));
+                                                                                                            }
+                                                                                                            ?>">
+                </td>
+                <td>
+                  <input type="time" name="inicioHorario[]" id="inicioHorario-<?php echo $i; ?>" min="07:30" max="20:40"
+                    required onchange="calcularHorarioTermino(<?php echo $i; ?>, <?php
+                                                                                    if ($idform_reposicao && isset($aulasReposicao[$i]['num_aulas'])) {
+                                                                                      echo htmlspecialchars($aulasReposicao[$i]['num_aulas']);
+                                                                                    } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['num_aulas'])) {
+                                                                                      echo htmlspecialchars($aulasFaltas[$i]['num_aulas']);
+                                                                                    } else {
+                                                                                      echo '1'; // Default
+                                                                                    }
+                                                                                    ?>)" value="<?php
+                                                                                                if ($idform_reposicao && isset($aulasReposicao[$i]['horarioinicio'])) {
+                                                                                                  echo htmlspecialchars($aulasReposicao[$i]['horarioinicio']);
+                                                                                                }
+                                                                                                ?>">
+                  às
+                  <input type="time" name="teroHorario[]" id="teroHorario-<?php echo $i; ?>" readonly value="<?php
+                                                                                                                if ($idform_reposicao && isset($aulasReposicao[$i]['horariofim'])) {
+                                                                                                                  echo htmlspecialchars($aulasReposicao[$i]['horariofim']);
+                                                                                                                }
+                                                                                                                ?>">
+                </td>
+                <td>
+                  <input type="text" readonly value="<?php
+                                                        if ($idform_reposicao && isset($aulasReposicao[$i]['nome_disciplina'])) {
+                                                          echo htmlspecialchars($aulasReposicao[$i]['nome_disciplina']);
+                                                        } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['nome_disciplina'])) {
+                                                          echo htmlspecialchars($aulasFaltas[$i]['nome_disciplina']);
+                                                        }
+                                                        ?>"
+                    style="border: none; background-color: #f4f4f4; padding: 5px;">
+                  <input type="hidden" name="nome_disciplina[]" value="<?php
+                                                                          if ($idform_reposicao && isset($aulasReposicao[$i]['nome_disciplina'])) {
+                                                                            echo htmlspecialchars($aulasReposicao[$i]['nome_disciplina']);
+                                                                          } elseif (!$idform_reposicao && isset($aulasFaltas[$i]['nome_disciplina'])) {
+                                                                            echo htmlspecialchars($aulasFaltas[$i]['nome_disciplina']);
+                                                                          }
+                                                                          ?>">
+                </td>
+              </tr>
+              <?php endfor; ?>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <script>

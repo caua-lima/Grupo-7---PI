@@ -1,4 +1,30 @@
+/* Importação de Fontes */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;400;500;600;700;800;900&family=Open+Sans:wght@300;400;600;700;800&display=swap');
 
+/* Variáveis CSS para Cores e Outros Valores */
+:root {
+    /* Cores Primárias */
+    --primary-color: #e74c3c;
+    --primary-dark: #c0392b;
+    --secondary-color: #ff6961;
+    --accent-color: #ADD8E6;
+    --border-color: #e0e0e0;
+    --background-color: #ffffff;
+    --text-color: #333333;
+    --error-color: #ff4d4d;
+    --error-bg-color: #ffe6e6;
+
+    /* Espaçamentos */
+    --padding: 10px;
+    --margin: 10px;
+    --border-radius: 5px;
+
+    /* Fontes */
+    --font-family: 'Montserrat', sans-serif;
+    --font-size-base: 16px;
+    --font-size-small: 14px;
+    --font-size-large: 24px;
+}
 
 body {
   font-family: Arial, sans-serif;
@@ -130,6 +156,7 @@ border-radius: 5px;
     gap: 20px;
     align-items: center;
     margin-bottom: 15px;
+    padding: 10px;
   }
   
   .form-group-inline .form-field {
@@ -137,10 +164,11 @@ border-radius: 5px;
   }
   
   fieldset {
-    border: 1px solid #ccc;
+   
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 8px;
+    border: 1px solid #e4dfdf;
   }
   
   fieldset legend {
@@ -220,8 +248,9 @@ border-radius: 5px;
     flex-wrap: wrap;
     justify-content: space-between;
   }
-  
+ 
   .tables-side-by-side .form-group {
+    
     flex: 1;
     min-width: 45%; /* Permite ajuste automático */
     max-width: 48%; /* Ajusta para ocupar melhor o espaço */
@@ -229,7 +258,16 @@ border-radius: 5px;
     padding: 10px;
     border-radius: 5px;
   }
-  
+  .form-group:hover {
+    border: 1.5px solid;
+    border-color:#e74c3c; /* Borda vermelha escura no hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
+  }
+  .form-group-inline:hover{
+    border: 1.5px solid;
+    border-color: #e74c3c; /* Borda vermelha escura no hover */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra no hover */
+  }
   @media (max-width: 768px) {
     .tables-side-by-side {
       flex-direction: column; /* Empilha as tabelas verticalmente em telas menores */
@@ -251,10 +289,11 @@ border-radius: 5px;
   }
   
   .styled-table {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    margin-bottom: 15px;
-  }
+    border-collapse: collapse;
+    width: 80%; /* Ajuste conforme necessário */
+    margin: auto; /* Garantia adicional de centralização */
+    border: 1px solid #ddd; /* Exemplo de borda */
+}
   
   /* Title styling */
   .title {
@@ -562,13 +601,9 @@ td:hover {
   color: #fff; /* Texto branco no hover */
 }
 
-/* Hover para fieldsets */
-fieldset {
-  border: 1px solid #FF0000; /* Borda vermelha padrão */
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+
 
 fieldset:hover {
-  border-color: #b30000; /* Borda vermelha escura no hover */
-  box-shadow: 0 0 8px rgba(255, 0, 0, 0.5); /* Sombra no hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra ao passar o mouse */
+  border-color: var(--primary-color); /* Mudança de cor da borda no hover */
 }

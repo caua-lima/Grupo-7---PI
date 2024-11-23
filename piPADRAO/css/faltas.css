@@ -39,9 +39,27 @@ body {
     color: var(--text-color);
     line-height: 1.6;
 }
+.bory {
+    width: 97%;
+    margin: 0 auto; /* Centraliza horizontalmente */
+}
+.legenda {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #151515;                /* Texto branco */
+    
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Transições suaves */
+}
+
+.legenda:hover {
+    transform: scale(1.05);        /* Aumenta levemente ao passar o mouse */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Sombra mais intensa */
+}
 
 /* Container Principal */
 .container {
+    
     margin: 50px 10px;
     min-height: 100vh; /* Garantir que o container ocupe pelo menos a altura total da viewport */
     display: flex;
@@ -77,6 +95,7 @@ body {
 
 /* Fieldset */
 fieldset {
+
     border: 1px solid #e4dfdf;
     padding: 20px;
     margin-bottom: 5px; /* Reduzido de 20px para 10px */
@@ -107,7 +126,14 @@ label {
     color: #555;
     /* Remover a centralização global */
 }
-
+/* Labels Gerais */
+h3 {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+    color: #555;
+    /* Remover a centralização global */
+}
 
 /* Linha de Input */
 .input-row {
@@ -645,18 +671,13 @@ button:hover {
     align-items: center;
     justify-content: center;
     padding: 10px 20px; /* Reduzido padding para diminuir espaçamento */
-    border: 1px solid #e4dfdf;
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
+     transition: box-shadow 0.3s ease, transform 0.3s ease;
     margin-bottom: 10px; /* Reduzido para diminuir espaçamento entre divs */
 }
 
 .form-footer:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transform: translateY(-2px);
-    background-color: #f9f9f9;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra ao passar o mouse */
+    border-color: var(--primary-color); /* Mudança de cor da borda no hover */
 }
 
 .form-footer label {

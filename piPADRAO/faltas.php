@@ -295,255 +295,258 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php echo htmlspecialchars($errorMessage); ?>
   </div>
   <?php endif; ?>
+  <div class="bory">
+    <form method="POST" enctype="multipart/form-data">
+      <fieldset class="fieldset">
+        <legend class="legenda">Informações Pessoais</legend>
+        <div class="input-row">
+          <label for="nome">Nome:</label>
+          <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="nome"
+            name="nome" value="<?php echo htmlspecialchars($funcionario['nome']); ?>" readonly required>
 
-  <form method="POST" enctype="multipart/form-data">
-    <fieldset class="fieldset">
-      <legend>Informações Pessoais</legend>
-      <div class="input-row">
-        <label for="nome">Nome:</label>
-        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="nome" name="nome"
-          value="<?php echo htmlspecialchars($funcionario['nome']); ?>" readonly required>
+          <label for="matricula">Matrícula:</label>
+          <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="matricula"
+            name="matricula" value="<?php echo htmlspecialchars($funcionario['matricula']); ?>" readonly required>
+          <label for="funcao">Função:</label>
+          <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="funcao"
+            name="funcao" value="<?php echo htmlspecialchars($funcionario['funcao']); ?>" readonly required>
+          <label for="regime">Regime Jurídico:</label>
+          <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="regime"
+            name="regime" value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
+        </div>
+      </fieldset>
 
-        <label for="matricula">Matrícula:</label>
-        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="matricula"
-          name="matricula" value="<?php echo htmlspecialchars($funcionario['matricula']); ?>" readonly required>
-        <label for="funcao">Função:</label>
-        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="funcao"
-          name="funcao" value="<?php echo htmlspecialchars($funcionario['funcao']); ?>" readonly required>
-        <label for="regime">Regime Jurídico:</label>
-        <input type="text" style="text-align: center; background-color: #f4f4f4; padding: 5px;" class="regime"
-          name="regime" value="<?php echo htmlspecialchars($funcionario['regime_juridico']); ?>" readonly required>
-      </div>
-    </fieldset>
+      <fieldset class="faltas">
+        <legend class="legenda">Falta Referente</legend>
+        <h3>Selecione a Data ou o Periodo da falta: </h3>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="tipo_falta" value="unica" id="radio_unica"
+              <?php echo ($tipo_falta === 'unica') ? 'checked' : ''; ?> onclick="togglePeriodo(false)">
+            Falta referente ao dia:
+          </label>
+          <input type="date" class="data-falta" name="data_unica" id="data_unica"
+            value="<?php echo htmlspecialchars($formulario['datainicio'] ?? ($_POST['data_unica'] ?? '')); ?>"
+            <?php echo ($tipo_falta === 'periodo') ? 'disabled' : ''; ?> onchange="gerarSelecaoCursos()">
+        </div>
 
-    <fieldset class="faltas">
-      <legend class="legenda">Falta Referente</legend>
-      <p>Selecione a Data ou o Periodo da falta: </p>
-      <div class="radio-group">
-        <label>
-          <input type="radio" name="tipo_falta" value="unica" id="radio_unica"
-            <?php echo ($tipo_falta === 'unica') ? 'checked' : ''; ?> onclick="togglePeriodo(false)">
-          Falta referente ao dia:
-        </label>
-        <input type="date" class="data-falta" name="data_unica" id="data_unica"
-          value="<?php echo htmlspecialchars($formulario['datainicio'] ?? ($_POST['data_unica'] ?? '')); ?>"
-          <?php echo ($tipo_falta === 'periodo') ? 'disabled' : ''; ?> onchange="gerarSelecaoCursos()">
-      </div>
+        <div class="radio-group">
+          <label>
+            <input type="radio" name="tipo_falta" value="periodo" id="radio_periodo"
+              <?php echo ($tipo_falta === 'periodo') ? 'checked' : ''; ?> onclick="togglePeriodo(true)">
+            Período de
+          </label>
+          <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" max="15" placeholder="Nº de dias"
+            value="<?php echo htmlspecialchars($_POST['num_dias'] ?? ($tipo_falta === 'periodo' ? count(array_unique(array_column($aulasExistentes, 'data_aula'))) : '')); ?>"
+            <?php echo ($tipo_falta !== 'periodo') ? 'disabled' : ''; ?>>
+          <label for="data-inicio-periodo">Dias: </label>
+          <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
+            value="<?php echo htmlspecialchars($formulario['datainicio'] ?? ($_POST['data_inicio_periodo'] ?? '')); ?>"
+            <?php echo ($tipo_falta !== 'periodo') ? 'disabled' : ''; ?> onchange="gerarSelecaoCursosPeriodo()">
+          <label for="data-fim-periodo" class="ate">Até: </label>
+          <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo"
+            value="<?php echo htmlspecialchars($formulario['datafim'] ?? ($_POST['data_fim_periodo'] ?? '')); ?>"
+            readonly>
+        </div>
+        <!-- Container para Seleções Dinâmicas -->
+        <div id="selecoes-container"></div>
+      </fieldset>
 
-      <div class="radio-group">
-        <label>
-          <input type="radio" name="tipo_falta" value="periodo" id="radio_periodo"
-            <?php echo ($tipo_falta === 'periodo') ? 'checked' : ''; ?> onclick="togglePeriodo(true)">
-          Período de
-        </label>
-        <input type="number" class="num-dias" name="num_dias" id="num_dias" min="1" max="15" placeholder="Nº de dias"
-          value="<?php echo htmlspecialchars($_POST['num_dias'] ?? ($tipo_falta === 'periodo' ? count(array_unique(array_column($aulasExistentes, 'data_aula'))) : '')); ?>"
-          <?php echo ($tipo_falta !== 'periodo') ? 'disabled' : ''; ?>>
-        <label for="data-inicio-periodo">Dias: </label>
-        <input type="date" class="data-inicio-periodo" name="data_inicio_periodo" id="data_inicio_periodo"
-          value="<?php echo htmlspecialchars($formulario['datainicio'] ?? ($_POST['data_inicio_periodo'] ?? '')); ?>"
-          <?php echo ($tipo_falta !== 'periodo') ? 'disabled' : ''; ?> onchange="gerarSelecaoCursosPeriodo()">
-        <label for="data-fim-periodo" class="ate">Até: </label>
-        <input type="date" class="data-fim-periodo" name="data_fim_periodo" id="data_fim_periodo"
-          value="<?php echo htmlspecialchars($formulario['datafim'] ?? ($_POST['data_fim_periodo'] ?? '')); ?>"
-          readonly>
-      </div>
-      <!-- Container para Seleções Dinâmicas -->
-      <div id="selecoes-container"></div>
-    </fieldset>
+      <fieldset class="motivo-falta">
+        <legend class="legenda">Motivo da Falta</legend>
 
-    <fieldset class="motivo-falta">
-      <legend>Motivo da Falta</legend>
-
-      <label for="motivo">Selecione o motivo da falta:</label>
-      <select id="motivo" name="motivo_falta_categoria">
-        <option value="" disabled selected>Selecione o motivo</option>
-        <option value="licenca-falta-medica"
-          <?php echo ($motivo_falta_categoria === 'licenca-falta-medica') ? 'selected' : ''; ?>>Licença e Falta Médica
-        </option>
-        <option value="falta-injustificada"
-          <?php echo ($motivo_falta_categoria === 'falta-injustificada') ? 'selected' : ''; ?>>Falta Injustificada (Com
-          desconto do DSR)</option>
-        <option value="faltas-justificadas"
-          <?php echo ($motivo_falta_categoria === 'faltas-justificadas') ? 'selected' : ''; ?>>Faltas Justificadas
-        </option>
-        <option value="faltas-previstas-legislacao"
-          <?php echo ($motivo_falta_categoria === 'faltas-previstas-legislacao') ? 'selected' : ''; ?>>Faltas Previstas
-          na Legislação Trabalhista</option>
-      </select>
+        <h3 for="motivo">Selecione o motivo da falta:</h3>
+        <select id="motivo" name="motivo_falta_categoria">
+          <option value="" disabled selected>Selecione o motivo</option>
+          <option value="licenca-falta-medica"
+            <?php echo ($motivo_falta_categoria === 'licenca-falta-medica') ? 'selected' : ''; ?>>Licença e Falta Médica
+          </option>
+          <option value="falta-injustificada"
+            <?php echo ($motivo_falta_categoria === 'falta-injustificada') ? 'selected' : ''; ?>>Falta Injustificada
+            (Com
+            desconto do DSR)</option>
+          <option value="faltas-justificadas"
+            <?php echo ($motivo_falta_categoria === 'faltas-justificadas') ? 'selected' : ''; ?>>Faltas Justificadas
+          </option>
+          <option value="faltas-previstas-legislacao"
+            <?php echo ($motivo_falta_categoria === 'faltas-previstas-legislacao') ? 'selected' : ''; ?>>Faltas
+            Previstas
+            na Legislação Trabalhista</option>
+        </select>
 
 
-      <div id="opcoes_licenca-falta-medica"
-        style="display: <?php echo ($motivo_falta_categoria === 'licenca-falta-medica') ? 'block' : 'none'; ?>;"
-        class="motivo licenca-falta-medica">
-        <label><input type="radio" class="LFM" name="motivo_falta" value="Falta Medica"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falta Medica') ? 'checked' : ''; ?>>
-          Falta Médica (Atestado médico de 1 dia)</label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimento ao Medico"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento ao Medico') ? 'checked' : ''; ?>>
-          Comparecimento ao Médico no período das <input type="time" class="small-input" name="horario_inicio_medico"
-            value="<?php echo htmlspecialchars($_POST['horario_inicio_medico'] ?? ($aulasExistentes[0]['horario_inicio_medico'] ?? '')); ?>">
-          às <input type="time" class="small-input" name="horario_fim_medico"
-            value="<?php echo htmlspecialchars($_POST['horario_fim_medico'] ?? ($aulasExistentes[0]['horario_fim_medico'] ?? '')); ?>"></label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Saude"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Licenca Saude') ? 'checked' : ''; ?>>
-          Licença-Saúde (Atestado médico igual ou superior a 2 dias)</label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Maternidade"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Licenca Maternidade') ? 'checked' : ''; ?>>
-          Licença-Maternidade (Atestado médico até 15 dias)</label>
-      </div>
+        <div id="opcoes_licenca-falta-medica"
+          style="display: <?php echo ($motivo_falta_categoria === 'licenca-falta-medica') ? 'block' : 'none'; ?>;"
+          class="motivo licenca-falta-medica">
+          <label><input type="radio" class="LFM" name="motivo_falta" value="Falta Medica"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falta Medica') ? 'checked' : ''; ?>>
+            Falta Médica (Atestado médico de 1 dia)</label>
+          <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimento ao Medico"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento ao Medico') ? 'checked' : ''; ?>>
+            Comparecimento ao Médico no período das <input type="time" class="small-input" name="horario_inicio_medico"
+              value="<?php echo htmlspecialchars($_POST['horario_inicio_medico'] ?? ($aulasExistentes[0]['horario_inicio_medico'] ?? '')); ?>">
+            às <input type="time" class="small-input" name="horario_fim_medico"
+              value="<?php echo htmlspecialchars($_POST['horario_fim_medico'] ?? ($aulasExistentes[0]['horario_fim_medico'] ?? '')); ?>"></label>
+          <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Saude"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Licenca Saude') ? 'checked' : ''; ?>>
+            Licença-Saúde (Atestado médico igual ou superior a 2 dias)</label>
+          <label><input type="radio" class="LFM" name="motivo_falta" value="Licenca Maternidade"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Licenca Maternidade') ? 'checked' : ''; ?>>
+            Licença-Maternidade (Atestado médico até 15 dias)</label>
+        </div>
 
-      <div id="opcoes_falta-injustificada"
-        style="display: <?php echo ($motivo_falta_categoria === 'falta-injustificada') ? 'block' : 'none'; ?>;"
-        class="motivo falta-injustificada">
-        <label><input type="radio" class="FI" name="motivo_falta" value="falta-injustificada"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'falta-injustificada') ? 'checked' : ''; ?>>
-          Falta</label>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'comparecimento-medico') ? 'checked' : ''; ?>>
-          Atraso ou Saída Antecipada, das <input type="time" class="small-input" name="horario_inicio_atraso"
-            value="<?php echo htmlspecialchars($_POST['horario_inicio_atraso'] ?? ($aulasExistentes[0]['horario_inicio_atraso'] ?? '')); ?>">
-          às <input type="time" class="small-input" name="horario_fim_atraso"
-            value="<?php echo htmlspecialchars($_POST['horario_fim_atraso'] ?? ($aulasExistentes[0]['horario_fim_atraso'] ?? '')); ?>"></label>
-      </div>
+        <div id="opcoes_falta-injustificada"
+          style="display: <?php echo ($motivo_falta_categoria === 'falta-injustificada') ? 'block' : 'none'; ?>;"
+          class="motivo falta-injustificada">
+          <label><input type="radio" class="FI" name="motivo_falta" value="falta-injustificada"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'falta-injustificada') ? 'checked' : ''; ?>>
+            Falta</label>
+          <label><input type="radio" class="LFM" name="motivo_falta" value="comparecimento-medico"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'comparecimento-medico') ? 'checked' : ''; ?>>
+            Atraso ou Saída Antecipada, das <input type="time" class="small-input" name="horario_inicio_atraso"
+              value="<?php echo htmlspecialchars($_POST['horario_inicio_atraso'] ?? ($aulasExistentes[0]['horario_inicio_atraso'] ?? '')); ?>">
+            às <input type="time" class="small-input" name="horario_fim_atraso"
+              value="<?php echo htmlspecialchars($_POST['horario_fim_atraso'] ?? ($aulasExistentes[0]['horario_fim_atraso'] ?? '')); ?>"></label>
+        </div>
 
-      <div id="opcoes_faltas-justificadas"
-        style="display: <?php echo ($motivo_falta_categoria === 'faltas-justificadas') ? 'block' : 'none'; ?>;"
-        class="motivo faltas-justificadas">
-        <label><input type="radio" class="FJ" name="motivo_falta" value="Falta justificada"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falta justificada') ? 'checked' : ''; ?>>
-          Falta por motivo de:</label>
-        <textarea name="motivo_descricao"
-          rows="1"><?php echo htmlspecialchars($_POST['motivo_descricao'] ?? ($formulario['motivo_descricao'] ?? '')); ?></textarea>
-        <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimento ao Medico"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento ao Medico') ? 'checked' : ''; ?>>
-          Atraso ou Saída Antecipada das <input type="time" class="small-input" name="horario_inicio_atraso_justificado"
-            value="<?php echo htmlspecialchars($_POST['horario_inicio_atraso_justificado'] ?? ($aulasExistentes[0]['horario_inicio_atraso_justificado'] ?? '')); ?>">
-          às <input type="time" class="small-input" name="horario_fim_atraso_justificado" value="<?php echo htmlspecialchars($_POST['horario_fim_atraso_justificado'] ?? ($aulasExistentes[0]['horario_fim_atraso_justificado'] ?? '')); ?>> Por motivo de:</label>
+        <div id="opcoes_faltas-justificadas"
+          style="display: <?php echo ($motivo_falta_categoria === 'faltas-justificadas') ? 'block' : 'none'; ?>;"
+          class="motivo faltas-justificadas">
+          <label><input type="radio" class="FJ" name="motivo_falta" value="Falta justificada"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falta justificada') ? 'checked' : ''; ?>>
+            Falta por motivo de:</label>
+          <textarea name="motivo_descricao"
+            rows="1"><?php echo htmlspecialchars($_POST['motivo_descricao'] ?? ($formulario['motivo_descricao'] ?? '')); ?></textarea>
+          <label><input type="radio" class="LFM" name="motivo_falta" value="Comparecimento ao Medico"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento ao Medico') ? 'checked' : ''; ?>>
+            Atraso ou Saída Antecipada das <input type="time" class="small-input"
+              name="horario_inicio_atraso_justificado"
+              value="<?php echo htmlspecialchars($_POST['horario_inicio_atraso_justificado'] ?? ($aulasExistentes[0]['horario_inicio_atraso_justificado'] ?? '')); ?>">
+            às <input type="time" class="small-input" name="horario_fim_atraso_justificado" value="<?php echo htmlspecialchars($_POST['horario_fim_atraso_justificado'] ?? ($aulasExistentes[0]['horario_fim_atraso_justificado'] ?? '')); ?>> Por motivo de:</label>
         <textarea name=" atraso_descricao"
-            rows="1"><?php echo htmlspecialchars($_POST['atraso_descricao'] ?? ($formulario['atraso_descricao'] ?? '')); ?></textarea>
+              rows="1"><?php echo htmlspecialchars($_POST['atraso_descricao'] ?? ($formulario['atraso_descricao'] ?? '')); ?></textarea>
+        </div>
+
+        <div id="opcoes-faltas-previstas-legislacao"
+          style="display: <?php echo ($motivo_falta_categoria === 'faltas-previstas-legislacao') ? 'block' : 'none'; ?>;"
+          class="motivo faltas-previstas-legislacao">
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento do Conjuge"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falecimento do Conjuge') ? 'checked' : ''; ?>>
+            Falecimento de cônjuge, pai, mãe, filho (9 dias consecutivos)</label>
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento Familiares"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falecimento Familiares') ? 'checked' : ''; ?>>
+            Falecimento de outros familiares (2 dias consecutivos)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Casamento"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Casamento') ? 'checked' : ''; ?>>
+            Casamento (9 dias consecutivos)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Nascimento do Filho"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Nascimento do Filho') ? 'checked' : ''; ?>>
+            Nascimento de filho (5 dias)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento da(o) Esposa(o)"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acompanhamento da(o) Esposa(o)') ? 'checked' : ''; ?>>
+            Acompanhar esposa ou companheira (Até 2 dias)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento do Filho"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acompanhamento do Filho') ? 'checked' : ''; ?>>
+            Acompanhar filho até 6 anos (1 dia por ano)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Doacao de Sangue"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Doacao de Sangue') ? 'checked' : ''; ?>>
+            Doação voluntária de sangue (1 dia em cada 12 meses)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Alistamento Eleitor"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Alistamento Eleitor') ? 'checked' : ''; ?>>
+            Alistamento como eleitor (Até 2 dias)</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Depoimento Judicial"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Depoimento Judicial') ? 'checked' : ''; ?>>
+            Convocação para depoimento judicial</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Comparecimento Juri"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento Juri') ? 'checked' : ''; ?>>
+            Comparecimento como jurado no Tribunal do Júri</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Servico Eleitoral"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Servico Eleitoral') ? 'checked' : ''; ?>>
+            Convocação para serviço eleitoral</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Composicao Mesa Eleitoral"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Composicao Mesa Eleitoral') ? 'checked' : ''; ?>>
+            Dispensa para compor mesas eleitorais</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Prova de Vestibular"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Prova de Vestibular') ? 'checked' : ''; ?>>
+            Realização de Prova de Vestibular</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Justica do trabalho"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Justica do trabalho') ? 'checked' : ''; ?>>
+            Comparecimento como parte na Justiça do Trabalho</label>
+
+          <label><input type="radio" class="FPLT" name="motivo_falta" value="Acidente de Transporte"
+              <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acidente de Transporte') ? 'checked' : ''; ?>>
+            Atrasos devido a acidentes de transporte</label>
+        </div>
+        <script>
+        // Função para exibir as opções de acordo com a categoria dos motivos selecionada
+        document.getElementById('motivo').addEventListener('change', function() {
+          // Esconder as divs de opções
+          document.getElementById('opcoes_licenca-falta-medica').style.display = 'none';
+          document.getElementById('opcoes_falta-injustificada').style.display = 'none';
+          document.getElementById('opcoes_faltas-justificadas').style.display = 'none';
+          document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'none';
+
+          // Mostrar a div correspondente à categoria dos motivos escolhida
+          var categoriaSelecionada = this.value;
+          if (categoriaSelecionada == 'licenca-falta-medica') {
+            document.getElementById('opcoes_licenca-falta-medica').style.display = 'block';
+          } else if (categoriaSelecionada == 'falta-injustificada') {
+            document.getElementById('opcoes_falta-injustificada').style.display = 'block';
+          } else if (categoriaSelecionada == 'faltas-justificadas') {
+            document.getElementById('opcoes_faltas-justificadas').style.display = 'block';
+          } else if (categoriaSelecionada == 'faltas-previstas-legislacao') {
+            document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'block';
+          }
+        });
+
+        // Se em modo de edição, disparar o evento para exibir as opções corretas
+        <?php if ($idform_faltas): ?>
+        document.addEventListener("DOMContentLoaded", function() {
+          const categoria = '<?php echo htmlspecialchars($motivo_falta_categoria); ?>';
+          if (categoria) {
+            const motivoSelect = document.getElementById('motivo');
+            motivoSelect.value = categoria;
+            motivoSelect.dispatchEvent(new Event('change'));
+          }
+        });
+        <?php endif; ?>
+        </script>
+      </fieldset>
+
+
+      <div class="form-footer">
+        <label for="arquivo_pdf">Upload do Atestado (PDF):</label>
+        <input type="file" class="form-control" name="arquivo_pdf" accept=".pdf" id="fileInput"
+          <?php echo ($idform_faltas) ? '' : 'required'; ?>>
+        <?php if ($idform_faltas && !empty($formulario['pdf_atestado'])): ?>
+        <p>Arquivo Atual: <a href="uploads/<?php echo htmlspecialchars($formulario['pdf_atestado']); ?>"
+            target="_blank"><?php echo htmlspecialchars($formulario['pdf_atestado']); ?></a></p>
+        <?php endif; ?>
+        <ul id="fileList"></ul>
+
+
+        <?php if ($idform_faltas): ?>
+        <input type="hidden" name="idform_faltas" value="<?php echo htmlspecialchars($idform_faltas); ?>">
+        <?php endif; ?>
+
+
+        <button class="btn-enviar"
+          type="submit"><?php echo ($idform_faltas) ? 'Atualizar Formulário' : 'Enviar Formulário'; ?></button>
       </div>
-
-      <div id="opcoes-faltas-previstas-legislacao"
-        style="display: <?php echo ($motivo_falta_categoria === 'faltas-previstas-legislacao') ? 'block' : 'none'; ?>;"
-        class="motivo faltas-previstas-legislacao">
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento do Conjuge"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falecimento do Conjuge') ? 'checked' : ''; ?>>
-          Falecimento de cônjuge, pai, mãe, filho (9 dias consecutivos)</label>
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Falecimento Familiares"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Falecimento Familiares') ? 'checked' : ''; ?>>
-          Falecimento de outros familiares (2 dias consecutivos)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Casamento"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Casamento') ? 'checked' : ''; ?>>
-          Casamento (9 dias consecutivos)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Nascimento do Filho"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Nascimento do Filho') ? 'checked' : ''; ?>>
-          Nascimento de filho (5 dias)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento da(o) Esposa(o)"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acompanhamento da(o) Esposa(o)') ? 'checked' : ''; ?>>
-          Acompanhar esposa ou companheira (Até 2 dias)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acompanhamento do Filho"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acompanhamento do Filho') ? 'checked' : ''; ?>>
-          Acompanhar filho até 6 anos (1 dia por ano)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Doacao de Sangue"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Doacao de Sangue') ? 'checked' : ''; ?>>
-          Doação voluntária de sangue (1 dia em cada 12 meses)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Alistamento Eleitor"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Alistamento Eleitor') ? 'checked' : ''; ?>>
-          Alistamento como eleitor (Até 2 dias)</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Depoimento Judicial"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Depoimento Judicial') ? 'checked' : ''; ?>>
-          Convocação para depoimento judicial</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Comparecimento Juri"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Comparecimento Juri') ? 'checked' : ''; ?>>
-          Comparecimento como jurado no Tribunal do Júri</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Servico Eleitoral"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Servico Eleitoral') ? 'checked' : ''; ?>>
-          Convocação para serviço eleitoral</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Composicao Mesa Eleitoral"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Composicao Mesa Eleitoral') ? 'checked' : ''; ?>>
-          Dispensa para compor mesas eleitorais</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Prova de Vestibular"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Prova de Vestibular') ? 'checked' : ''; ?>>
-          Realização de Prova de Vestibular</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Justica do trabalho"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Justica do trabalho') ? 'checked' : ''; ?>>
-          Comparecimento como parte na Justiça do Trabalho</label>
-
-        <label><input type="radio" class="FPLT" name="motivo_falta" value="Acidente de Transporte"
-            <?php echo (isset($formulario['motivo_falta']) && $formulario['motivo_falta'] === 'Acidente de Transporte') ? 'checked' : ''; ?>>
-          Atrasos devido a acidentes de transporte</label>
-      </div>
-      <script>
-      // Função para exibir as opções de acordo com a categoria dos motivos selecionada
-      document.getElementById('motivo').addEventListener('change', function() {
-        // Esconder as divs de opções
-        document.getElementById('opcoes_licenca-falta-medica').style.display = 'none';
-        document.getElementById('opcoes_falta-injustificada').style.display = 'none';
-        document.getElementById('opcoes_faltas-justificadas').style.display = 'none';
-        document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'none';
-
-        // Mostrar a div correspondente à categoria dos motivos escolhida
-        var categoriaSelecionada = this.value;
-        if (categoriaSelecionada == 'licenca-falta-medica') {
-          document.getElementById('opcoes_licenca-falta-medica').style.display = 'block';
-        } else if (categoriaSelecionada == 'falta-injustificada') {
-          document.getElementById('opcoes_falta-injustificada').style.display = 'block';
-        } else if (categoriaSelecionada == 'faltas-justificadas') {
-          document.getElementById('opcoes_faltas-justificadas').style.display = 'block';
-        } else if (categoriaSelecionada == 'faltas-previstas-legislacao') {
-          document.getElementById('opcoes-faltas-previstas-legislacao').style.display = 'block';
-        }
-      });
-
-      // Se em modo de edição, disparar o evento para exibir as opções corretas
-      <?php if ($idform_faltas): ?>
-      document.addEventListener("DOMContentLoaded", function() {
-        const categoria = '<?php echo htmlspecialchars($motivo_falta_categoria); ?>';
-        if (categoria) {
-          const motivoSelect = document.getElementById('motivo');
-          motivoSelect.value = categoria;
-          motivoSelect.dispatchEvent(new Event('change'));
-        }
-      });
-      <?php endif; ?>
-      </script>
-    </fieldset>
-
-
-    <div class="form-footer">
-      <label for="arquivo_pdf">Upload do Atestado (PDF):</label>
-      <input type="file" class="form-control" name="arquivo_pdf" accept=".pdf" id="fileInput"
-        <?php echo ($idform_faltas) ? '' : 'required'; ?>>
-      <?php if ($idform_faltas && !empty($formulario['pdf_atestado'])): ?>
-      <p>Arquivo Atual: <a href="uploads/<?php echo htmlspecialchars($formulario['pdf_atestado']); ?>"
-          target="_blank"><?php echo htmlspecialchars($formulario['pdf_atestado']); ?></a></p>
-      <?php endif; ?>
-      <ul id="fileList"></ul>
-
-
-      <?php if ($idform_faltas): ?>
-      <input type="hidden" name="idform_faltas" value="<?php echo htmlspecialchars($idform_faltas); ?>">
-      <?php endif; ?>
-
-
-      <button class="btn-enviar"
-        type="submit"><?php echo ($idform_faltas) ? 'Atualizar Formulário' : 'Enviar Formulário'; ?></button>
-    </div>
-  </form>
-
+    </form>
+  </div>
   <!-- Script Consolidado para a Área de Datas, Matérias e Cursos -->
   <script>
   // Dados de disciplinas e atividades HAE obtidos do PHP
@@ -618,7 +621,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     container.innerHTML = ''; // Limpa o container para nova seleção
 
     const dataLabel = document.createElement('p');
-    dataLabel.textContent = `Data Selecionada: ${selectedDate}`;
+    dataLabel.textContent = `Data Selecionada: ${formatarData(selectedDate)} `;
     container.appendChild(dataLabel);
 
     gerarSelecaoCursosDia(container, selectedDate);
@@ -744,7 +747,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     atividadeList.id = `atividades_${data}_${cursoId}`;
 
     const atividadeLabel = document.createElement('p');
-    atividadeLabel.textContent = `Atividades HAE (Data: ${data}):`;
+    atividadeLabel.textContent = `Atividades HAE (Data: ${formatarData(data)}):`;
     atividadeList.appendChild(atividadeLabel);
 
     haeAtividades.forEach(atividade => {
@@ -778,7 +781,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     disciplinaList.id = `disciplinas_${data}_${cursoId}`;
 
     const disciplinaLabel = document.createElement('p');
-    disciplinaLabel.textContent = `Disciplinas da Data: ${data}:`;
+    disciplinaLabel.textContent = `Disciplinas da Data: ${formatarData(data)}`;
     disciplinaList.appendChild(disciplinaLabel);
 
     const diaSemanaSelecionado = getDiaSemana(data); // Obter o dia da semana selecionado
@@ -794,8 +797,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Verifica se a disciplina está selecionada (em modo de edição)
         <?php if ($idform_faltas): ?>
         <?php foreach ($aulasExistentes as $aula): ?>
-        if (disciplina.disciplina === '<?php echo addslashes($aula['nome_disciplina']); ?>' && data ===
-          '<?php echo $aula['data_aula']; ?>' && cursoId === <?php echo $aula['idcursos']; ?>) {
+        if (
+          disciplina.disciplina === '<?php echo addslashes($aula['nome_disciplina']); ?>' &&
+          data === '<?php echo $aula['data_aula']; ?>' &&
+          cursoId === <?php echo $aula['idcursos']; ?>
+        ) {
           checkbox.checked = true;
         }
         <?php endforeach; ?>
@@ -809,6 +815,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     container.appendChild(disciplinaList);
   }
+
+  // Função para formatar a data no estilo "19 de dezembro"
+  function formatarData(dataISO) {
+    const meses = [
+      "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+      "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"
+    ];
+
+    const data = new Date(dataISO);
+    const dia = data.getDate();
+    const mes = meses[data.getMonth()];
+
+    return `${dia} de ${mes}`;
+  }
+
 
   // Geração de Número de Aulas
   function gerarSelecaoNumAulas(container, data, cursoId) {
